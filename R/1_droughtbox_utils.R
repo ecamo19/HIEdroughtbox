@@ -65,15 +65,3 @@ clean_droughtbox_data <- function(path_data_droughtbox){
     return()
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
