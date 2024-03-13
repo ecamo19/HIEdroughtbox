@@ -12,43 +12,42 @@
 #
 clean_droughtbox_colnames <- function(path_data_droughtbox){
 
+
+    # Validate input dataset ---------------------------------------------------
+
     # Check is a .dat file
-    if (tools::file_ext(path_data_droughtbox) == 'dat') {
+    stopifnot("Input must must be a .dat file" = tools::file_ext(path_data_droughtbox) == 'dat' )
 
-        # Read data
-        utils::read.table(path_data_droughtbox, header = TRUE, skip = 1,
-                          sep = ",") %>%
+    # Clean colnames -----------------------------------------------------------
 
-        janitor::clean_names() %>%
+    # Read data
+    utils::read.table(path_data_droughtbox, header = TRUE, skip = 1,
+                      sep = ",") %>%
 
-        dplyr::filter(dplyr::row_number() %in% c(1, 2)) %>%
+    janitor::clean_names() %>%
 
-        # Merge all rows with units with data-type (i.e. Avg, min)
-        dplyr::summarise(dplyr::across(tidyselect::where(is.character),
-                                        stringr::str_c, collapse = "_")) %>%
+    dplyr::filter(dplyr::row_number() %in% c(1, 2)) %>%
 
-        # Get the first row
-        dplyr::filter(dplyr::row_number() == 1) %>%
+    # Merge all rows with units with data-type (i.e. Avg, min)
+    dplyr::summarise(dplyr::across(tidyselect::where(is.character),
+                                   stringr::str_c, collapse = "_")) %>%
 
-        # Combine colnames with the first row
-        stringr::str_c(base::colnames(.), ., sep = "-") %>%
+    # Get the first row
+    dplyr::filter(dplyr::row_number() == 1) %>%
 
-        # Remove uppercase letters
-        stringr::str_to_lower(.) %>%
+    # Combine colnames with the first row
+    stringr::str_c(base::colnames(.), ., sep = "-") %>%
 
-        # Replace -_, spaces, - and / with a underscore
-        mgsub::mgsub(., c("-_", " ", "-", "/"), c("_", "_", "_", "_")) %>%
+    # Remove uppercase letters
+    stringr::str_to_lower(.) %>%
 
-        # Remove names ending with a underscore
-        stringr::str_remove(., "\\_\\d?$") %>%
+    # Replace -_, spaces, - and / with a underscore
+    mgsub::mgsub(., c("-_", " ", "-", "/"), c("_", "_", "_", "_")) %>%
 
-        return(.)
+    # Remove names ending with a underscore
+    stringr::str_remove(., "\\_\\d?$") %>%
 
-
-    } else {
-       stop("Data must be a .dat file")
-    }
-
+    return(.)
 }
 
 
