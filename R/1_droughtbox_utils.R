@@ -1,15 +1,11 @@
-
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+#' Title
+#'
+#' @param path_data_droughtbox
+#'
+#' @return
+#' @export
+#'
+#' @examples
 clean_droughtbox_colnames <- function(path_data_droughtbox){
 
 
@@ -52,6 +48,14 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 
 
 
+#' Title
+#'
+#' @param path_data_droughtbox
+#'
+#' @return
+#' @export
+#'
+#' @examples
 clean_droughtbox_data <- function(path_data_droughtbox){
 
 
