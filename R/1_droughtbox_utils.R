@@ -1,11 +1,28 @@
-#' Title
+#' clean_droughtbox_colnames
+#' @description
+#' This is an internal function meant to be used inside the `clean_droughtbox_data`
+#' function.
 #'
-#' @param path_data_droughtbox
+#' First it merges the the first two rows (which contain the units and the data
+#' type of each column) of the .dat file downloaded from the the droughtbox and
+#' then merges those merged rows with s each colname.
 #'
-#' @return
+#' The pattern of the new colname is varname_unit_data_type. For example
+#' "air_tc_avg_deg_c_avg" the varname is air_tc_avg, the unit is deg_c and the
+#' data_type is avg.
+#'
+#' Some colnames don`t have a units or data type. For example tare_count_sm,
+#' where the varname is tare_count and the data_type is sm.
+#'
+#'
+#'
+#' @param path_data_droughtbox String indicating the location of the .dat file in your computer
+#'
+#' @return  Vector of strings of length 30
 #' @export
 #'
-#' @examples
+#' @examples clean_droughtbox_colnames(path/to/file.dat)
+#'
 clean_droughtbox_colnames <- function(path_data_droughtbox){
 
 
@@ -50,7 +67,7 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 
 #' Title
 #'
-#' @param path_data_droughtbox
+#' @param path_data_droughtbox String indicating the location of the .dat file in your computer
 #'
 #' @return
 #' @export

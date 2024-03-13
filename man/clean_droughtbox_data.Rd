@@ -7,7 +7,7 @@
 clean_droughtbox_data(path_data_droughtbox)
 }
 \arguments{
-\item{path_data_droughtbox}{}
+\item{path_data_droughtbox}{String indicating the location of the .dat file in your computer}
 }
 \description{
 Title
