@@ -8,7 +8,6 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "",
-  warning = FALSE,
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
@@ -34,7 +33,7 @@ devtools::install_github("ecamo19/hie_dRoughtbox")
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r libraries}
+```{r libraries, message = FALSE,warning = FALSE}
 library(HIEdroughtbox)
 library(dplyr)
 ```
@@ -42,4 +41,5 @@ library(dplyr)
 ```{r example}
 head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 ```
+
 
