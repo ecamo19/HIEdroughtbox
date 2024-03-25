@@ -73,7 +73,7 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 #' This function reads the raw .dat file downloaded from the droughtbox located
 #' at the Hawkesbury Institute for the Environment
 #'
-#' @param path_data_droughtbox String indicating the location of the .dat file in your computer
+#' @param path_droughtbox_data String indicating the location of the .dat file in your computer
 #'
 #' @return A dataframe with 25 columns
 #' @importFrom magrittr %>%
