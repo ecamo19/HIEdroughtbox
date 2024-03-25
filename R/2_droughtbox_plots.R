@@ -37,28 +37,66 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
     # Create plots -------------------------------------------------------------
 
-    base_plot <- ggplot2::ggplot(data = {{droughtbox_data}}) +
-                    ggplot2::theme_bw() +
-                    ggplot2::xlab("Time") +
-                    ggplot2::annotate("point",
-                                      x = base::min(droughtbox_data$date_time),
-                                      y = base::max(droughtbox_data$vpd_avg_kpa_avg),
-                                      label = "paste(italic(R) ^ 2, \" = .75\")"
-                                      )
+    # Function for positioning the label in each plot accordingly to each
+    # y-axis variable
 
 
-    if (cowplot == TRUE) {
+    ggplot_annotation_wrapper <- function(y){
 
-        # VPD
-        base_plot +
-            ggplot2::geom_point(ggplot2::aes(x = date_time, y = vpd_avg_kpa_avg)) +
-            ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_vpd_avg_avg),
-                                color = "red") +
+    ggplot2::annotate(geom = 'text',
+                 x = base::min(droughtbox_data$date_time) + 2000,
+                 y = y - 0.1,
+                 label = "atop(set_conditions == red, measured_conditions == black)",
+                 parse = TRUE,
+                 col =  "blue",
+                 size = 4.5
+                 )
 
-            ggplot2::ylab("Vapour pressure deficit (kPa)")
-    }else {
-        NULL
     }
+
+    # Base plot
+    base_plot <- ggplot2::ggplot(data = {{droughtbox_data}}) +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("Time")
+
+    # VPD
+    vpd_plot <-
+        base_plot +
+
+        # Measured conditions inside the box
+        ggplot2::geom_point(ggplot2::aes(x = date_time, y = vpd_avg_kpa_avg)) +
+
+        # Set conditions for the box
+         ggplot2::geom_point(ggplot2::aes(x = date_time,
+                                          y = set_point_vpd_avg_avg),
+                             color = "red") +
+
+        # Add annotation
+        ggplot_annotation_wrapper(y = base::max(droughtbox_data$vpd_avg_kpa_avg)) +
+
+        ggplot2::ylab("Vapour pressure deficit (kPa)")
+
+    # Temperature
+    #temp_plot <-
+        base_plot +
+
+        # Measured conditions inside the box
+        ggplot2::geom_point(ggplot2::aes(x = date_time, y = tc_avg_deg_c_avg)) +
+
+        ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_t_avg_avg),
+                            color = "red") +
+
+        # Add annotation
+        ggplot_annotation_wrapper(y = base::max(droughtbox_data$tc_avg_deg_c_avg)) +
+        ggplot2::ylab("Temperature (degree Celsius)")
+
+    # Air temperature
+
+
+    #if (cowplot == TRUE) {
+    #}else {
+    #    NULL
+    #}
 
 
 }
