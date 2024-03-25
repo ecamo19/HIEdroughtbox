@@ -18,10 +18,11 @@
 #'
 #' @param path_data_droughtbox String indicating the location of the .dat file in your computer
 #'
+#' @importFrom magrittr %>%
 #' @return  Vector of strings of length 30
 #' @export
 #'
-#' @examples clean_droughtbox_colnames(path/to/file.dat)
+#' @examples clean_droughtbox_colnames("data/acacia_aneura_25c.dat")
 #'
 clean_droughtbox_colnames <- function(path_data_droughtbox){
 
@@ -64,7 +65,7 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
     # Remove names ending with a underscore
     stringr::str_remove(., "\\_\\d?$") %>%
 
-    return(.)
+    return()
 }
 
 #'read_hie_droughtbox_data
@@ -75,9 +76,10 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 #' @param path_data_droughtbox String indicating the location of the .dat file in your computer
 #'
 #' @return A dataframe with 25 columns
+#' @importFrom magrittr %>%
 #' @export
 #'
-#' @examples read_hie_droughtbox_data(path/to/file.dat)
+#' @examples read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
 #'
 #'
 read_hie_droughtbox_data <- function(path_data_droughtbox){
@@ -97,7 +99,6 @@ read_hie_droughtbox_data <- function(path_data_droughtbox){
 
     # Substitute the old names with a clean ones
     magrittr::set_colnames(., clean_droughtbox_colnames(path_data_droughtbox)) %>%
-
 
     # Remove rows with units and comments
     dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
@@ -123,8 +124,8 @@ read_hie_droughtbox_data <- function(path_data_droughtbox){
     # Remove not used variables
     dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
                      i_avg_avg, batt_v_min_volts_min, i_output_avg_avg,
-                     duty_cycle_avg_avg))  %>%
+                     duty_cycle_avg_avg)) %>%
 
-    return()
+    return(tibble::as_data_frame())
 }
 
