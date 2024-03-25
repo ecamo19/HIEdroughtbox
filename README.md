@@ -36,7 +36,7 @@ library(dplyr)
 ```
 
 ``` r
-head(read_hie_droughtbox_data("./data/acacia_aneura_25c.dat"))
+head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 #>             date_time       date     time air_tc_avg_deg_c_avg
 #> 1 2024-03-04 12:51:00 2024-03-04 12:51:00                26.76
 #> 2 2024-03-04 12:51:30 2024-03-04 12:51:30                26.80

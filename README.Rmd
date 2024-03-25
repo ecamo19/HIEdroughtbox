@@ -39,6 +39,6 @@ library(dplyr)
 ```
 
 ```{r example}
-head(read_hie_droughtbox_data("./data/acacia_aneura_25c.dat"))
+head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 ```
 
