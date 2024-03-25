@@ -33,7 +33,7 @@ devtools::install_github("ecamo19/hie_dRoughtbox")
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r libraries}
+```{r libraries, warning=FALSE}
 library(HIEdroughtbox)
 library(dplyr)
 ```
@@ -42,3 +42,6 @@ library(dplyr)
 head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 ```
 
+```{r}
+# Test
+```
