@@ -20,7 +20,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
     # Validate input dataset ---------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" =  "data.frame" %in% base::class(data))
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
     base::stopifnot("Missing columns in the dataframe" =  c(
                                                             "set_point_t_avg_avg",
                                                             "set_point_vpd_avg_avg",
@@ -33,9 +33,32 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                             "vpd_avg_kpa_avg",
                                                             "abs_h_avg_g_m3_avg"
 
-                                                            ) %in% base::colnames(data))
+                                                            ) %in% base::colnames(droughtbox_data))
+
+    # Create plots -------------------------------------------------------------
+
+    base_plot <- ggplot2::ggplot(data = {{droughtbox_data}}) +
+                    ggplot2::theme_bw() +
+                    ggplot2::xlab("Time") +
+                    ggplot2::annotate("point",
+                                      x = base::min(droughtbox_data$date_time),
+                                      y = base::max(droughtbox_data$vpd_avg_kpa_avg),
+                                      label = "paste(italic(R) ^ 2, \" = .75\")"
+                                      )
 
 
+    if (cowplot == TRUE) {
+
+        # VPD
+        base_plot +
+            ggplot2::geom_point(ggplot2::aes(x = date_time, y = vpd_avg_kpa_avg)) +
+            ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_vpd_avg_avg),
+                                color = "red") +
+
+            ggplot2::ylab("Vapour pressure deficit (kPa)")
+    }else {
+        NULL
+    }
 
 
 }
