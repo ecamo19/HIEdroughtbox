@@ -4,9 +4,8 @@ Title: HIEdroughtbox
 Version: 0.0.01
 Author: Erick Calderon-Morales
 Maintainer: Erick Calderon-Morales <erickcamo19@gmail.com>
-Description: This package clean, read and analize the data coming from the 
-droughtbox located at the Hawkesbury Institude for the Environment 
-License: What license is it under?
+Description: This package clean, read and analize the data coming from the droughtbox located at the Hawkesbury Institude for the Environment 
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
