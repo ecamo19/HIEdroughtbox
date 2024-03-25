@@ -42,6 +42,3 @@ library(dplyr)
 head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 ```
 
-```{r}
-# Test
-```

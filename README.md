@@ -94,7 +94,3 @@ head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 5           -0.01728998           -0.01347576             14
 6           -0.01728998           -0.01347576             14
 ```
-
-``` r
-# Test
-```
