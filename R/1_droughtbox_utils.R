@@ -23,7 +23,7 @@
 #'
 #' @examples clean_droughtbox_colnames(path/to/file.dat)
 #'
-clean_droughtbox_colnames <- function(path_data_droughtbox){
+df <- function(path_data_droughtbox){
 
 
     # Validate input dataset ---------------------------------------------------
