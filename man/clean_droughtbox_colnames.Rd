@@ -10,7 +10,7 @@ clean_droughtbox_colnames(path_droughtbox_data)
 \item{path_droughtbox_data}{String indicating the location of the .dat file in your computer}
 }
 \value{
-Vector of strings of length 30
+Vector of strings with a length 30 elements
 }
 \description{
 This is an internal function meant to be used inside the
