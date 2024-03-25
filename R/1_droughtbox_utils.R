@@ -19,7 +19,7 @@
 #' @param path_droughtbox_data  String indicating the location of the .dat file in your computer
 #'
 #' @importFrom magrittr %>%
-#' @return  Vector of strings of length 30
+#' @return  Vector of strings with a length 30 elements
 #' @export
 #'
 #' @examples clean_droughtbox_colnames("./data/acacia_aneura_25c.dat")
