@@ -28,8 +28,12 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 
     # Validate input dataset ---------------------------------------------------
 
+    # Check that file exists and is not a folder
+    base::stopifnot(".dat file not found" = file.exists(path_data_droughtbox) && !dir.exists(path_data_droughtbox))
+
     # Check is a .dat file
-    stopifnot("Input must must be a .dat file" = tools::file_ext(path_data_droughtbox) == 'dat' )
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_data_droughtbox) == 'dat' )
+
 
     # Clean colnames -----------------------------------------------------------
 
@@ -63,25 +67,64 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
     return(.)
 }
 
-
-
-#' Title
+#'read_hie_droughtbox_data
+#' @description
+#' This function reads the raw .dat file downloaded from the droughtbox located
+#' at the Hawkesbury Institute for the Environment
 #'
 #' @param path_data_droughtbox String indicating the location of the .dat file in your computer
 #'
-#' @return
+#' @return A dataframe with 25 columns
 #' @export
 #'
-#' @examples
-clean_droughtbox_data <- function(path_data_droughtbox){
+#' @examples read_hie_droughtbox_data(path/to/file.dat)
+#'
+#'
+read_hie_droughtbox_data <- function(path_data_droughtbox){
+
+    # Validate input dataset ---------------------------------------------------
+
+    # Check that file exists and is not a folder
+    base::stopifnot(".dat file not found" = base::file.exists(path_data_droughtbox) && !base::dir.exists(path_data_droughtbox))
+
+    # Check is a .dat file
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_data_droughtbox) == 'dat' )
 
 
-    # Read data
+    # Read data ----------------------------------------------------------------
     utils::read.table(path_data_droughtbox, header = TRUE, skip = 1,
                           sep = ",") %>%
 
-    janitor::clean_names() %>%
+    # Substitute the old names with a clean ones
     magrittr::set_colnames(., clean_droughtbox_colnames(path_data_droughtbox)) %>%
+
+
+    # Remove rows with units and comments
+    dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
+
+    # Change colnames to lowercase
+    janitor::clean_names() %>%
+
+    # separate timestamp column into date and time
+    tidyr::separate(timestamp_ts, c("date", "time"), sep = " ") %>%
+
+    # Convert date and time columns into a time format
+    dplyr::mutate(date = lubridate::as_date(lubridate::ymd(date)), time = hms::as_hms(time)) %>%
+
+    # Convert character columns to numeric
+    dplyr::mutate(dplyr::across(dplyr::where(is.character), as.numeric)) %>%
+
+    # Join date and time and create new column
+    dplyr::mutate(date_time = lubridate::ymd_hms(paste(date, time))) %>%
+
+    # Set date_column as the first column in the dataframe
+    dplyr::select(date_time, dplyr::everything()) %>%
+
+    # Remove not used variables
+    dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
+                     i_avg_avg, batt_v_min_volts_min, i_output_avg_avg,
+                     duty_cycle_avg_avg))  %>%
+
     return()
 }
 
