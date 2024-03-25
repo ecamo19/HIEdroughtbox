@@ -1,11 +1,19 @@
 Package: HIEdroughtbox
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: HIEdroughtbox
+Version: 0.0.01
+Author: Erick Calderon-Morales
+Maintainer: Erick Calderon-Morales <erickcamo19@gmail.com>
+Description: This package clean, read and analize the data coming from the droughtbox located at the Hawkesbury Institude for the Environment 
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.3.1
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+Imports: 
+    dplyr (>= 1.1.4),
+    stringr (>= 1.5.1)
