@@ -22,7 +22,7 @@
 #' @return  Vector of strings of length 30
 #' @export
 #'
-#' @examples clean_droughtbox_colnames("data/acacia_aneura_25c.dat")
+#' @examples clean_droughtbox_colnames("./data/acacia_aneura_25c.dat")
 #'
 clean_droughtbox_colnames <- function(path_data_droughtbox){
 
@@ -79,7 +79,7 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 #' @importFrom magrittr %>%
 #' @export
 #'
-#' @examples read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+#' @examples read_hie_droughtbox_data("./data/acacia_aneura_25c.dat")
 #'
 #'
 read_hie_droughtbox_data <- function(path_data_droughtbox){
