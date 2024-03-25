@@ -16,7 +16,7 @@
 #' Some colnames don`t have a units or data type. For example tare_count_sm,
 #' where the varname is tare_count and the data_type is sm.
 #'
-#' @param path_data_droughtbox String indicating the location of the .dat file in your computer
+#' @param path_droughtbox_data  String indicating the location of the .dat file in your computer
 #'
 #' @importFrom magrittr %>%
 #' @return  Vector of strings of length 30
@@ -24,22 +24,22 @@
 #'
 #' @examples clean_droughtbox_colnames("./data/acacia_aneura_25c.dat")
 #'
-clean_droughtbox_colnames <- function(path_data_droughtbox){
+clean_droughtbox_colnames <- function(path_droughtbox_data){
 
 
     # Validate input dataset ---------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot(".dat file not found" = file.exists(path_data_droughtbox) && !dir.exists(path_data_droughtbox))
+    base::stopifnot(".dat file not found" = file.exists(path_droughtbox_data ) && !dir.exists(path_droughtbox_data ))
 
     # Check is a .dat file
-    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_data_droughtbox) == 'dat' )
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
 
 
     # Clean colnames -----------------------------------------------------------
 
     # Read data
-    utils::read.table(path_data_droughtbox, header = TRUE, skip = 1,
+    utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
                       sep = ",") %>%
 
     janitor::clean_names() %>%
@@ -82,23 +82,23 @@ clean_droughtbox_colnames <- function(path_data_droughtbox){
 #' @examples read_hie_droughtbox_data("./data/acacia_aneura_25c.dat")
 #'
 #'
-read_hie_droughtbox_data <- function(path_data_droughtbox){
+read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
     # Validate input dataset ---------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot(".dat file not found" = base::file.exists(path_data_droughtbox) && !base::dir.exists(path_data_droughtbox))
+    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data ) && !base::dir.exists(path_droughtbox_data ))
 
     # Check is a .dat file
-    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_data_droughtbox) == 'dat' )
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
 
 
     # Read data ----------------------------------------------------------------
-    utils::read.table(path_data_droughtbox, header = TRUE, skip = 1,
+    utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
                           sep = ",") %>%
 
     # Substitute the old names with a clean ones
-    magrittr::set_colnames(., clean_droughtbox_colnames(path_data_droughtbox)) %>%
+    magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data )) %>%
 
     # Remove rows with units and comments
     dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
