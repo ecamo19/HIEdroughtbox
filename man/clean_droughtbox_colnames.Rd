@@ -4,10 +4,10 @@
 \alias{clean_droughtbox_colnames}
 \title{clean_droughtbox_colnames}
 \usage{
-clean_droughtbox_colnames(path_data_droughtbox)
+clean_droughtbox_colnames(path_droughtbox_data)
 }
 \arguments{
-\item{path_data_droughtbox}{String indicating the location of the .dat file in your computer}
+\item{path_droughtbox_data}{String indicating the location of the .dat file in your computer}
 }
 \value{
 Vector of strings of length 30

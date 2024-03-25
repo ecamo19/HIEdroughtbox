@@ -4,10 +4,10 @@
 \alias{read_hie_droughtbox_data}
 \title{read_hie_droughtbox_data}
 \usage{
-read_hie_droughtbox_data(path_data_droughtbox)
+read_hie_droughtbox_data(path_droughtbox_data)
 }
 \arguments{
-\item{path_data_droughtbox}{String indicating the location of the .dat file in your computer}
+\item{path_droughtbox_data}{String indicating the location of the .dat file in your computer}
 }
 \value{
 A dataframe with 25 columns
