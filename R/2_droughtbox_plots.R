@@ -1,0 +1,1 @@
+plot_droughtbox_climatic_conditions
