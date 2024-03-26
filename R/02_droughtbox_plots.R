@@ -1,12 +1,18 @@
 #' plot_droughtbox_climatic_controls
 #'
+#' @description
+#' This function plots the change across time of the climatic controls specified
+#' by the user (shown in red) and the climatic controls measured inside of the
+#' Droughtbox
+#'
+#'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
 #'
 #' @importFrom magrittr %>%
 #'
 #' @param cowplot Boolean indicating if plots should be arranged in one single
-#' figure with 2 columns and 2 rows (TRUE) or if should be arranged individually
+#' figure with 2 columns and 3 rows (TRUE) or if should be arranged individually
 #'
 #' @return A ggplot2 object with a total of 5 figures
 #' @export
@@ -154,4 +160,17 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         print(relative_humidity_plot)
         print(air_temp_plot)
         }
+}
+
+
+#' plot_raw_strain_weight_data
+#'
+#' @param droughtbox_data Dataframe loaded with the function
+#' `read_hie_droughtbox_data`
+#' @return
+#' @export
+#'
+#' @examples
+plot_raw_strain_weight_data <- function(droughtbox_data){
+
 }
