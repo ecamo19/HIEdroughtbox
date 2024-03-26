@@ -66,18 +66,18 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot2::theme_bw() +
         ggplot2::xlab("Time") +
         ggplot2::theme(legend.position = "bottom",
-                       strip.text.x =  ggplot2::element_text(size = 25),
-                       axis.text.y   = ggplot2::element_text(size = 25),
-                       axis.text.x   = ggplot2::element_text(size = 25),
-                       axis.title.y  = ggplot2::element_text(size = 25),
-                       axis.title.x  = ggplot2::element_text(size = 25),
+                       strip.text.x =  ggplot2::element_text(size = 20),
+                       axis.text.y   = ggplot2::element_text(size = 20),
+                       axis.text.x   = ggplot2::element_text(size = 20),
+                       axis.title.y  = ggplot2::element_text(size = 20),
+                       axis.title.x  = ggplot2::element_text(size = 20),
                        panel.grid.major.y = ggplot2::element_blank(),
                        panel.grid.minor = ggplot2::element_blank(),
-                       axis.line = ggplot2::element_line(size = .4,
+                       axis.line = ggplot2::element_line(size = 0.4,
                                                          colour = "black"),
                        panel.border = ggplot2::element_rect(colour = "black",
                                                             fill = NA,
-                                                            size = 1.3))
+                                                            size = 1))
 
     # VPD
     vpd_plot <-
