@@ -267,6 +267,11 @@ plot_raw_strain_weight_data <- function(droughtbox_data){
         ggplot2::ylab("Strain weight (g)") +
         ggplot2::xlab("Time") +
 
+        # Set the colors of each strain
+        ggplot2::scale_color_manual(values = c("#eec000",
+                                               "#cf544c",
+                                               "#0175c3",
+                                               "#878687")) +
         # Add legend at the bottom
         ggplot2::theme(legend.position = "bottom")
 
