@@ -42,15 +42,13 @@ library(dplyr)
 
 ```{r example}
 data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
-
 head(data)
 ```
 
 
 ### Visualize climatic conditions
 
-
-```{r example_plot_climatic_controls, fig.height=20, fig.width=25}
+```{r example_plot_climatic_controls, fig.height=30, fig.width=35}
 plot_droughtbox_climatic_controls(data, cowplot = T)
 ```
 
