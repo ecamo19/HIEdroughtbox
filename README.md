@@ -98,7 +98,8 @@ plot_droughtbox_climatic_controls(data, cowplot = T)
 ```
 
 <img src="man/figures/README-example_plot_climatic_controls-1.png" width="100%" />
-\### Visualize **raw** weights measured by the strains
+
+### Visualize **raw** weights measured by the strains
 
 ``` r
 plot_raw_strains_weights(data)
