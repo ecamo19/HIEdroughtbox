@@ -172,7 +172,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
 #'
-#' @returnA ggplot2 object with the weight (grams) measured by each strain (4 in
+#' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
 #' total) inside the Droughtbox
 #'
 #' @export
