@@ -94,10 +94,6 @@ head(data)
 ### Visualize climatic conditions
 
 ``` r
-data(iris)
-```
-
-``` r
 plot_droughtbox_climatic_controls(data, cowplot = T)
 ```
 
