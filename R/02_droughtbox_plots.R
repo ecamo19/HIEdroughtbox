@@ -5,7 +5,6 @@
 #' by the user (shown in red) and the climatic controls measured inside of the
 #' Droughtbox
 #'
-#'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
 #'
@@ -15,6 +14,7 @@
 #' figure with 2 columns and 3 rows (TRUE) or if should be arranged individually
 #'
 #' @return A ggplot2 object with a total of 5 figures
+#'
 #' @export
 #'
 #' @examples
@@ -38,8 +38,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                             "rh_avg_percent_avg",
                                                             "tc_avg_deg_c_avg",
                                                             "vpd_avg_kpa_avg",
-                                                            "abs_h_avg_g_m3_avg"
-
+                                                            "abs_h_avg_g_m3_avg",
+                                                            "date_time"
                                                             ) %in% base::colnames(droughtbox_data))
 
     # Create plots -------------------------------------------------------------
@@ -164,13 +164,110 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
 
 #' plot_raw_strain_weight_data
+#' @description
+#' This function displays the raw weights (grams) measured inside the Droughtbox
+#'
+#' @importFrom magrittr %>%
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
-#' @return
+#'
+#' @returnA ggplot2 object with the weight (grams) measured by each strain (4 in
+#' total) inside the Droughtbox
+#'
 #' @export
 #'
 #' @examples
+#' droughtbox_data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+#' plot_raw_strain_weight_data(droughtbox_data)
+
 plot_raw_strain_weight_data <- function(droughtbox_data){
+
+    # Validate input dataset ---------------------------------------------------
+
+    # Check that file exists and is not a folder
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Make sure data is in the dataframe
+    base::stopifnot("Missing columns in the dataframe" =  c("strain_avg_1_microstrain_avg",
+                                                            "strain_avg_2_microstrain_avg",
+                                                            "strain_avg_3_microstrain_avg",
+                                                            "strain_avg_4_microstrain_avg",
+
+                                                            "t_sg_avg_1_avg",
+                                                            "t_sg_avg_2_avg",
+                                                            "t_sg_avg_3_avg",
+                                                            "t_sg_avg_4_avg",
+
+                                                            "date_time"
+                                                            ) %in% base::colnames(droughtbox_data))
+
+    # Create plot --------------------------------------------------------------
+    droughtbox_data %>%
+
+        # Select only the necessary varaibles for the plots
+        dplyr::select(date_time,
+
+                      # Variable 1
+                      t_sg_avg_1_avg,
+                      t_sg_avg_2_avg,
+                      t_sg_avg_3_avg,
+                      t_sg_avg_4_avg,
+
+                      # Variable 2
+                      strain_avg_1_microstrain_avg,
+                      strain_avg_2_microstrain_avg,
+                      strain_avg_3_microstrain_avg,
+                      strain_avg_4_microstrain_avg)  %>%
+
+        # Reshape data into a long format
+        tidyr::pivot_longer(!date_time,
+                            names_to = "strains",
+                            values_to = "strain_weight") %>%
+
+        # Create a new column with the variable name to be able to use
+        # facet_grid
+        dplyr::mutate(variable = base::factor(base::ifelse(stringr::str_detect(strains,
+
+                                                                               # starts with
+                                                                               "^t_sg_avg"),
+                                                           # Return
+                                                           "t_sg_avg", "strain_avg"))
+                      ) %>%
+        # Transform strain_number to factor type to keep consistent
+        dplyr::mutate(strains = base::factor(strains)) %>%
+
+
+        # Create new column with the new names for each strain
+        dplyr::mutate(strain_number = dplyr::case_when(strains == "t_sg_avg_1_avg"  ~ "strain_1",
+                                                       strains == "t_sg_avg_2_avg"  ~ "strain_2",
+                                                       strains == "t_sg_avg_3_avg"  ~ "strain_3",
+                                                       strains == "t_sg_avg_4_avg"  ~ "strain_4",
+
+                                                       # Variable 2
+                                                       strains == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                                       strains == "strain_avg_2_microstrain_avg"  ~ "strain_2",
+                                                       strains == "strain_avg_3_microstrain_avg"  ~ "strain_3",
+                                                       strains == "strain_avg_4_microstrain_avg"  ~ "strain_4",
+                                                       TRUE ~ strains)) %>%
+
+        # Create plot
+        ggplot2::ggplot(data = ., ggplot2::aes(x = date_time,
+                                               y = strain_weight,
+                                               colour = strain_number)) +
+        ggplot2::geom_point() +
+
+        # Chose the theme
+        ggplot2::theme_bw() +
+
+        # Set y-scales as indpendent
+        ggh4x::facet_grid2(. ~variable, scales = "free_y", independent = "y") +
+
+        # Edit x and y labs
+        ggplot2::ylab("Strain weight (g)") +
+        ggplot2::xlab("Time") +
+
+        # Add legend at the bottom
+        ggplot2::theme(legend.position = "bottom")
 
 }
