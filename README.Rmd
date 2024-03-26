@@ -48,11 +48,11 @@ head(data)
 
 ### Visualize climatic conditions
 
-```{r example_plot_climatic_controls, fig.height=30, fig.width=35}
+```{r example_plot_climatic_controls, fig.height=20, fig.width=25}
 plot_droughtbox_climatic_controls(data, cowplot = T)
 ```
 
-### Visualize __raw__ weights measured by the strains
+### Visualize raw weights measured by the strains
 
 ```{r example_plot_raw_weights, fig.height=10, fig.width=15}
 plot_raw_strains_weights(data)
