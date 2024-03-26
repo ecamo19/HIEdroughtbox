@@ -27,8 +27,12 @@ library(HIEdroughtbox)
 library(dplyr)
 ```
 
+### Read droughtbox data
+
 ``` r
-head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
+data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+
+head(data)
             date_time       date     time air_tc_avg_deg_c_avg
 1 2024-03-04 12:51:00 2024-03-04 12:51:00                26.76
 2 2024-03-04 12:51:30 2024-03-04 12:51:30                26.80
@@ -86,3 +90,18 @@ head(read_hie_droughtbox_data("data/acacia_aneura_25c.dat"))
 5           -0.01728998           -0.01347576             14
 6           -0.01728998           -0.01347576             14
 ```
+
+### Visualize climatic conditions
+
+``` r
+plot_droughtbox_climatic_controls(data, cowplot = T)
+```
+
+<img src="man/figures/README-example_plot_climatic_controls-1.png" width="100%" />
+\### Visualize **raw** weights measured by the strains
+
+``` r
+plot_raw_strains_weights(data)
+```
+
+<img src="man/figures/README-example_plot_raw_weights-1.png" width="100%" />
