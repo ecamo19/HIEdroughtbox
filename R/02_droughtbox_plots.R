@@ -64,7 +64,20 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
     # Create base plot
     base_plot <- ggplot2::ggplot(data = {{droughtbox_data}}) +
         ggplot2::theme_bw() +
-        ggplot2::xlab("Time")
+        ggplot2::xlab("Time") +
+        ggplot2::theme(legend.position = "bottom",
+                       strip.text.x =  ggplot2::element_text(size = 25),
+                       axis.text.y   = ggplot2::element_text(size = 25),
+                       axis.text.x   = ggplot2::element_text(size = 25),
+                       axis.title.y  = ggplot2::element_text(size = 25),
+                       axis.title.x  = ggplot2::element_text(size = 25),
+                       panel.grid.major.y = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),
+                       axis.line = ggplot2::element_line(size = .4,
+                                                         colour = "black"),
+                       panel.border = ggplot2::element_rect(colour = "black",
+                                                            fill = NA,
+                                                            size = 1.3))
 
     # VPD
     vpd_plot <-
@@ -272,7 +285,19 @@ plot_raw_strains_weights <- function(droughtbox_data){
                                                "#cf544c",
                                                "#0175c3",
                                                "#878687")) +
-        # Add legend at the bottom
-        ggplot2::theme(legend.position = "bottom")
 
+        # Add legend at the bottom
+        ggplot2::theme(legend.position = "bottom",
+                       strip.text.x =  ggplot2::element_text(size = 25),
+                       axis.text.y   = ggplot2::element_text(size = 25),
+                       axis.text.x   = ggplot2::element_text(size = 25),
+                       axis.title.y  = ggplot2::element_text(size = 25),
+                       axis.title.x  = ggplot2::element_text(size = 25),
+                       panel.grid.major.y = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),
+                       axis.line = ggplot2::element_line(size = .4,
+                                                         colour = "black"),
+                       panel.border = ggplot2::element_rect(colour = "black",
+                                                            fill = NA,
+                                                            size = 1.3))
 }
