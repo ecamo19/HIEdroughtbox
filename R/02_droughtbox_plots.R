@@ -181,7 +181,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' droughtbox_data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
 #' plot_raw_strain_weight_data(droughtbox_data)
 
-plot_raw_strain_weight_data <- function(droughtbox_data){
+plot_raw_strain_weights <- function(droughtbox_data){
 
     # Validate input dataset ---------------------------------------------------
 
