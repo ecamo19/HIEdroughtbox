@@ -207,27 +207,17 @@ plot_raw_strains_weights <- function(droughtbox_data){
                                                             "strain_avg_3_microstrain_avg",
                                                             "strain_avg_4_microstrain_avg",
 
-                                                            "t_sg_avg_1_avg",
-                                                            "t_sg_avg_2_avg",
-                                                            "t_sg_avg_3_avg",
-                                                            "t_sg_avg_4_avg",
-
                                                             "date_time"
                                                             ) %in% base::colnames(droughtbox_data))
 
     # Create plot --------------------------------------------------------------
     droughtbox_data %>%
 
-        # Select only the necessary varaibles for the plots
+        # Select only the necessary variables for the plots
         dplyr::select(date_time,
 
-                      # Variable 1
-                      t_sg_avg_1_avg,
-                      t_sg_avg_2_avg,
-                      t_sg_avg_3_avg,
-                      t_sg_avg_4_avg,
 
-                      # Variable 2
+                      # Variable 1
                       strain_avg_1_microstrain_avg,
                       strain_avg_2_microstrain_avg,
                       strain_avg_3_microstrain_avg,
@@ -238,27 +228,12 @@ plot_raw_strains_weights <- function(droughtbox_data){
                             names_to = "strains",
                             values_to = "strain_weight") %>%
 
-        # Create a new column with the variable name to be able to use
-        # facet_grid
-        dplyr::mutate(variable = base::factor(base::ifelse(stringr::str_detect(strains,
-
-                                                                               # starts with
-                                                                               "^t_sg_avg"),
-                                                           # Return
-                                                           "t_sg_avg", "strain_avg"))
-                      ) %>%
         # Transform strain_number to factor type to keep consistent
         dplyr::mutate(strains = base::factor(strains)) %>%
 
 
         # Create new column with the new names for each strain
-        dplyr::mutate(strain_number = dplyr::case_when(strains == "t_sg_avg_1_avg"  ~ "strain_1",
-                                                       strains == "t_sg_avg_2_avg"  ~ "strain_2",
-                                                       strains == "t_sg_avg_3_avg"  ~ "strain_3",
-                                                       strains == "t_sg_avg_4_avg"  ~ "strain_4",
-
-                                                       # Variable 2
-                                                       strains == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "strain_1",
                                                        strains == "strain_avg_2_microstrain_avg"  ~ "strain_2",
                                                        strains == "strain_avg_3_microstrain_avg"  ~ "strain_3",
                                                        strains == "strain_avg_4_microstrain_avg"  ~ "strain_4",
@@ -273,8 +248,8 @@ plot_raw_strains_weights <- function(droughtbox_data){
         # Chose the theme
         ggplot2::theme_bw() +
 
-        # Set y-scales as indpendent
-        ggh4x::facet_grid2(. ~variable, scales = "free_y", independent = "y") +
+        # Set y-scales as independent
+        #ggh4x::facet_grid2(. ~variable, scales = "free_y", independent = "y") +
 
         # Edit x and y labs
         ggplot2::ylab("Strain weight (g)") +
