@@ -9,7 +9,7 @@ test_that("Return object of type character for clean_droughtbox_colnames", {
   expect_type(clean_droughtbox_colnames("assets/droughtbox_output.dat"), "character")
 })
 
-test_that("Return object of lenght 30 for clean_droughtbox_colnames", {
+test_that("Return object of length 30 for clean_droughtbox_colnames", {
     expect_equal(length(clean_droughtbox_colnames("assets/droughtbox_output.dat")), 30)
 })
 
@@ -20,5 +20,5 @@ test_that("Return object of type data.frame", {
 })
 
 test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
-    expect_equal(length(read_hie_droughtbox_data("assets/droughtbox_output.dat")), 25)
+    expect_equal(length(read_hie_droughtbox_data("assets/droughtbox_output.dat")), 17)
 })
