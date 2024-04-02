@@ -87,15 +87,17 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
     # Validate input dataset ---------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data ) && !base::dir.exists(path_droughtbox_data ))
+    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data ) && !base::dir.exists(path_droughtbox_data))
 
     # Check is a .dat file
     base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
 
+    # Check that first cell in .dat file is TOA5
+    base::stopifnot("File not recognized. Check example files located in the data folder of the github package" =  "TOA5" %in% utils::read.table(path_droughtbox_data, nrows = 1, )[1,1])
 
     # Read data ----------------------------------------------------------------
     utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
-                          sep = ",") %>%
+                      sep = ",") %>%
 
     # Substitute the old names with a clean ones
     magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data )) %>%
