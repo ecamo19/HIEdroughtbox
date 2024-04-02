@@ -124,7 +124,15 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
     # Remove not used variables
     dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
                      i_avg_avg, batt_v_min_volts_min, i_output_avg_avg,
-                     duty_cycle_avg_avg)) %>%
+                     duty_cycle_avg_avg,
+
+                     # Volt columns
+                     vr1000_avg_1_mv_v_avg, vr1000_avg_2_mv_v_avg,
+                     vr1000_avg_3_mv_v_avg,vr1000_avg_4_mv_v_avg,
+
+                     # Hook temperature columns
+                     t_sg_avg_1_avg, t_sg_avg_2_avg,
+                     t_sg_avg_3_avg, t_sg_avg_4_avg)) %>%
 
     return(tibble::as_data_frame())
 }
