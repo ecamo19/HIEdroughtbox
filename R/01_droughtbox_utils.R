@@ -42,28 +42,28 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
     utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
                       sep = ",") %>%
 
-    janitor::clean_names() %>%
+        janitor::clean_names() %>%
 
-    dplyr::filter(dplyr::row_number() %in% c(1, 2)) %>%
+        dplyr::filter(dplyr::row_number() %in% c(1, 2)) %>%
 
-    # Merge all rows with units with data-type (i.e. Avg, min)
-    dplyr::summarise(dplyr::across(tidyselect::where(is.character),
+        # Merge all rows with units with data-type (i.e. Avg, min)
+        dplyr::summarise(dplyr::across(tidyselect::where(is.character),
                                    stringr::str_c, collapse = "_")) %>%
 
-    # Get the first row
-    dplyr::filter(dplyr::row_number() == 1) %>%
+        # Get the first row
+        dplyr::filter(dplyr::row_number() == 1) %>%
 
-    # Combine colnames with the first row
-    stringr::str_c(base::colnames(.), ., sep = "-") %>%
+        # Combine colnames with the first row
+        stringr::str_c(base::colnames(.), ., sep = "-") %>%
 
-    # Remove uppercase letters
-    stringr::str_to_lower(.) %>%
+        # Remove uppercase letters
+        stringr::str_to_lower(.) %>%
 
-    # Replace -_, spaces, - and / with a underscore
-    mgsub::mgsub(., c("-_", " ", "-", "/"), c("_", "_", "_", "_")) %>%
+        # Replace -_, spaces, - and / with a underscore
+        mgsub::mgsub(., c("-_", " ", "-", "/"), c("_", "_", "_", "_")) %>%
 
-    # Remove names ending with a underscore
-    stringr::str_remove(., "\\_\\d?$") %>%
+        # Remove names ending with a underscore
+        stringr::str_remove(., "\\_\\d?$") %>%
 
     return()
 }
@@ -98,65 +98,125 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
     utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
                       sep = ",") %>%
 
-    # Substitute the old names with a clean ones
-    magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data )) %>%
+        # Substitute the old names with a clean ones
+        magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data )) %>%
 
-    # Remove rows with units and comments
-    dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
+        # Remove rows with units and comments
+        dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
 
-    # Change colnames to lowercase
-    janitor::clean_names() %>%
+        # Change colnames to lowercase
+        janitor::clean_names() %>%
 
-    # separate timestamp column into date and time
-    tidyr::separate(timestamp_ts, c("date", "time"), sep = " ") %>%
+        # separate timestamp column into date and time
+        tidyr::separate(timestamp_ts, c("date", "time"), sep = " ") %>%
 
-    # Convert date and time columns into a time format
-    dplyr::mutate(date = lubridate::as_date(lubridate::ymd(date)), time = hms::as_hms(time)) %>%
+        # Convert date and time columns into a time format
+        dplyr::mutate(date = lubridate::as_date(lubridate::ymd(date)), time = hms::as_hms(time)) %>%
 
-    # Convert character columns to numeric
-    dplyr::mutate(dplyr::across(dplyr::where(is.character), as.numeric)) %>%
+        # Convert character columns to numeric
+        dplyr::mutate(dplyr::across(dplyr::where(is.character), as.numeric)) %>%
 
-    # Join date and time and create new column
-    dplyr::mutate(date_time = lubridate::ymd_hms(paste(date, time))) %>%
+        # Join date and time and create new column
+        dplyr::mutate(date_time = lubridate::ymd_hms(paste(date, time))) %>%
 
-    # Set date_column as the first column in the dataframe
-    dplyr::select(date_time, dplyr::everything()) %>%
+        # Set date_column as the first column in the dataframe
+        dplyr::select(date_time, dplyr::everything()) %>%
 
-    # Remove not used variables
-    dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
-                     i_avg_avg, batt_v_min_volts_min, i_output_avg_avg,
-                     duty_cycle_avg_avg,
+        # Remove not used variables
+        dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
+                         i_avg_avg, batt_v_min_volts_min, i_output_avg_avg,
+                         duty_cycle_avg_avg,
 
-                     # Volt columns
-                     vr1000_avg_1_mv_v_avg, vr1000_avg_2_mv_v_avg,
-                     vr1000_avg_3_mv_v_avg,vr1000_avg_4_mv_v_avg,
+                         # Volt columns
+                         vr1000_avg_1_mv_v_avg, vr1000_avg_2_mv_v_avg,
+                         vr1000_avg_3_mv_v_avg,vr1000_avg_4_mv_v_avg,
 
-                     # Hook temperature columns
-                     t_sg_avg_1_avg, t_sg_avg_2_avg,
-                     t_sg_avg_3_avg, t_sg_avg_4_avg)) %>%
+                         # Hook temperature columns
+                         t_sg_avg_1_avg, t_sg_avg_2_avg,
+                         t_sg_avg_3_avg, t_sg_avg_4_avg)) %>%
 
     return(tibble::as_data_frame())
 }
 
 #' filter_hie_droughtbox_data
 #' @description
+#' This function is meant to be used to removed chunks of data that is collected
+#' when the droughtbox has not reach the climatic conditions desired.
+#'
+#' This functions does not remove individual observations
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
-#' @param start_date
-#' @param end_date
-#' @param start_time
-#' @param end_time
+#' @param from_start_date in Year Month and Day
+#' @param to_end_date   in Year Month and Day
+#' @param from_start_time
+#' @param to_end_time
 #'
 #' @return
 #' @export
 #'
 #' @examples
-filter_hie_droughtbox_data <- function(droughtbox_data, start_date, end_date,
-                                       start_time, end_time){
+filter_hie_droughtbox_data <- function(droughtbox_data,
+                                       from_start_date = NULL,
+                                       to_end_date = NULL,
+                                       from_start_time = NULL,
+                                       to_end_time = NULL){
     # Validate input parameters ------------------------------------------------
 
-    # Check that file exists and is not a folder
+    # Stop if all parameters are NULL
+    if (is.null(c(from_start_date, to_end_date,
+                  from_start_time, to_end_time))) {
+        stop("from_start_date and to_end_date or from_start_time and to_end_time must be specified")
+    }
+
+    # Stop if one of the dates is not specified
+    if (is.null(from_start_date) && !is.null(to_end_date) | is.null(to_end_date) && !is.null(from_start_date) ) {
+        stop("start_date and to_end_date must be both specified or set both to NULL")
+    }
+
+    # Stop if one of the times is not specified
+    if (is.null(from_start_date) && !is.null(to_end_time) | is.null(to_end_time) && !is.null(from_start_time) ) {
+        stop("from_start_time and to_end_time must be both specified or set both to NULL")
+    }
+
+    # Stop of droughtbox_data is not a data frame
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Assert date column in dataframe
+    checkmate::assert_date(droughtbox_data$date)
+
+    # Assert time column in dataframe
+    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+
+    # Stop if time parameters are NA
+    if (is.na(hms::parse_hms(from_start_time)) | is.na(hms::parse_hms(to_end_time))) {
+        stop("from_start_time or to_end_time are NA. Make sure the format is HH:MM:SS i.e. 12:53:00")
+    }
+
+    # Stop if date parameters are NA
+    if (is.na(lubridate::ymd(from_start_date)) | is.na(lubridate::ymd(to_end_date))) {
+        stop("from_start_date or to_end_date are NA. Make sure the format is YYYY/MM/DD i.e. 1991/10/19")
+    }
+
+    # Convert parameters
+    from_start_date <- lubridate::ymd(from_start_date )
+    to_end_date <- lubridate::ymd(to_end_date)
+    from_start_time  <- hms::parse_hms(from_start_time)
+    to_end_time <- hms::parse_hms(to_end_time)
+
+    # Stop if start time is higher than end time
+    base::stopifnot("from_start_time is larger than to_end_time")
+
+    # Stop if end date is lower than start date
+
+
+    # Filter data --------------------------------------------------------------
+
+    # Filter data based on the range previously created
+    droughtbox_data %>%
+        filter(time %in% (hms::parse_hms("15:10:00"):hms::parse_hms("15:11:00")))
+
+
+    return(tibble::as_data_frame())
 
 }
