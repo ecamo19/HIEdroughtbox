@@ -198,7 +198,7 @@ plot_raw_strains_weights <- function(droughtbox_data){
 
     # Validate input dataset ---------------------------------------------------
 
-    # Check that file exists and is not a folder
+    # Check that droughtbox_data is a dataframe
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
     # Make sure data is in the dataframe
