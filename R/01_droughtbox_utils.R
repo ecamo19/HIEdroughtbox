@@ -23,7 +23,7 @@
 #' @export
 #'
 #' @examples clean_droughtbox_colnames("data/acacia_aneura_25c.dat")
-#'
+
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
 
@@ -80,8 +80,7 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' @export
 #'
 #' @examples read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
-#'
-#'
+
 read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
     # Validate input dataset ---------------------------------------------------
@@ -139,3 +138,25 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
     return(tibble::as_data_frame())
 }
 
+#' filter_hie_droughtbox_data
+#' @description
+#'
+#' @param droughtbox_data Dataframe loaded with the function
+#' `read_hie_droughtbox_data`
+#' @param start_date
+#' @param end_date
+#' @param start_time
+#' @param end_time
+#'
+#' @return
+#' @export
+#'
+#' @examples
+filter_hie_droughtbox_data <- function(droughtbox_data, start_date, end_date,
+                                       start_time, end_time){
+    # Validate input parameters ------------------------------------------------
+
+    # Check that file exists and is not a folder
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+}
