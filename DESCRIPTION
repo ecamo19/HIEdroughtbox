@@ -17,6 +17,5 @@ Depends:
 Imports: 
     cowplot,
     dplyr (>= 1.1.4),
-    ggh4x,
     ggplot2,
     stringr (>= 1.5.1)
