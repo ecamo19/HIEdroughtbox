@@ -182,15 +182,15 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
     # Stop of droughtbox_data is not a data frame
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
-    # Assert date column in dataframe
+    # Assert date column in droughtbox_data
     checkmate::assert_date(droughtbox_data$date)
 
-    # Assert time column in dataframe
+    # Assert time column in droughtbox_data
     base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Stop if time parameters are NA
     if (is.na(hms::parse_hms(from_start_time)) | is.na(hms::parse_hms(to_end_time))) {
-        stop("from_start_time or to_end_time are NA. Make sure the format is HH:MM:SS i.e. 12:53:00")
+        stop("from_start_time or to_end_time are NA. Make sure the format is in 24h HH:MM:SS i.e. 13:53:00")
     }
 
     # Stop if date parameters are NA
@@ -204,19 +204,41 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
     from_start_time  <- hms::parse_hms(from_start_time)
     to_end_time <- hms::parse_hms(to_end_time)
 
-    # Stop if start time is higher than end time
-    base::stopifnot("from_start_time is larger than to_end_time")
-
-    # Stop if end date is lower than start date
+    # Stop if start date is higher than end date
+    base::stopifnot("from_start_date is larger than to_end_date" = to_end_date > from_start_date)
 
 
     # Filter data --------------------------------------------------------------
 
-    # Filter data based on the range previously created
-    droughtbox_data %>%
-        filter(time %in% (hms::parse_hms("15:10:00"):hms::parse_hms("15:11:00")))
+    # Filter base on time parameters
+    if (is.null(c(from_start_date,to_end_date) & !is.null(from_start_time,to_end_time) )) {
+
+        print(crayon::cyan(paste0("Filtering data from: ", from_start_time,
+                                  " to: ", to_end_time)))
+        droughtbox_data %>%
+            filter(time %in% (from_start_time:to_end_time)) %>%
+            return(tibble::as_data_frame())
 
 
-    return(tibble::as_data_frame())
+    # Filter base on date parameters
+    }ifelse(!is.null(c(from_start_date,to_end_date) & is.null(from_start_time,to_end_time) )){
+        print(crayon::cyan(paste0("Filtering data from: ", from_start_date,
+                                  " to: ", to_end_date)))
+        droughtbox_data %>%
+            filter(date %in% (from_start_date:to_end_date)) %>%
+            return(tibble::as_data_frame())
+
+
+    }ifelse(!is.null(c(from_start_date,to_end_date) & !is.null(from_start_time,to_end_time) )){
+        print("Not implemented yet")
+    }
+    # Break code if some unknown condition is found
+    else{
+        stop('Filtering in filter_hie_droughtbox_data function failed')
+    }
+
+
+
+
 
 }
