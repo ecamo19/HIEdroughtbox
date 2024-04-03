@@ -216,20 +216,20 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
         print(crayon::cyan(paste0("Filtering data from: ", from_start_time,
                                   " to: ", to_end_time)))
         droughtbox_data %>%
-            filter(time %in% (from_start_time:to_end_time)) %>%
+            dplyr::filter(time %in% (from_start_time:to_end_time)) %>%
             return(tibble::as_data_frame())
 
 
     # Filter base on date parameters
-    }ifelse(!is.null(c(from_start_date,to_end_date) & is.null(from_start_time,to_end_time) )){
+    } else if(!is.null(c(from_start_date,to_end_date) & is.null(from_start_time,to_end_time) )){
         print(crayon::cyan(paste0("Filtering data from: ", from_start_date,
                                   " to: ", to_end_date)))
         droughtbox_data %>%
-            filter(date %in% (from_start_date:to_end_date)) %>%
+            dplyr::filter(date %in% (from_start_date:to_end_date)) %>%
             return(tibble::as_data_frame())
 
 
-    }ifelse(!is.null(c(from_start_date,to_end_date) & !is.null(from_start_time,to_end_time) )){
+    } else if(!is.null(c(from_start_date,to_end_date) & !is.null(from_start_time,to_end_time) )){
         print("Not implemented yet")
     }
     # Break code if some unknown condition is found
@@ -239,6 +239,3 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
 
 
 
-
-
-}
