@@ -30,5 +30,5 @@ Some colnames don`t have a units or data type. For example tare_count_sm,
 where the varname is tare_count and the data_type is sm.
 }
 \examples{
-clean_droughtbox_colnames("inst/extdata/acacia_aneura_25c.dat")
+clean_droughtbox_colnames("acacia_aneura_25c.dat")
 }

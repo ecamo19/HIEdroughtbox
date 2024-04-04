@@ -18,6 +18,6 @@ total) inside the Droughtbox
 This function displays the raw weights (grams) measured inside the Droughtbox
 }
 \examples{
-droughtbox_data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
+droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
 plot_raw_strains_weights(droughtbox_data)
 }
