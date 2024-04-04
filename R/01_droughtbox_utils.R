@@ -109,8 +109,10 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
         # separate timestamp column into date and time
         tidyr::separate(timestamp_ts, c("date", "time"), sep = " ") %>%
 
-        # Convert date and time columns into a time format
-        dplyr::mutate(date = lubridate::as_date(lubridate::ymd(date)), time = hms::as_hms(time)) %>%
+        # Convert columns to the right format
+        dplyr::mutate(date = lubridate::as_date(lubridate::ymd(date)),
+                      time = hms::as_hms(time),
+                      tare_count_smp = base::factor(tare_count_smp)) %>%
 
         # Convert character columns to numeric
         dplyr::mutate(dplyr::across(dplyr::where(is.character), as.numeric)) %>%
@@ -119,7 +121,7 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
         dplyr::mutate(date_time = lubridate::ymd_hms(paste(date, time))) %>%
 
         # Set date_column as the first column in the dataframe
-        dplyr::select(date_time, dplyr::everything()) %>%
+        dplyr::select(tare_count_smp, date_time, dplyr::everything()) %>%
 
         # Remove not used variables
         dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
@@ -330,13 +332,14 @@ clean_droughtbox_dataset <- function(droughtbox_data){
 
     # Clean data ---------------------------------------------------------------
 
-
     droughtbox_data %>%
 
         # Remove values equal or lower than 0.3 grams across strain_avg vars
         dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
+                         dplyr::any_vars(. >= 0.2)) %>%
 
-                         dplyr::any_vars(. >= 0.2))
+        group_by()
+
 
 
     # Show how many points were removed
