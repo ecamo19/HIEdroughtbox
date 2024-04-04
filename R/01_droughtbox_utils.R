@@ -147,15 +147,39 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
-#' @param from_start_date in Year Month and Day
-#' @param to_end_date   in Year Month and Day
-#' @param from_start_time
-#' @param to_end_time
+#' @param from_start_date String indicating the initial Year, Month and Day to
+#' filter in the dataset. It must have a YYYY-MM-DD format
+#' @param to_end_date String indicating the final Year, Month and Day to filter
+#' in the dataset. It must have a YYYY-MM-DD format
+#' @param from_start_time String indicating the initial hour, minutes and seconds
+#' to filter in the dataset. It must have a HH:MM:SS format
+#' @param to_end_time String indicating the final hour, minutes and seconds
+#' to filter in the dataset. It must have a HH:MM:SS format
 #'
-#' @return
+#' @return dataframe
+#' @importFrom magrittr %>%
 #' @export
 #'
 #' @examples
+#' droughtbox_data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+#' filter_hie_droughtbox_data(droughtbox_data,
+#'                             from_start_date = "2024/03/04",
+#'                             to_end_date = "2024/03/04",
+#'                             from_start_time = NULL,
+#'                             to_end_time = NULL)
+#'
+#' filter_hie_droughtbox_data(droughtbox_data,
+#'                             from_start_date = "2024/03/04",
+#'                             to_end_date = "2024/03/04",
+#'                             from_start_time = "12:51:00",
+#'                             to_end_time = "12:52:00")
+#'
+#' filter_hie_droughtbox_data(droughtbox_data,
+#'                             from_start_date = NULL,
+#'                             to_end_date = NULL,
+#'                             from_start_time = "12:51:00",
+#'                             to_end_time = "12:52:00")
+
 filter_hie_droughtbox_data <- function(droughtbox_data,
                                        from_start_date = NULL,
                                        to_end_date = NULL,
