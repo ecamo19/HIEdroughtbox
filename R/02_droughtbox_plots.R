@@ -176,7 +176,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 }
 
 
-#' plot_raw_strains_weights
+#' plot_strains_weights
 #' @description
 #' This function displays the raw weights (grams) measured inside the Droughtbox
 #'
@@ -192,9 +192,9 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #'
 #' @examples
 #' droughtbox_data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
-#' plot_raw_strains_weights(droughtbox_data)
+#' plot_strains_weights(droughtbox_data)
 
-plot_raw_strains_weights <- function(droughtbox_data){
+plot_strains_weights <- function(droughtbox_data){
 
     # Validate input dataset ---------------------------------------------------
 
