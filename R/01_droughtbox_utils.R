@@ -315,7 +315,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' @export
 #'
 #' @examples
-clean_droughtbox_dataset <- function(droughtbox_data){
+clean_droughtbox_dataset <- function(droughtbox_data, remove_n_observations){
 
     # Validate input parameters ------------------------------------------------
     # Stop of droughtbox_data is not a data frame
@@ -332,14 +332,22 @@ clean_droughtbox_dataset <- function(droughtbox_data){
 
     # Clean data ---------------------------------------------------------------
 
+    # Show how many observations does a tare have
+
+    number_of_tares <- droughtbox_data %>% count(tarea_count)
+
     droughtbox_data %>%
 
         # Remove values equal or lower than 0.3 grams across strain_avg vars
         dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
                          dplyr::any_vars(. >= 0.2)) %>%
 
-        group_by()
+        # Identify the first and last value of each group (tare_count)
 
+        dplyr::group_by(tare_count_smp) %>%
+
+        # Clean
+        dplyr::slice(remove_n_observations:(n() - remove_n_observations))
 
 
     # Show how many points were removed
