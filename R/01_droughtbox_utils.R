@@ -155,7 +155,7 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #' @param to_end_time String indicating the final hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format
 #'
-#' @return dataframe
+#' @return Dataframe with the selected dates and times
 #' @importFrom magrittr %>%
 #' @export
 #'
@@ -293,4 +293,52 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
         # Break the code if some unknown condition is found
         stop('Filtering in filter_hie_droughtbox_data function failed')
         }
+}
+
+#' clean_droughtbox_dataset
+#' @description
+#' This function removes wrong data points that are produced by the Droughtbox
+#' after each taring process. First values lower than 0.1 grams are removed,
+#' then the function reads the tare_count column in the dataset and selects the
+#' values in the middle (we consider these as correct measurements) of each
+#' group of tare_count
+#'
+#' Use the function `plot_raw_strains_weights` to visualize the wrong data points.
+#'
+#' @param droughtbox_data Dataframe loaded with the function
+#' `read_hie_droughtbox_data`
+#'
+#' @importFrom magrittr %>%
+#' @return A dataset
+#' @export
+#'
+#' @examples
+clean_droughtbox_dataset <- function(droughtbox_data){
+
+    # Validate input parameters ------------------------------------------------
+    # Stop of droughtbox_data is not a data frame
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Make sure that the data is in the dataframe
+    base::stopifnot("Missing columns in the dataframe" =  c("strain_avg_1_microstrain_avg",
+                                                            "strain_avg_2_microstrain_avg",
+                                                            "strain_avg_3_microstrain_avg",
+                                                            "strain_avg_4_microstrain_avg",
+
+                                                            "tare_count_smp"
+                                                            ) %in% base::colnames(droughtbox_data))
+
+    # Clean data ---------------------------------------------------------------
+
+
+    droughtbox_data %>%
+
+        # Remove values equal or lower than 0.3 grams across strain_avg vars
+        dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
+
+                         dplyr::any_vars(. >= 0.2))
+
+
+    # Show how many points were removed
+
 }

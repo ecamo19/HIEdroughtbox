@@ -201,7 +201,7 @@ plot_raw_strains_weights <- function(droughtbox_data){
     # Check that droughtbox_data is a dataframe
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
-    # Make sure data is in the dataframe
+    # Make sure that the data is in the dataframe
     base::stopifnot("Missing columns in the dataframe" =  c("strain_avg_1_microstrain_avg",
                                                             "strain_avg_2_microstrain_avg",
                                                             "strain_avg_3_microstrain_avg",

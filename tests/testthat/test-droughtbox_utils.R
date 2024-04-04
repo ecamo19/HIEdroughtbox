@@ -123,6 +123,6 @@ test_that("Return 2 rows out of 796",{
                                                  to_end_time = "12:52:00")), 2)
 })
 
-
-
 # filter_hie_droughtbox_data(data, from_start_date = "2024/03/", to_end_date = "2024/03/")
+
+# clean_droughtbox_dataset -----------------------------------------------------
