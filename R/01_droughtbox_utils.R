@@ -139,7 +139,7 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
     return(tibble::as_data_frame(.data))
 }
 
-#' filter_hie_droughtbox_data
+#' filter_droughtbox_data
 #' @description
 #' This function is meant to be used to removed chunks of data that is collected
 #' when the droughtbox has not reach the climatic conditions desired.
@@ -163,25 +163,25 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #'
 #' @examples
 #' droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
-#' filter_hie_droughtbox_data(droughtbox_data,
+#' filter_droughtbox_data(droughtbox_data,
 #'                             from_start_date = "2024/03/04",
 #'                             to_end_date = "2024/03/04",
 #'                             from_start_time = NULL,
 #'                             to_end_time = NULL)
 #'
-#' filter_hie_droughtbox_data(droughtbox_data,
+#' filter_droughtbox_data(droughtbox_data,
 #'                             from_start_date = "2024/03/04",
 #'                             to_end_date = "2024/03/04",
 #'                             from_start_time = "12:51:00",
 #'                             to_end_time = "12:52:00")
 #'
-#' filter_hie_droughtbox_data(droughtbox_data,
+#' filter_droughtbox_data(droughtbox_data,
 #'                             from_start_date = NULL,
 #'                             to_end_date = NULL,
 #'                             from_start_time = "12:51:00",
 #'                             to_end_time = "12:52:00")
 
-filter_hie_droughtbox_data <- function(droughtbox_data,
+filter_droughtbox_data <- function(droughtbox_data,
                                        from_start_date = NULL,
                                        to_end_date = NULL,
                                        from_start_time = NULL,
@@ -293,7 +293,7 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
     } else{
 
         # Break the code if some unknown condition is found
-        stop('Filtering in filter_hie_droughtbox_data function failed')
+        stop('Filtering in filter_droughtbox_data function failed')
         }
 }
 
