@@ -184,7 +184,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
-#'
+#' @param show_strain String (i.e. "strain_1") or vector of strings
+#' (c("strain_2", "strain_3")) indicating which strain to plot. Default is "all"
 #' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
 #' total) inside the Droughtbox
 #'
@@ -194,7 +195,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
 #' plot_strains_weights(droughtbox_data)
 
-plot_strains_weights <- function(droughtbox_data){
+plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
 
     # Validate input dataset ---------------------------------------------------
 
@@ -210,12 +211,26 @@ plot_strains_weights <- function(droughtbox_data){
                                                             "date_time"
                                                             ) %in% base::colnames(droughtbox_data))
 
+    # Validate show_strain parameters
+    options <- c("all", "strain_1", "strain_2","strain_3", "strain_4")
+
+    # Stop if show_strain not in options
+    if (!all(show_strain %in% options)) {
+        stop("Invalid option for show_strain parameter. ",
+             "Choose bewteen: all, strain_1, strain_2, strain_3 or strain_4. ",
+             'For example c("strain_1","strain_2")')
+    }
+
+    # Dummy code for using all option
+    if (show_strain == "all"){
+        show_strain <- c("strain_1", "strain_2","strain_3", "strain_4")
+    }
+
     # Create plot --------------------------------------------------------------
     droughtbox_data %>%
 
         # Select only the necessary variables for the plots
         dplyr::select(date_time,
-
 
                       # Variable 1
                       strain_avg_1_microstrain_avg,
@@ -231,7 +246,6 @@ plot_strains_weights <- function(droughtbox_data){
         # Transform strain_number to factor type to keep consistent
         dplyr::mutate(strains = base::factor(strains)) %>%
 
-
         # Create new column with the new names for each strain
         dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "strain_1",
                                                        strains == "strain_avg_2_microstrain_avg"  ~ "strain_2",
@@ -239,16 +253,20 @@ plot_strains_weights <- function(droughtbox_data){
                                                        strains == "strain_avg_4_microstrain_avg"  ~ "strain_4",
                                                        TRUE ~ strains)) %>%
 
+        # Filter data based on the show_strain parameter
+        dplyr::filter(strain_number %in% show_strain) %>%
+
         # Create plot
         ggplot2::ggplot(data = ., ggplot2::aes(x = date_time,
                                                y = strain_weight,
                                                colour = strain_number)) +
         ggplot2::geom_point() +
 
-        # Chose the theme
+        # Choose the theme
         ggplot2::theme_bw() +
 
-        # Set y-scales as independent
+        # Set y-scales as independent, I am leaving this line here for
+        # remembering ggh4x library. It is useful!
         #ggh4x::facet_grid2(. ~variable, scales = "free_y", independent = "y") +
 
         # Edit x and y labs
