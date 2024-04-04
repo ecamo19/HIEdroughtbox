@@ -83,6 +83,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
     vpd_plot <-
         base_plot +
 
+
+
         # Measured conditions inside the box
         ggplot2::geom_point(ggplot2::aes(x = date_time, y = vpd_avg_kpa_avg)) +
 
@@ -230,7 +232,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
     droughtbox_data %>%
 
         # Select only the necessary variables for the plots
-        dplyr::select(date_time,
+        dplyr::select(date_time,tare_count_smp,
 
                       # Variable 1
                       strain_avg_1_microstrain_avg,
@@ -239,7 +241,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
                       strain_avg_4_microstrain_avg)  %>%
 
         # Reshape data into a long format
-        tidyr::pivot_longer(!date_time,
+        tidyr::pivot_longer(!c(date_time, tare_count_smp),
                             names_to = "strains",
                             values_to = "strain_weight") %>%
 
@@ -260,7 +262,17 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
         ggplot2::ggplot(data = ., ggplot2::aes(x = date_time,
                                                y = strain_weight,
                                                colour = strain_number)) +
+
+
         ggplot2::geom_point() +
+
+        # Add line with the mean value of the weights
+        ggplot2::stat_smooth(ggplot2::aes(colour = strain_number),
+                             se = FALSE) +
+
+        # Try to implement the plot from ggplot2-book.org/annotations
+        ggplot2::geom_text(ggplot2::aes(label = tare_count_smp)) +
+
 
         # Choose the theme
         ggplot2::theme_bw() +
