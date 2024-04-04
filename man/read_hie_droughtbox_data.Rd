@@ -18,6 +18,4 @@ at the Hawkesbury Institute for the Environment
 }
 \examples{
 read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
-
-
 }

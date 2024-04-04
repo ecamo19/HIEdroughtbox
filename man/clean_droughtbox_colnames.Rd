@@ -31,5 +31,4 @@ where the varname is tare_count and the data_type is sm.
 }
 \examples{
 clean_droughtbox_colnames("data/acacia_aneura_25c.dat")
-
 }
