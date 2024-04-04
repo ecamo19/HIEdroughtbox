@@ -161,24 +161,49 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
                                        to_end_date = NULL,
                                        from_start_time = NULL,
                                        to_end_time = NULL){
-    # Validate input parameters ------------------------------------------------
+
     print(crayon::cyan("Times must have a HH:MM:SS format i.e. 13:53:00"))
     print(crayon::cyan("Dates must have a YYYY-MM-DD format i.e. 1991-10-19"))
 
-    # Stop if all parameters are NULL
-    if (is.null(c(from_start_date, to_end_date,
-                  from_start_time, to_end_time))) {
-        stop("from_start_date and to_end_date or from_start_time and to_end_time must be specified")
-    }
+    # Validate input parameters ------------------------------------------------
 
-    # Stop if one of the dates is not specified
-    if (is.null(from_start_date) && !is.null(to_end_date) | is.null(to_end_date) && !is.null(from_start_date) ) {
-        stop("start_date and to_end_date must be both specified or set both to NULL")
+    # Stop if all parameters are NULL
+    if (all(is.null(from_start_date) & is.null(to_end_date) &
+            is.null(from_start_time) & is.null(to_end_time))) {
+
+        stop("from_start_date and to_end_date or from_start_time and to_end_time must be specified.")
     }
 
     # Stop if one of the times is not specified
-    if (is.null(from_start_date) && !is.null(to_end_time) | is.null(to_end_time) && !is.null(from_start_time) ) {
-        stop("from_start_time and to_end_time must be both specified or set both to NULL")
+    if (is.null(from_start_date) & is.null(to_end_date)) {
+
+        if (any(is.null(from_start_time) | is.null(to_end_time))){
+            stop("from_start_time and to_end_time must be both specified or set both to NULL. Time parameters must have a HH:MM:SS format i.e. 13:53:00")
+        }
+    }
+
+    # Stop if one of the dates is not specified
+    if (is.null(from_start_time) & is.null(to_end_time)) {
+
+        if (any(is.null(from_start_date) | is.null(to_end_date))){
+            stop("from_start_date and to_end_date must be both specified or set both to NULL. Date parameters must have a YYYY-MM-DD format i.e. 1991-10-19")
+        }
+    }
+
+    # Stop if time parameters are NA
+    if (!is.null(from_start_time) & !is.null(to_end_time)){
+
+        if (is.na(hms::parse_hms(from_start_time)) | is.na(hms::parse_hms(to_end_time))) {
+            stop("from_start_time or to_end_time are not in the correct format. Make sure the format is in 24h HH:MM:SS i.e. 13:53:00")
+        }
+    }
+
+    # Stop if date parameters are NA
+    if (all(!is.null(from_start_date) & !is.null(to_end_date))){
+
+        if (is.na(lubridate::ymd(from_start_date)) | is.na(lubridate::ymd(to_end_date))) {
+            stop("from_start_date or to_end_date are not in the correct format. Make sure the format is YYYY-MM-DD i.e. 1991-10-19")
+        }
     }
 
     # Stop of droughtbox_data is not a data frame
@@ -190,70 +215,59 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
     # Assert time column in droughtbox_data
     base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
-    # Stop if time parameters are NA
-    if (!is.null(c(from_start_time, to_end_time))){
-
-        if (is.na(hms::parse_hms(from_start_time)) | is.na(hms::parse_hms(to_end_time))) {
-            stop("from_start_time or to_end_time are NA. Make sure the format is in 24h HH:MM:SS i.e. 13:53:00")
-        }
-    }
-
-    # Stop if date parameters are NA
-    if (!is.null(c(from_start_date, to_end_date))){
-        if (is.na(lubridate::ymd(from_start_date)) | is.na(lubridate::ymd(to_end_date))) {
-            stop("from_start_date or to_end_date are NA. Make sure the format is YYYY-MM-DD i.e. 1991-10-19")
-        }
-    }
-
+    print("assertions passed")
     # Filter data --------------------------------------------------------------
 
-    # Filter based on time parameters
-    if (is.null(c(from_start_date,to_end_date) & !is.null(c(from_start_time,to_end_time) ))){
-
-        print(crayon::cyan(paste0("Filtering data by hour from: ", from_start_time,
-                                  " to: ", to_end_time)))
-
-        # Convert parameters to the right format
-        from_start_time  <- hms::parse_hms(from_start_time)
-        to_end_time <- hms::parse_hms(to_end_time)
-
-        droughtbox_data %>%
-            dplyr::filter(time %in% (from_start_time:to_end_time)) %>%
-            return(tibble::as_data_frame())
-
-
     # Filter based on date parameters
-    } else if(!is.null(c(from_start_date,to_end_date) & is.null(c(from_start_time,to_end_time)))){
+    if (!is.null(c(from_start_date,to_end_date)) & is.null(c(from_start_time,to_end_time))){
 
-        print(crayon::cyan(paste0("Filtering data by date from: ", from_start_date,
-                                  " to: ", to_end_date)))
+        print(crayon::cyan(paste0("Filtering data by date from: ",
+                                  from_start_date, " to: ", to_end_date)))
 
         # Convert parameters to the right format
         from_start_date <- lubridate::ymd(from_start_date )
         to_end_date <- lubridate::ymd(to_end_date)
 
+        # Filter data
         droughtbox_data %>%
             dplyr::filter(date %in% (from_start_date:to_end_date)) %>%
             return(tibble::as_data_frame())
 
+    # Filter based on time parameters
+    } else if(is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
+
+        print(crayon::cyan(paste0("Filtering data by hour from: ",
+                                  from_start_time, " to: ", to_end_time)))
+
+        # Convert parameters to the right format
+        from_start_time  <- hms::parse_hms(from_start_time)
+        to_end_time <- hms::parse_hms(to_end_time)
+
+        # Filter data
+        droughtbox_data %>%
+            dplyr::filter(time %in% (from_start_time:to_end_time)) %>%
+            return(tibble::as_data_frame())
+
+
     # Filter based on date and time parameters
-    } else if(!is.null(c(from_start_date,to_end_date) & !is.null(c(from_start_time,to_end_time)))){
+    } else if(!is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
 
         print(crayon::cyan(paste0("Filtering data by hour and date from: ", from_start_date,
                                   " to: ", to_end_date)))
 
-        # Create initial values
+        # Join parameters
         from_start <- lubridate::ymd_hms(paste(from_start_date,from_start_time))
 
         # Create end values
         to_end <- lubridate::ymd_hms(paste(to_end_date,to_end_time))
 
-
+        #
         droughtbox_data %>%
             dplyr::filter(date_time %in% (from_start:to_end)) %>%
             return(tibble::as_data_frame())
 
-    }else{
+    } else{
+
         # Break the code if some unknown condition is found
         stop('Filtering in filter_hie_droughtbox_data function failed')
         }
