@@ -205,18 +205,6 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
         }
     }
 
-    # Convert parameters
-    from_start_date <- lubridate::ymd(from_start_date )
-    to_end_date <- lubridate::ymd(to_end_date)
-    from_start_time  <- hms::parse_hms(from_start_time)
-    to_end_time <- hms::parse_hms(to_end_time)
-
-    # Stop if start date is higher than end date
-    if (to_end_date < from_start_date) {
-        stop("from_start_date is larger than to_end_date")
-    }
-
-
     # Filter data --------------------------------------------------------------
 
     # Filter based on time parameters
@@ -224,6 +212,11 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
 
         print(crayon::cyan(paste0("Filtering data by hour from: ", from_start_time,
                                   " to: ", to_end_time)))
+
+        # Convert parameters to the right format
+        from_start_time  <- hms::parse_hms(from_start_time)
+        to_end_time <- hms::parse_hms(to_end_time)
+
         droughtbox_data %>%
             dplyr::filter(time %in% (from_start_time:to_end_time)) %>%
             return(tibble::as_data_frame())
@@ -231,8 +224,14 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
 
     # Filter based on date parameters
     } else if(!is.null(c(from_start_date,to_end_date) & is.null(c(from_start_time,to_end_time)))){
+
         print(crayon::cyan(paste0("Filtering data by date from: ", from_start_date,
                                   " to: ", to_end_date)))
+
+        # Convert parameters to the right format
+        from_start_date <- lubridate::ymd(from_start_date )
+        to_end_date <- lubridate::ymd(to_end_date)
+
         droughtbox_data %>%
             dplyr::filter(date %in% (from_start_date:to_end_date)) %>%
             return(tibble::as_data_frame())
@@ -248,6 +247,7 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
 
         # Create end values
         to_end <- lubridate::ymd_hms(paste(to_end_date,to_end_time))
+
 
         droughtbox_data %>%
             dplyr::filter(date_time %in% (from_start:to_end)) %>%
