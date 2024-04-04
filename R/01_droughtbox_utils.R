@@ -22,7 +22,7 @@
 #' @return  Vector of strings with a length 30 elements
 #' @export
 #'
-#' @examples clean_droughtbox_colnames("data/acacia_aneura_25c.dat")
+#' @examples clean_droughtbox_colnames("inst/extdata/acacia_aneura_25c.dat")
 
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
@@ -79,7 +79,7 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' @importFrom magrittr %>%
 #' @export
 #'
-#' @examples read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+#' @examples read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
 
 read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
@@ -161,7 +161,7 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #' @export
 #'
 #' @examples
-#' droughtbox_data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+#' droughtbox_data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
 #' filter_hie_droughtbox_data(droughtbox_data,
 #'                             from_start_date = "2024/03/04",
 #'                             to_end_date = "2024/03/04",
@@ -287,7 +287,7 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
         #
         droughtbox_data %>%
             dplyr::filter(date_time %in% (from_start:to_end)) %>%
-            return(tibble::as_data_frame())
+            return(tibble::as_data_frame(.data))
 
     } else{
 

@@ -17,5 +17,5 @@ This function reads the raw .dat file downloaded from the droughtbox located
 at the Hawkesbury Institute for the Environment
 }
 \examples{
-read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
 }
