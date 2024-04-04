@@ -1,7 +1,3 @@
-# Search globally the .dat files
-#Sys.glob("assets/*.dat")
-library(dplyr)
-library(stringr)
 
 # Tests for clean_droughtbox_colnames ------------------------------------------
 

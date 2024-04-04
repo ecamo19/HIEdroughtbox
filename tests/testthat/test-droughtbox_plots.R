@@ -1,3 +1,4 @@
+
 # Tests for plot_droughtbox_climatic_controls ----------------------------------
 test_that("Return object of type gg or ggplot", {
     data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
