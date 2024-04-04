@@ -26,7 +26,6 @@
 
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
-
     # Validate input dataset ---------------------------------------------------
 
     # Check that file exists and is not a folder
@@ -34,7 +33,6 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 
     # Check is a .dat file
     base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
-
 
     # Clean colnames -----------------------------------------------------------
 
