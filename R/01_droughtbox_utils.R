@@ -65,7 +65,7 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
         # Remove names ending with a underscore
         stringr::str_remove(., "\\_\\d?$") %>%
 
-    return()
+    return(.data)
 }
 
 #'read_hie_droughtbox_data
@@ -135,7 +135,7 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
                          t_sg_avg_1_avg, t_sg_avg_2_avg,
                          t_sg_avg_3_avg, t_sg_avg_4_avg)) %>%
 
-    return(tibble::as_data_frame())
+    return(tibble::as_data_frame(.data))
 }
 
 #' filter_hie_droughtbox_data
@@ -239,7 +239,6 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
     # Assert time column in droughtbox_data
     base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
-    print("assertions passed")
     # Filter data --------------------------------------------------------------
 
     # Filter based on date parameters
@@ -255,7 +254,7 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
         # Filter data
         droughtbox_data %>%
             dplyr::filter(date %in% (from_start_date:to_end_date)) %>%
-            return(tibble::as_data_frame())
+            return(tibble::as_data_frame(.data))
 
     # Filter based on time parameters
     } else if(is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
@@ -270,7 +269,7 @@ filter_hie_droughtbox_data <- function(droughtbox_data,
         # Filter data
         droughtbox_data %>%
             dplyr::filter(time %in% (from_start_time:to_end_time)) %>%
-            return(tibble::as_data_frame())
+            return(tibble::as_data_frame(.data))
 
 
     # Filter based on date and time parameters
