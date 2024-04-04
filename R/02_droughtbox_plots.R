@@ -232,7 +232,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
     droughtbox_data %>%
 
         # Select only the necessary variables for the plots
-        dplyr::select(date_time,tare_count_smp,
+        dplyr::select(date_time, tare_count_smp,
 
                       # Variable 1
                       strain_avg_1_microstrain_avg,
