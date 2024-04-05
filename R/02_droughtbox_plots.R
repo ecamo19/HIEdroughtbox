@@ -201,6 +201,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
 
     # Validate input dataset ---------------------------------------------------
 
+
     # Check that droughtbox_data is a dataframe
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
@@ -214,6 +215,8 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
                                                             ) %in% base::colnames(droughtbox_data))
 
     # Validate show_strain parameters
+    checkmate::assert_character(show_strain)
+
     options <- c("all", "strain_1", "strain_2","strain_3", "strain_4")
 
     # Stop if show_strain not in options
