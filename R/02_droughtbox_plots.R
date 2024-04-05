@@ -79,26 +79,26 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                             fill = NA,
                                                             size = 1))
 
-    # VPD
+    # VPD plot
     vpd_plot <-
+
         base_plot +
-
-
 
         # Measured conditions inside the box
         ggplot2::geom_point(ggplot2::aes(x = date_time, y = vpd_avg_kpa_avg)) +
 
         # Set conditions for the box
         ggplot2::geom_point(ggplot2::aes(x = date_time,
-                                          y = set_point_vpd_avg_avg),
-                             color = "red") +
+                                         y = set_point_vpd_avg_avg),
+                            color = "red") +
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$vpd_avg_kpa_avg)) +
         ggplot2::ylab("Vapour pressure deficit (kPa)")
 
-    # Temperature
+    # Temperature plot
     temp_plot <-
+
         base_plot +
 
         # Measured conditions inside the box
@@ -112,8 +112,9 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$tc_avg_deg_c_avg)) +
         ggplot2::ylab("Temperature (degree Celsius)")
 
-    # Air temperature
+    # Air temperature plot
     air_temp_plot <-
+
         base_plot +
 
         # Measured conditions inside the box
@@ -127,8 +128,9 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$air_tc_avg_deg_c_avg)) +
         ggplot2::ylab("Air temperature (degree Celsius)")
 
-    # Relative Humidity
+    # Relative Humidity plot
     relative_humidity_plot <-
+
         base_plot +
 
         # Measured conditions inside the box
@@ -143,8 +145,9 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot2::ylab("Relative humidity (%)")
 
 
-    # Absolute humidity
+    # Absolute humidity plot
     absolute_humidity_plot <-
+
         base_plot +
 
         # Measured conditions inside the box
@@ -160,11 +163,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
     # Return one figure with several plots
     if (cowplot == TRUE) {
-        return(cowplot::plot_grid(ncol = 2,
-                                  vpd_plot,
-                                  temp_plot,
-                                  absolute_humidity_plot,
-                                  relative_humidity_plot,
+        return(cowplot::plot_grid(ncol = 2, vpd_plot, temp_plot,
+                                  absolute_humidity_plot, relative_humidity_plot,
                                   air_temp_plot))
 
     # Return each plot individually
@@ -173,10 +173,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         print(temp_plot)
         print(absolute_humidity_plot)
         print(relative_humidity_plot)
-        print(air_temp_plot)
-        }
+        print(air_temp_plot)}
 }
-
 
 #' plot_strains_weights
 #' @description
@@ -297,7 +295,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         # Choose the theme
         ggplot2::theme_bw() +
 
-        # Set y-scales as independent, I am leaving this line here for
+        # Set y-scales independent. I am leaving this line here for
         # remembering ggh4x library. It is useful!
         #ggh4x::facet_grid2(. ~variable, scales = "free_y", independent = "y") +
 
