@@ -7,7 +7,8 @@
 clean_droughtbox_colnames(path_droughtbox_data)
 }
 \arguments{
-\item{path_droughtbox_data}{String indicating the location of the .dat file in your computer}
+\item{path_droughtbox_data}{String indicating the location of the .dat file
+in your computer}
 }
 \value{
 Vector of strings with a length 30 elements

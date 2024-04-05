@@ -55,28 +55,48 @@ plot_droughtbox_climatic_controls(data, cowplot = T)
 ### Visualize raw weights measured by the strains
 
 ```{r example_plot_raw_weights, fig.height=10, fig.width=15}
-plot_strains_weights(data, show_strain = "all")
+plot_strains_weights(data, show_strain = "all", 
+                     time_breaks = "5 min", 
+                     show_tare_group = TRUE)
 ```
 #### Visualize some strains 
 
 ```{r example_plot_raw_weights_1_4, fig.height=10, fig.width=15}
-plot_strains_weights(data, show_strain = c("strain_1", "strain_4"))
+plot_strains_weights(data, 
+                     show_strain = c("strain_1", "strain_4"), 
+                     time_breaks = "10 min",
+                     show_tare_group = TRUE)
 ```
 
 ### Choose a range of data
 
 ```{r}
 filtered_data <- filter_droughtbox_data(data, 
-                       from_start_time = "13:15:00",
-                       to_end_time = "15:15:00")
+                       from_start_time = "13:10:00",
+                       to_end_time = "15:10:00")
 
-filtered_data
+head(filtered_data)
 ```
-
+```{r example_plot_weights_1_4_filtered_data, fig.height=10, fig.width=15}
+plot_strains_weights(filtered_data, 
+                     show_strain = c("strain_1", "strain_4"), 
+                     time_breaks = "10 min",
+                     show_tare_group = TRUE)
+```
 
 ### Clean data
 
 ```{r}
-#clean_droughtbox_data()
+clean_data <- 
+    clean_droughtbox_data(filtered_data, 
+                      remove_n_observations = 10, 
+                      threshold = 0.2)
+
+head(clean_data)
+```
+```{r example_plot_weights_all_cleaned_data, fig.height=10, fig.width=15}
+plot_strains_weights(clean_data, 
+                     show_strain = "all",
+                     show_tare_group = FALSE)
 ```
 
