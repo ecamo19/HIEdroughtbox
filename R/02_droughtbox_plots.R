@@ -278,9 +278,8 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
 
         ggplot2::geom_point() +
 
-        # Increase the number of axis ticks
-
-        ggplot2::scale_x_datetime(breaks = scales::date_breaks("10 mins")) +
+        # Increase the number of axis ticks according to time_breaks
+        ggplot2::scale_x_datetime(breaks = scales::date_breaks({{time_breaks}})) +
 
         # Add line with the mean value of the weights
         ggplot2::stat_smooth(ggplot2::aes(colour = strain_number),
