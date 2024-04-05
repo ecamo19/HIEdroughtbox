@@ -297,7 +297,7 @@ filter_droughtbox_data <- function(droughtbox_data,
         }
 }
 
-#' clean_droughtbox_dataset
+#' clean_droughtbox_data
 #' @description
 #' This function removes wrong data points that are produced by the Droughtbox
 #' after each taring process. First it removes values lower than a `threshold`,
@@ -324,7 +324,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' data <- data %>% filter(!tare_count_smp %in% c("13","14","28"))
 #'
 #' # Clean data
-#' clean_droughtbox_dataset(data, remove_n_observations = 6)
+#' clean_droughtbox_data(data, remove_n_observations = 6)
 
 clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
                                      threshold = 0.2){
