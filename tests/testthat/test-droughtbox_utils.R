@@ -125,36 +125,36 @@ test_that("Return 2 rows out of 796",{
 
 # filter_droughtbox_data(data, from_start_date = "2024/03/", to_end_date = "2024/03/")
 
-# clean_droughtbox_dataset -----------------------------------------------------
+# clean_droughtbox_data --------------------------------------------------------
 test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
 
 
 test_that("Return 1 row from a dataset with 13 rows",{
-    expect_equal(nrow(clean_droughtbox_dataset(test_data[11:23,],
+    expect_equal(nrow(clean_droughtbox_data(test_data[11:23,],
                                                remove_n_observations = 6)), 1)
 
 })
 
 test_that("Return 2 rows from a dataset with 14 rows",{
-    expect_equal(nrow(clean_droughtbox_dataset(test_data[11:24,],
+    expect_equal(nrow(clean_droughtbox_data(test_data[11:24,],
                                                remove_n_observations = 6)), 2)
 
 })
 
 test_that("Return 3 rows from a dataset with 15 rows",{
-    expect_equal(nrow(clean_droughtbox_dataset(test_data[11:25,],
+    expect_equal(nrow(clean_droughtbox_data(test_data[11:25,],
                                                remove_n_observations = 6)), 3)
 
 })
 
 test_that("Return 5 rows from a dataset with 15 rows",{
-    expect_equal(nrow(clean_droughtbox_dataset(test_data[11:25,],
+    expect_equal(nrow(clean_droughtbox_data(test_data[11:25,],
                                                remove_n_observations = 5)), 5)
 
 })
 
 test_that("Return 30 rows from a dataset with 50 rows",{
-    expect_equal(nrow(clean_droughtbox_dataset(test_data[11:60,],
+    expect_equal(nrow(clean_droughtbox_data(test_data[11:60,],
                                                remove_n_observations = 10)), 30)
 
 })
@@ -162,7 +162,7 @@ test_that("Return 30 rows from a dataset with 50 rows",{
 
 
 test_that("Return 60 rows from a dataset with 50 rows",{
-    expect_equal(nrow(clean_droughtbox_dataset(test_data[11:110,],
+    expect_equal(nrow(clean_droughtbox_data(test_data[11:110,],
                                                remove_n_observations = 10)), 59)
 
 })
@@ -170,7 +170,7 @@ test_that("Return 60 rows from a dataset with 50 rows",{
 
 
 test_that("Return error when tare groups don't have enough tares",{
-    expect_error(nrow(clean_droughtbox_dataset(test_data[1:13,],
+    expect_error(nrow(clean_droughtbox_data(test_data[1:13,],
                                                remove_n_observations = 6)))
 
 })

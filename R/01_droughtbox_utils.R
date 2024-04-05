@@ -326,7 +326,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' # Clean data
 #' clean_droughtbox_dataset(data, remove_n_observations = 6)
 
-clean_droughtbox_dataset <- function(droughtbox_data, remove_n_observations,
+clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
                                      threshold = 0.2){
 
     # Validate input parameters ------------------------------------------------
