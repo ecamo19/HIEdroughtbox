@@ -295,10 +295,9 @@ filter_droughtbox_data <- function(droughtbox_data,
         # Join parameters
         from_start <- lubridate::ymd_hms(paste(from_start_date,from_start_time))
 
-        # Create end values
         to_end <- lubridate::ymd_hms(paste(to_end_date,to_end_time))
 
-        #
+        # Filter
         droughtbox_data %>%
             dplyr::filter(date_time %in% (from_start:to_end)) %>%
             return(tibble::as_data_frame(.data))
@@ -306,8 +305,7 @@ filter_droughtbox_data <- function(droughtbox_data,
     } else{
 
         # Break the code if some unknown condition is found
-        stop('Filtering in filter_droughtbox_data function failed')
-        }
+        stop('Filtering in filter_droughtbox_data function failed')}
 }
 
 #' clean_droughtbox_data
