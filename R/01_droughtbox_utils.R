@@ -300,22 +300,34 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' clean_droughtbox_dataset
 #' @description
 #' This function removes wrong data points that are produced by the Droughtbox
-#' after each taring process. First values lower than 0.1 grams are removed,
-#' then the function reads the tare_count column in the dataset and selects the
-#' values in the middle (we consider these as correct measurements) of each
-#' group of tare_count
+#' after each taring process. First it removes values lower than a `threshold`,
+#' (which is in grams) and then it removes the first and last values of each
+#' tare_count
 #'
-#' Use the function `plot_raw_strains_weights` to visualize the wrong data points.
+#' The function `plot_raw_strains_weights` can be used to visualize the data
+#' points might need to be removed.
 #'
-#' @param droughtbox_data Dataframe loaded with the function
+#' @param droughtbox_data Dataframe loaded with the function.
 #' `read_hie_droughtbox_data`
-#'
+#' @param remove_n_observations Integer indicating the number of values that
+#' need to be removed at the beginning and at the end of each tare_count group.
+#' @param threshold Float indicating the threshold at which values should be
+#' removed
 #' @importFrom magrittr %>%
 #' @return A dataset
 #' @export
 #'
 #' @examples
-clean_droughtbox_dataset <- function(droughtbox_data, remove_n_observations){
+#' data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
+#'
+#' # Remove tare_counts without enough measurements
+#' data <- data %>% filter(!tare_count_smp %in% c("13","14","28"))
+#'
+#' # Clean data
+#' clean_droughtbox_dataset(data, remove_n_observations = 6)
+
+clean_droughtbox_dataset <- function(droughtbox_data, remove_n_observations,
+                                     threshold = 0.2){
 
     # Validate input parameters ------------------------------------------------
     # Stop of droughtbox_data is not a data frame
@@ -330,26 +342,63 @@ clean_droughtbox_dataset <- function(droughtbox_data, remove_n_observations){
                                                             "tare_count_smp"
                                                             ) %in% base::colnames(droughtbox_data))
 
+    # Make sure remove_n_observations is an integer
+    checkmate::assert_int(remove_n_observations)
+
+    # Check if each tare_group has enough measurements
+    number_measurements_in_each_tare_group <-
+
+        # Count the number of measurements in each tare
+        droughtbox_data %>% dplyr::count(tare_count_smp) %>%
+
+        # Label if tare count has enough data points to remove.
+        # For example if the user wants to remove the first and last minute of
+        # observations of each tare, the group should contain at least 13
+        # measurements to return one value.
+        dplyr::mutate(comparison =  dplyr::if_else(n < ((2*{{remove_n_observations}}) + 1),
+                                                   TRUE, FALSE)) %>%
+
+        # Get the tares that don't have enough measurements
+        dplyr::filter(comparison == TRUE)
+
+        # Stop if any TRUE is found
+        if (nrow(number_measurements_in_each_tare_group) > 0) {
+
+            print("tare_count group with not enough meaureaments found!")
+            print(number_measurements_in_each_tare_group)
+            print("Consider removing the tares or reduce the number of observations to be removed")
+
+            # Remove object
+            rm(number_measurements_in_each_tare_group)
+            stop("tare_count group don't have enough meaureaments")
+        }
+
     # Clean data ---------------------------------------------------------------
-
-    # Show how many observations does a tare have
-
-    number_of_tares <- droughtbox_data %>% count(tarea_count)
 
     droughtbox_data %>%
 
-        # Remove values equal or lower than 0.3 grams across strain_avg vars
+        # Remove values equal or lower than threshold across strain_avg vars
         dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
-                         dplyr::any_vars(. >= 0.2)) %>%
 
-        # Identify the first and last value of each group (tare_count)
+                         # Remove values
+                         dplyr::any_vars(. >= {{threshold}})) %>%
 
+        # Identify the firsts and lasts values of each group (tare_count)
         dplyr::group_by(tare_count_smp) %>%
 
-        # Clean
-        dplyr::slice(remove_n_observations:(n() - remove_n_observations))
+        # Remove measurements at the beginning and at the end of the dataframe.
+        # For example, if a dataframe has 13 measurements and
+        # remove_n_observations is equal to 6, 6 measurements at the beginning
+        # and 6 measurements at the end will be removed returning the just one
+        # row
+        dplyr::slice(({{remove_n_observations}} + 1):(n() - {{remove_n_observations}})) %>%
 
+        # Print the total number of rows filtered
+        {print(paste0("Total number of rows removed: ",
 
-    # Show how many points were removed
+                      # Subtract the total minus the filtered
+                      nrow(droughtbox_data) - nrow(.))); .} %>%
+
+    return(tibble::as_data_frame(.data))
 
 }
