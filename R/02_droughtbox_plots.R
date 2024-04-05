@@ -194,6 +194,10 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' should show the tick marks. Choose one of "sec", "min", "hour", "day",
 #' "week", "month", "year"
 #'
+#' @param show_tare_group Boolean (TRUE/FALSE) indicating if data should
+#' be shown as points or as labels with the tare_count to which they
+#' belong to.
+#'
 #' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
 #' total) inside the Droughtbox
 #'
@@ -204,6 +208,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' plot_strains_weights(droughtbox_data)
 
 plot_strains_weights <- function(droughtbox_data, show_strain = "all",
+                                 show_tare_group = TRUE,
                                  time_breaks = "10 min"){
 
     # Validate inputs ------ ---------------------------------------------------
@@ -240,7 +245,17 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         show_strain <- c("strain_1", "strain_2","strain_3", "strain_4")
     }
 
+    if(show_tare_group == TRUE) {
+
+
+
+    } else if (show_tare_group == FALSE) {
+        tare_count_smp  <- "NULL"
+    }
+
     # Create plot --------------------------------------------------------------
+
+    # Transform the data into the right format
     droughtbox_data %>%
 
         # Select only the necessary variables for the plots
@@ -275,6 +290,8 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                y = strain_weight,
                                                colour = strain_number)) +
 
+        # Show tare_count_smp as label if show_tare_group is TRUE
+        {if(show_tare_group == TRUE)ggplot2::geom_text(ggplot2::aes(label = tare_count_smp))}+
 
         ggplot2::geom_point() +
 
@@ -284,10 +301,6 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         # Add line with the mean value of the weights
         ggplot2::stat_smooth(ggplot2::aes(colour = strain_number),
                              se = FALSE) +
-
-        # Try to implement the plot from ggplot2-book.org/annotations
-        ggplot2::geom_text(ggplot2::aes(label = tare_count_smp)) +
-
 
         # Choose the theme
         ggplot2::theme_bw() +
