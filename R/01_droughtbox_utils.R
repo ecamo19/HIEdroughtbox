@@ -1,4 +1,5 @@
 #' clean_droughtbox_colnames
+#'
 #' @description
 #' This is an internal function meant to be used inside the
 #' `clean_droughtbox_data` function.
@@ -16,9 +17,13 @@
 #' Some colnames don`t have a units or data type. For example tare_count_sm,
 #' where the varname is tare_count and the data_type is sm.
 #'
-#' @param path_droughtbox_data  String indicating the location of the .dat file in your computer
+#' @param path_droughtbox_data  String indicating the location of the .dat file
+#' in your computer
+#'
 #' @importFrom magrittr %>%
+#'
 #' @return  Vector of strings with a length 30 elements
+#'
 #' @export
 #'
 #' @examples
@@ -74,7 +79,9 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' @param path_droughtbox_data String indicating the location of the .dat file in your computer
 #'
 #' @return A dataframe with 25 columns
+
 #' @importFrom magrittr %>%
+
 #' @export
 #'
 #' @examples
@@ -148,17 +155,23 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
+
 #' @param from_start_date String indicating the initial Year, Month and Day to
 #' filter in the dataset. It must have a YYYY-MM-DD format
+
 #' @param to_end_date String indicating the final Year, Month and Day to filter
 #' in the dataset. It must have a YYYY-MM-DD format
+
 #' @param from_start_time String indicating the initial hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format
+
 #' @param to_end_time String indicating the final hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format
 #'
 #' @return Dataframe with the selected dates and times
+
 #' @importFrom magrittr %>%
+
 #' @export
 #'
 #' @examples
@@ -298,6 +311,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 }
 
 #' clean_droughtbox_data
+#'
 #' @description
 #' This function removes wrong data points that are produced by the Droughtbox
 #' after each taring process. First it removes values lower than a `threshold`,
@@ -309,12 +323,17 @@ filter_droughtbox_data <- function(droughtbox_data,
 #'
 #' @param droughtbox_data Dataframe loaded with the function.
 #' `read_hie_droughtbox_data`
+#'
 #' @param remove_n_observations Integer indicating the number of values that
 #' need to be removed at the beginning and at the end of each tare_count group.
+#'
 #' @param threshold Float indicating the threshold at which values should be
 #' removed
+#'
 #' @importFrom magrittr %>%
+#'
 #' @return A dataset
+#'
 #' @export
 #'
 #' @examples
