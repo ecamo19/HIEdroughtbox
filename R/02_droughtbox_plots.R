@@ -186,8 +186,14 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
+#'
 #' @param show_strain String (i.e. "strain_1") or vector of strings
 #' (c("strain_2", "strain_3")) indicating which strain to plot. Default is "all"
+#'
+#' @param time_breaks String indicating the resolution at which the x-axis
+#' should show the tick marks. Choose one of "sec", "min", "hour", "day",
+#' "week", "month", "year"
+#'
 #' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
 #' total) inside the Droughtbox
 #'
@@ -197,10 +203,10 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
 #' plot_strains_weights(droughtbox_data)
 
-plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
+plot_strains_weights <- function(droughtbox_data, show_strain = "all",
+                                 time_breaks = "10 min"){
 
-    # Validate input dataset ---------------------------------------------------
-
+    # Validate inputs ------ ---------------------------------------------------
 
     # Check that droughtbox_data is a dataframe
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
@@ -213,6 +219,9 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
 
                                                             "date_time"
                                                             ) %in% base::colnames(droughtbox_data))
+
+    # Validate show_strain parameters
+    checkmate::assert_character(time_breaks)
 
     # Validate show_strain parameters
     checkmate::assert_character(show_strain)
@@ -269,6 +278,10 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
 
         ggplot2::geom_point() +
 
+        # Increase the number of axis ticks
+
+        ggplot2::scale_x_datetime(breaks = scales::date_breaks("10 mins")) +
+
         # Add line with the mean value of the weights
         ggplot2::stat_smooth(ggplot2::aes(colour = strain_number),
                              se = FALSE) +
@@ -293,12 +306,17 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all"){
                                                "#cf544c",
                                                "#0175c3",
                                                "#878687")) +
-
-        # Add legend at the bottom
+        # Edit legend
         ggplot2::theme(legend.position = "bottom",
                        strip.text.x =  ggplot2::element_text(size = 25),
-                       axis.text.y   = ggplot2::element_text(size = 25),
-                       axis.text.x   = ggplot2::element_text(size = 25),
+                       axis.text.y   = ggplot2::element_text(size = 15),
+
+                       # Rotating and spacing axis labels
+                       axis.text.x   = ggplot2::element_text(angle = 90,
+                                                             vjust = 0.5,
+                                                             hjust = 1,
+                                                             size = 8),
+
                        axis.title.y  = ggplot2::element_text(size = 25),
                        axis.title.x  = ggplot2::element_text(size = 25),
                        panel.grid.major.y = ggplot2::element_blank(),
