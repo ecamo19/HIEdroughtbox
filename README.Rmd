@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of HIEdroughtbox is to ...
+The goal of HIEdroughtbox is to facilitate the analysis of the data coming from
+the [droughtbox located at the Hawkesbury Institute for the Environment](https://ecamo19.github.io/droughtbox_documentation/)
 
 ## Installation
 
@@ -31,7 +32,6 @@ devtools::install_github("ecamo19/hie_dRoughtbox")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
 
 ```{r libraries, message = FALSE,warning = FALSE}
 library(HIEdroughtbox)
@@ -41,7 +41,7 @@ library(dplyr)
 ### Read droughtbox data
 
 ```{r example}
-data <- read_hie_droughtbox_data("data/acacia_aneura_25c.dat")
+data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
 head(data)
 ```
 
@@ -55,9 +55,28 @@ plot_droughtbox_climatic_controls(data, cowplot = T)
 ### Visualize raw weights measured by the strains
 
 ```{r example_plot_raw_weights, fig.height=10, fig.width=15}
-plot_raw_strains_weights(data)
+plot_strains_weights(data, show_strain = "all")
 ```
-```{r}
+#### Visualize some strains 
 
+```{r example_plot_raw_weights_1_4, fig.height=10, fig.width=15}
+plot_strains_weights(data, show_strain = c("strain_1", "strain_4"))
+```
+
+### Choose a range of data
+
+```{r}
+filtered_data <- filter_droughtbox_data(data, 
+                       from_start_time = "13:15:00",
+                       to_end_time = "15:15:00")
+
+filtered_data
+```
+
+
+### Clean data
+
+```{r}
+#clean_droughtbox_data()
 ```
 
