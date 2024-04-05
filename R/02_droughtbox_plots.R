@@ -245,14 +245,6 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         show_strain <- c("strain_1", "strain_2","strain_3", "strain_4")
     }
 
-    if(show_tare_group == TRUE) {
-
-
-
-    } else if (show_tare_group == FALSE) {
-        tare_count_smp  <- "NULL"
-    }
-
     # Create plot --------------------------------------------------------------
 
     # Transform the data into the right format
