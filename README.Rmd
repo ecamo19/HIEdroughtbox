@@ -25,13 +25,12 @@ the [droughtbox located at the Hawkesbury Institute for the Environment](https:/
 
 You can install the development version of HIEdroughtbox from [GitHub](https://github.com/) with:
 
-``` r
+```r
 # install.packages("devtools")
-devtools::install_github("ecamo19/hie_dRoughtbox")
+devtools::install_github("ecamo19/HIEdroughtbox")
 ```
 
 ## Example
-
 
 ```{r libraries, message = FALSE,warning = FALSE}
 library(HIEdroughtbox)

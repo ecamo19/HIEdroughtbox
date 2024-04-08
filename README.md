@@ -17,7 +17,7 @@ You can install the development version of HIEdroughtbox from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ecamo19/hie_dRoughtbox")
+devtools::install_github("ecamo19/HIEdroughtbox")
 ```
 
 ## Example
