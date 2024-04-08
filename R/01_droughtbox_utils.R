@@ -24,8 +24,6 @@
 #'
 #' @return  Vector of strings with a length 30 elements
 #'
-#' @export
-#'
 #' @examples
 #'
 #' path_to_droughtbox_data <- system.file("extdata",
@@ -33,6 +31,10 @@
 #'                             package = "HIEdroughtbox")
 #'
 #' clean_droughtbox_colnames(path_to_droughtbox_data)
+#'
+#' @noRd
+#'
+#' @keywords internal
 
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
