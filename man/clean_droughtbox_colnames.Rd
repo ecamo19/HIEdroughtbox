@@ -31,5 +31,10 @@ Some colnames don`t have a units or data type. For example tare_count_sm,
 where the varname is tare_count and the data_type is sm.
 }
 \examples{
-clean_droughtbox_colnames("acacia_aneura_25c.dat")
+
+path_to_data <- system.file("extdata",
+                            "acacia_aneura_25c.dat",
+                            package = "HIEdroughtbox")
+
+clean_droughtbox_colnames(path_to_data)
 }

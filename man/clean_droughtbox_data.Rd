@@ -29,10 +29,14 @@ The function `plot_raw_strains_weights` can be used to visualize the data
 points might need to be removed.
 }
 \examples{
-data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
+path_to_data <- system.file("extdata",
+                            "acacia_aneura_25c.dat",
+                            package = "HIEdroughtbox")
+
+data <- read_hie_droughtbox_data(path_to_data)
 
 # Remove tare_counts without enough measurements
-data <- data \%>\% filter(!tare_count_smp \%in\% c("13","14","28"))
+data <- data \%>\% dplyr::filter(!tare_count_smp \%in\% c("13","14","28"))
 
 # Clean data
 clean_droughtbox_data(data, remove_n_observations = 6)

@@ -27,7 +27,12 @@
 #' @export
 #'
 #' @examples
-#' clean_droughtbox_colnames("acacia_aneura_25c.dat")
+#'
+#' path_to_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' clean_droughtbox_colnames(path_to_data)
 
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
@@ -85,7 +90,8 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' @export
 #'
 #' @examples
-#' read_hie_droughtbox_data("acacia_aneura_25c.dat")
+#'
+#' read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
 
 read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
@@ -175,7 +181,9 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #' @export
 #'
 #' @examples
-#' droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+#'
 #' filter_droughtbox_data(droughtbox_data,
 #'                             from_start_date = "2024/03/04",
 #'                             to_end_date = "2024/03/04",
@@ -335,10 +343,14 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' @export
 #'
 #' @examples
-#' data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
+#' path_to_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' data <- read_hie_droughtbox_data(path_to_data)
 #'
 #' # Remove tare_counts without enough measurements
-#' data <- data %>% filter(!tare_count_smp %in% c("13","14","28"))
+#' data <- data %>% dplyr::filter(!tare_count_smp %in% c("13","14","28"))
 #'
 #' # Clean data
 #' clean_droughtbox_data(data, remove_n_observations = 6)

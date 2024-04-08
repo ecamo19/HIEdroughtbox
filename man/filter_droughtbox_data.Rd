@@ -38,7 +38,9 @@ when the droughtbox has not reach the climatic conditions desired.
 This functions does not remove individual observations
 }
 \examples{
-droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
+
+droughtbox_data <- read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+
 filter_droughtbox_data(droughtbox_data,
                             from_start_date = "2024/03/04",
                             to_end_date = "2024/03/04",

@@ -22,6 +22,8 @@ by the user (shown in red) and the climatic controls measured inside of the
 Droughtbox
 }
 \examples{
-droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
+
+droughtbox_data <- read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+
 plot_droughtbox_climatic_controls(droughtbox_data, cowplot = TRUE)
 }

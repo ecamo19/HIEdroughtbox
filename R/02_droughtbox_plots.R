@@ -18,7 +18,9 @@
 #' @export
 #'
 #' @examples
-#' droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+#'
 #' plot_droughtbox_climatic_controls(droughtbox_data, cowplot = TRUE)
 
 plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
@@ -79,7 +81,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                             fill = NA,
                                                             size = 1))
 
-    # VPD plot
+    ## VPD plot ----------------------------------------------------------------
     vpd_plot <-
 
         base_plot +
@@ -96,7 +98,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$vpd_avg_kpa_avg)) +
         ggplot2::ylab("Vapour pressure deficit (kPa)")
 
-    # Temperature plot
+    ## Temperature plot --------------------------------------------------------
     temp_plot <-
 
         base_plot +
@@ -112,7 +114,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$tc_avg_deg_c_avg)) +
         ggplot2::ylab("Temperature (degree Celsius)")
 
-    # Air temperature plot
+    ## Air temperature plot ----------------------------------------------------
     air_temp_plot <-
 
         base_plot +
@@ -128,7 +130,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$air_tc_avg_deg_c_avg)) +
         ggplot2::ylab("Air temperature (degree Celsius)")
 
-    # Relative Humidity plot
+    ## Relative Humidity plot --------------------------------------------------
     relative_humidity_plot <-
 
         base_plot +
@@ -145,7 +147,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot2::ylab("Relative humidity (%)")
 
 
-    # Absolute humidity plot
+    ## Absolute humidity plot --------------------------------------------------
     absolute_humidity_plot <-
 
         base_plot +
@@ -177,6 +179,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 }
 
 #' plot_strains_weights
+#'
 #' @description
 #' This function displays the raw weights (grams) measured inside the Droughtbox
 #'
@@ -202,7 +205,9 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' @export
 #'
 #' @examples
-#' droughtbox_data <- read_hie_droughtbox_data("acacia_aneura_25c.dat")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+#'
 #' plot_strains_weights(droughtbox_data)
 
 plot_strains_weights <- function(droughtbox_data, show_strain = "all",
@@ -251,7 +256,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                        strain_3 = "#0175c3",
                        strain_4 = "#878687")
 
-    # Transform the data into the right format for the plot
+    # Transform the data into the right format for the ggplot
     droughtbox_data %>%
 
         # Select only the necessary variables for the plots
