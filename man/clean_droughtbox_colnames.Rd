@@ -32,9 +32,9 @@ where the varname is tare_count and the data_type is sm.
 }
 \examples{
 
-path_to_data <- system.file("extdata",
+path_to_droughtbox_data <- system.file("extdata",
                             "acacia_aneura_25c.dat",
                             package = "HIEdroughtbox")
 
-clean_droughtbox_colnames(path_to_data)
+clean_droughtbox_colnames(path_to_droughtbox_data)
 }

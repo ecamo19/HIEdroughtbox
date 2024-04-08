@@ -28,11 +28,11 @@
 #'
 #' @examples
 #'
-#' path_to_data <- system.file("extdata",
+#' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' clean_droughtbox_colnames(path_to_data)
+#' clean_droughtbox_colnames(path_to_droughtbox_data)
 
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
@@ -76,7 +76,8 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
     return(.data)
 }
 
-#'read_hie_droughtbox_data
+#' read_hie_droughtbox_data
+#'
 #' @description
 #' This function reads the raw .dat file downloaded from the droughtbox located
 #' at the Hawkesbury Institute for the Environment
@@ -84,14 +85,17 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' @param path_droughtbox_data String indicating the location of the .dat file in your computer
 #'
 #' @return A dataframe with 25 columns
-
+#'
 #' @importFrom magrittr %>%
-
+#'
 #' @export
 #'
 #' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
 #'
-#' read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+#' read_hie_droughtbox_data(path_to_droughtbox_data)
 
 read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
@@ -153,6 +157,7 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 }
 
 #' filter_droughtbox_data
+#'
 #' @description
 #' This function is meant to be used to removed chunks of data that is collected
 #' when the droughtbox has not reach the climatic conditions desired.
@@ -161,28 +166,31 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
-
+#'
 #' @param from_start_date String indicating the initial Year, Month and Day to
 #' filter in the dataset. It must have a YYYY-MM-DD format
-
+#'
 #' @param to_end_date String indicating the final Year, Month and Day to filter
 #' in the dataset. It must have a YYYY-MM-DD format
-
+#'
 #' @param from_start_time String indicating the initial hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format
-
+#'
 #' @param to_end_time String indicating the final hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format
 #'
 #' @return Dataframe with the selected dates and times
-
+#'
 #' @importFrom magrittr %>%
-
+#'
 #' @export
 #'
 #' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
 #'
-#' droughtbox_data <- read_hie_droughtbox_data("./inst/extdata/acacia_aneura_25c.dat")
+#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
 #'
 #' filter_droughtbox_data(droughtbox_data,
 #'                             from_start_date = "2024/03/04",
@@ -343,17 +351,17 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' @export
 #'
 #' @examples
-#' path_to_data <- system.file("extdata",
+#' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' data <- read_hie_droughtbox_data(path_to_data)
+#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
 #'
 #' # Remove tare_counts without enough measurements
-#' data <- data %>% dplyr::filter(!tare_count_smp %in% c("13","14","28"))
+#' droughtbox_data <- droughtbox_data |> dplyr::filter(!tare_count_smp %in% c("13","14","28"))
 #'
 #' # Clean data
-#' clean_droughtbox_data(data, remove_n_observations = 6)
+#' clean_droughtbox_data(droughtbox_data, remove_n_observations = 6)
 
 clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
                                      threshold = 0.2){
