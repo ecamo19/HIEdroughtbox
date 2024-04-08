@@ -116,17 +116,17 @@ Using the previous plot as reference, I decided to focus only on the data
 collected between 13:10:00 and 15:10:00. 
 
 ```{r warning=FALSE, message=FALSE}
-filtered_data <- filter_droughtbox_data(droughtbox_data, 
+filtered_droughtbox_data <- filter_droughtbox_data(droughtbox_data, 
                        from_start_time = "13:10:00",
                        to_end_time = "15:10:00")
 
-glimpse(filtered_data)
+glimpse(filtered_droughtbox_data)
 ```
 
 
 
 ```{r example_plot_weights_1_4_filtered_data, fig.height=10, fig.width=15, warning=FALSE}
-plot_strains_weights(filtered_data, 
+plot_strains_weights(filtered_droughtbox_data, 
                      show_strain = c("strain_1", "strain_4"), 
                      time_breaks = "10 min",
                      show_tare_group = TRUE)
@@ -142,19 +142,19 @@ The following code will remove the values lower than 0.2 grams and the first 10
 and last 10 values of each taring group.  
 
 ```{r}
-clean_data <- 
-    clean_droughtbox_data(filtered_data, 
+clean_droughtbox_data <- 
+    clean_droughtbox_data(filtered_droughtbox_data, 
                       remove_n_observations = 10, 
                       threshold = 0.2)
 
-glimpse(clean_data)
+glimpse(clean_droughtbox_data)
 ```
 
 
 ```{r example_plot_weights_all_cleaned_data, fig.height=10, fig.width=15}
-plot_strains_weights(clean_data, 
+plot_strains_weights(clean_droughtbox_data, 
                      show_strain = "all",
-                     time_breaks = "10 min",
+                     time_breaks = "15 min",
                      # If true, this will display the taring group
                      show_tare_group = FALSE)
 ```

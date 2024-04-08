@@ -137,14 +137,14 @@ Using the previous plot as reference, I decided to focus only on the
 data collected between 13:10:00 and 15:10:00.
 
 ``` r
-filtered_data <- filter_droughtbox_data(droughtbox_data, 
+filtered_droughtbox_data <- filter_droughtbox_data(droughtbox_data, 
                        from_start_time = "13:10:00",
                        to_end_time = "15:10:00")
 [1] "Times must have a HH:MM:SS format i.e. 13:53:00"
 [1] "Dates must have a YYYY-MM-DD format i.e. 1991-10-19"
 [1] "Filtering data by hour from: 13:10:00 to: 15:10:00"
 
-glimpse(filtered_data)
+glimpse(filtered_droughtbox_data)
 Rows: 716
 Columns: 17
 $ tare_count_smp               <fct> 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 1â€¦
@@ -167,7 +167,7 @@ $ strain_avg_4_microstrain_avg <dbl> 2.240364, 2.240412, 2.240412, 2.240412, 2â€
 ```
 
 ``` r
-plot_strains_weights(filtered_data, 
+plot_strains_weights(filtered_droughtbox_data, 
                      show_strain = c("strain_1", "strain_4"), 
                      time_breaks = "10 min",
                      show_tare_group = TRUE)
@@ -186,13 +186,13 @@ The following code will remove the values lower than 0.2 grams and the
 first 10 and last 10 values of each taring group.
 
 ``` r
-clean_data <- 
-    clean_droughtbox_data(filtered_data, 
+clean_droughtbox_data <- 
+    clean_droughtbox_data(filtered_droughtbox_data, 
                       remove_n_observations = 10, 
                       threshold = 0.2)
 [1] "Total number of rows removed: 251"
 
-glimpse(clean_data)
+glimpse(clean_droughtbox_data)
 Rows: 465
 Columns: 17
 Groups: tare_count_smp [12]
@@ -216,9 +216,9 @@ $ strain_avg_4_microstrain_avg <dbl> 2.290644, 2.257162, 2.240449, 2.273988, 2â€
 ```
 
 ``` r
-plot_strains_weights(clean_data, 
+plot_strains_weights(clean_droughtbox_data, 
                      show_strain = "all",
-                     time_breaks = "10 min",
+                     time_breaks = "15 min",
                      # If true, this will display the taring group
                      show_tare_group = FALSE)
 `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
