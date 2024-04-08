@@ -61,4 +61,5 @@ filter_droughtbox_data(droughtbox_data,
                             to_end_date = NULL,
                             from_start_time = "12:51:00",
                             to_end_time = "12:52:00")
+
 }

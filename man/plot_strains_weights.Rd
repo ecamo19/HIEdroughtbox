@@ -41,4 +41,5 @@ path_to_droughtbox_data <- system.file("extdata",
 droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
 
 plot_strains_weights(droughtbox_data)
+
 }

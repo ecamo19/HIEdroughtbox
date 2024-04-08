@@ -22,4 +22,5 @@ path_to_droughtbox_data <- system.file("extdata",
                             package = "HIEdroughtbox")
 
 read_hie_droughtbox_data(path_to_droughtbox_data)
+
 }

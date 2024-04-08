@@ -40,4 +40,5 @@ droughtbox_data <- droughtbox_data |> dplyr::filter(!tare_count_smp \%in\% c("13
 
 # Clean data
 clean_droughtbox_data(droughtbox_data, remove_n_observations = 6)
+
 }
