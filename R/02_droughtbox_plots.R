@@ -245,6 +245,12 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
 
     # Create plot --------------------------------------------------------------
 
+    # Set specific colors to each strain so these won't change.
+    strain_colors <- c(strain_1 = "#eec000",
+                       strain_2 = "#cf544c",
+                       strain_3 = "#0175c3",
+                       strain_4 = "#878687")
+
     # Transform the data into the right format
     droughtbox_data %>%
 
@@ -303,11 +309,8 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         ggplot2::ylab("Strain weight (g)") +
         ggplot2::xlab("Time") +
 
-        # Set the colors of each strain
-        ggplot2::scale_color_manual(values = c("#eec000",
-                                               "#cf544c",
-                                               "#0175c3",
-                                               "#878687")) +
+        ggplot2::scale_color_manual(values = strain_colors) +
+
         # Edit legend
         ggplot2::theme(legend.position = "bottom",
                        strip.text.x =  ggplot2::element_text(size = 25),
