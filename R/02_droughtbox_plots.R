@@ -219,7 +219,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                  show_tare_group = TRUE,
                                  time_breaks = "10 min"){
 
-    # Validate inputs ------ ---------------------------------------------------
+    # Validate inputs ----------------------------------------------------------
 
     # Check that droughtbox_data is a dataframe
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
