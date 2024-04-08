@@ -15,7 +15,6 @@
 #'
 #' @return A ggplot2 object with a total of 5 figures
 #'
-#' @export
 #'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
@@ -25,7 +24,8 @@
 #' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
 #'
 #' plot_droughtbox_climatic_controls(droughtbox_data, cowplot = TRUE)
-
+#'
+#' @export
 plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
     # Validate input dataset ---------------------------------------------------
@@ -205,8 +205,6 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
 #' total) inside the Droughtbox
 #'
-#' @export
-#'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
@@ -215,7 +213,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
 #'
 #' plot_strains_weights(droughtbox_data)
-
+#'
+#' @export
 plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                  show_tare_group = TRUE,
                                  time_breaks = "10 min"){

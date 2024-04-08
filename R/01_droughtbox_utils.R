@@ -25,7 +25,6 @@
 #' @return  Vector of strings with a length 30 elements
 #'
 #' @examples
-#'
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
@@ -35,7 +34,6 @@
 #' @noRd
 #'
 #' @keywords internal
-
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
     # Validate input dataset ---------------------------------------------------
@@ -90,15 +88,14 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #'
 #' @importFrom magrittr %>%
 #'
-#' @export
-#'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
 #' read_hie_droughtbox_data(path_to_droughtbox_data)
-
+#'
+#' @export
 read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
     # Validate input dataset ---------------------------------------------------
@@ -185,8 +182,6 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #'
 #' @importFrom magrittr %>%
 #'
-#' @export
-#'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
@@ -211,7 +206,8 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #'                             to_end_date = NULL,
 #'                             from_start_time = "12:51:00",
 #'                             to_end_time = "12:52:00")
-
+#'
+#' @export
 filter_droughtbox_data <- function(droughtbox_data,
                                        from_start_date = NULL,
                                        to_end_date = NULL,
@@ -350,8 +346,6 @@ filter_droughtbox_data <- function(droughtbox_data,
 #'
 #' @return A dataset
 #'
-#' @export
-#'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
@@ -364,7 +358,8 @@ filter_droughtbox_data <- function(droughtbox_data,
 #'
 #' # Clean data
 #' clean_droughtbox_data(droughtbox_data, remove_n_observations = 6)
-
+#'
+#' @export
 clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
                                      threshold = 0.2){
 
