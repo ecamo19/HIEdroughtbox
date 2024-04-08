@@ -408,13 +408,13 @@ clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
         # remove_n_observations is equal to 6, 6 measurements at the beginning
         # and 6 measurements at the end will be removed returning the just one
         # row
-        dplyr::slice(({{remove_n_observations}} + 1):(n() - {{remove_n_observations}})) %>%
+        dplyr::slice(({{remove_n_observations}} + 1):(dplyr::n() - {{remove_n_observations}})) %>%
 
         # Print the total number of rows filtered
         {print(paste0("Total number of rows removed: ",
 
                       # Subtract the total minus the filtered
-                      nrow(droughtbox_data) - nrow(.))); .} %>%
+                      base::nrow(droughtbox_data) - base::nrow(.))); .} %>%
 
     return(tibble::as_data_frame(.data))
 
