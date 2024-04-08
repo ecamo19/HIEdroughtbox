@@ -75,7 +75,7 @@ provide __UNMODIFIED__ files coming from the droughtbox.
 
 ```{r example}
 droughtbox_data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
-head(droughtbox_data)
+glimpse(droughtbox_data)
 ```
 
 ### Visualize climatic conditions
@@ -120,7 +120,7 @@ filtered_data <- filter_droughtbox_data(droughtbox_data,
                        from_start_time = "13:10:00",
                        to_end_time = "15:10:00")
 
-head(filtered_data)
+glimpse(filtered_data)
 ```
 
 
@@ -147,7 +147,7 @@ clean_data <-
                       remove_n_observations = 10, 
                       threshold = 0.2)
 
-head(clean_data)
+glimpse(clean_data)
 ```
 
 

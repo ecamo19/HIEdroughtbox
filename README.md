@@ -68,49 +68,26 @@ droughtbox.
 
 ``` r
 droughtbox_data <- read_hie_droughtbox_data("inst/extdata/acacia_aneura_25c.dat")
-head(droughtbox_data)
-  tare_count_smp           date_time       date     time air_tc_avg_deg_c_avg
-1             13 2024-03-04 12:51:00 2024-03-04 12:51:00                26.76
-2             13 2024-03-04 12:51:30 2024-03-04 12:51:30                26.80
-3             13 2024-03-04 12:52:20 2024-03-04 12:52:20                26.83
-4             13 2024-03-04 12:52:20 2024-03-04 12:52:20                26.83
-5             14 2024-03-04 13:01:10 2024-03-04 13:01:10                27.22
-6             14 2024-03-04 13:01:10 2024-03-04 13:01:10                27.22
-  rh_avg_percent_avg tc_avg_deg_c_avg set_point_t_avg_avg set_point_vpd_avg_avg
-1              44.05            27.19                  25                   1.6
-2              43.63            27.25                  25                   1.6
-3              43.36            27.29                  25                   1.6
-4              43.36            27.29                  25                   1.6
-5              39.73            27.79                  25                   1.6
-6              39.73            27.79                  25                   1.6
-  set_point_abs_h_avg_avg vpd_avg_kpa_avg abs_h_avg_g_m3_avg
-1                   11.39           1.967              11.19
-2                   11.39           1.986              11.10
-3                   11.39           1.999              11.05
-4                   11.39           1.999              11.05
-5                   11.39           2.177              10.35
-6                   11.39           2.177              10.35
-  set_point_rh_avg_avg strain_avg_1_microstrain_avg
-1                49.48                     2.472753
-2                49.48                     2.489199
-3                49.48                     2.505648
-4                49.48                     2.505648
-5                49.48                     2.485881
-6                49.48                     2.485881
-  strain_avg_2_microstrain_avg strain_avg_3_microstrain_avg
-1                     2.434764                     2.381188
-2                     2.451971                     2.349167
-3                     2.417776                     2.333139
-4                     2.417776                     2.333139
-5                     2.410692                     2.406784
-6                     2.410692                     2.406784
-  strain_avg_4_microstrain_avg
-1                     2.310796
-2                     2.310783
-3                     2.327533
-4                     2.327533
-5                     2.287311
-6                     2.287311
+glimpse(droughtbox_data)
+Rows: 796
+Columns: 17
+$ tare_count_smp               <fct> 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 1…
+$ date_time                    <dttm> 2024-03-04 12:51:00, 2024-03-04 12:51:30…
+$ date                         <date> 2024-03-04, 2024-03-04, 2024-03-04, 2024…
+$ time                         <time> 12:51:00, 12:51:30, 12:52:20, 12:52:20, …
+$ air_tc_avg_deg_c_avg         <dbl> 26.76, 26.80, 26.83, 26.83, 27.22, 27.22,…
+$ rh_avg_percent_avg           <dbl> 44.05, 43.63, 43.36, 43.36, 39.73, 39.73,…
+$ tc_avg_deg_c_avg             <dbl> 27.19, 27.25, 27.29, 27.29, 27.79, 27.79,…
+$ set_point_t_avg_avg          <dbl> 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 2…
+$ set_point_vpd_avg_avg        <dbl> 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1…
+$ set_point_abs_h_avg_avg      <dbl> 11.39, 11.39, 11.39, 11.39, 11.39, 11.39,…
+$ vpd_avg_kpa_avg              <dbl> 1.967, 1.986, 1.999, 1.999, 2.177, 2.177,…
+$ abs_h_avg_g_m3_avg           <dbl> 11.19, 11.10, 11.05, 11.05, 10.35, 10.35,…
+$ set_point_rh_avg_avg         <dbl> 49.48, 49.48, 49.48, 49.48, 49.48, 49.48,…
+$ strain_avg_1_microstrain_avg <dbl> 2.472753, 2.489199, 2.505648, 2.505648, 2…
+$ strain_avg_2_microstrain_avg <dbl> 2.434764, 2.451971, 2.417776, 2.417776, 2…
+$ strain_avg_3_microstrain_avg <dbl> 2.381188, 2.349167, 2.333139, 2.333139, 2…
+$ strain_avg_4_microstrain_avg <dbl> 2.310796, 2.310783, 2.327533, 2.327533, 2…
 ```
 
 ### Visualize climatic conditions
@@ -167,49 +144,26 @@ filtered_data <- filter_droughtbox_data(droughtbox_data,
 [1] "Dates must have a YYYY-MM-DD format i.e. 1991-10-19"
 [1] "Filtering data by hour from: 13:10:00 to: 15:10:00"
 
-head(filtered_data)
-  tare_count_smp           date_time       date     time air_tc_avg_deg_c_avg
-1             15 2024-03-04 13:10:40 2024-03-04 13:10:40                27.66
-2             15 2024-03-04 13:11:00 2024-03-04 13:11:00                27.67
-3             15 2024-03-04 13:11:10 2024-03-04 13:11:10                27.68
-4             15 2024-03-04 13:11:20 2024-03-04 13:11:20                27.69
-5             15 2024-03-04 13:11:30 2024-03-04 13:11:30                27.70
-6             15 2024-03-04 13:11:40 2024-03-04 13:11:40                27.70
-  rh_avg_percent_avg tc_avg_deg_c_avg set_point_t_avg_avg set_point_vpd_avg_avg
-1              35.75            28.30                  25                   1.6
-2              35.61            28.26                  25                   1.6
-3              35.49            28.32                  25                   1.6
-4              35.48            28.29                  25                   1.6
-5              35.45            28.32                  25                   1.6
-6              35.24            28.31                  25                   1.6
-  set_point_abs_h_avg_avg vpd_avg_kpa_avg abs_h_avg_g_m3_avg
-1                   11.39           2.381               9.54
-2                   11.39           2.387               9.51
-3                   11.39           2.394               9.48
-4                   11.39           2.394               9.49
-5                   11.39           2.397               9.48
-6                   11.39           2.405               9.43
-  set_point_rh_avg_avg strain_avg_1_microstrain_avg
-1                49.48                     2.443138
-2                49.48                     2.443120
-3                49.48                     2.459561
-4                49.48                     2.443120
-5                49.48                     2.410238
-6                49.48                     2.426678
-  strain_avg_2_microstrain_avg strain_avg_3_microstrain_avg
-1                     2.465538                     2.365185
-2                     2.448162                     2.381247
-3                     2.465310                     2.349241
-4                     2.448166                     2.365244
-5                     2.448166                     2.365244
-6                     2.465310                     2.365244
-  strain_avg_4_microstrain_avg
-1                     2.240364
-2                     2.240412
-3                     2.240412
-4                     2.240412
-5                     2.290720
-6                     2.206874
+glimpse(filtered_data)
+Rows: 716
+Columns: 17
+$ tare_count_smp               <fct> 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 1…
+$ date_time                    <dttm> 2024-03-04 13:10:40, 2024-03-04 13:11:00…
+$ date                         <date> 2024-03-04, 2024-03-04, 2024-03-04, 2024…
+$ time                         <time> 13:10:40, 13:11:00, 13:11:10, 13:11:20, …
+$ air_tc_avg_deg_c_avg         <dbl> 27.66, 27.67, 27.68, 27.69, 27.70, 27.70,…
+$ rh_avg_percent_avg           <dbl> 35.75, 35.61, 35.49, 35.48, 35.45, 35.24,…
+$ tc_avg_deg_c_avg             <dbl> 28.30, 28.26, 28.32, 28.29, 28.32, 28.31,…
+$ set_point_t_avg_avg          <dbl> 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 2…
+$ set_point_vpd_avg_avg        <dbl> 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1…
+$ set_point_abs_h_avg_avg      <dbl> 11.39, 11.39, 11.39, 11.39, 11.39, 11.39,…
+$ vpd_avg_kpa_avg              <dbl> 2.381, 2.387, 2.394, 2.394, 2.397, 2.405,…
+$ abs_h_avg_g_m3_avg           <dbl> 9.54, 9.51, 9.48, 9.49, 9.48, 9.43, 9.42,…
+$ set_point_rh_avg_avg         <dbl> 49.48, 49.48, 49.48, 49.48, 49.48, 49.48,…
+$ strain_avg_1_microstrain_avg <dbl> 2.443138, 2.443120, 2.459561, 2.443120, 2…
+$ strain_avg_2_microstrain_avg <dbl> 2.465538, 2.448162, 2.465310, 2.448166, 2…
+$ strain_avg_3_microstrain_avg <dbl> 2.365185, 2.381247, 2.349241, 2.365244, 2…
+$ strain_avg_4_microstrain_avg <dbl> 2.240364, 2.240412, 2.240412, 2.240412, 2…
 ```
 
 ``` r
@@ -238,23 +192,27 @@ clean_data <-
                       threshold = 0.2)
 [1] "Total number of rows removed: 251"
 
-head(clean_data)
-# A tibble: 6 × 17
-# Groups:   tare_count_smp [1]
-  tare_count_smp date_time           date       time     air_tc_avg_deg_c_avg
-  <fct>          <dttm>              <date>     <time>                  <dbl>
-1 15             2024-03-04 13:12:30 2024-03-04 13:12:30                 27.7
-2 15             2024-03-04 13:12:40 2024-03-04 13:12:40                 27.8
-3 15             2024-03-04 13:12:50 2024-03-04 13:12:50                 27.8
-4 15             2024-03-04 13:13:00 2024-03-04 13:13:00                 27.8
-5 15             2024-03-04 13:13:10 2024-03-04 13:13:10                 27.8
-6 15             2024-03-04 13:13:20 2024-03-04 13:13:20                 27.8
-# ℹ 12 more variables: rh_avg_percent_avg <dbl>, tc_avg_deg_c_avg <dbl>,
-#   set_point_t_avg_avg <dbl>, set_point_vpd_avg_avg <dbl>,
-#   set_point_abs_h_avg_avg <dbl>, vpd_avg_kpa_avg <dbl>,
-#   abs_h_avg_g_m3_avg <dbl>, set_point_rh_avg_avg <dbl>,
-#   strain_avg_1_microstrain_avg <dbl>, strain_avg_2_microstrain_avg <dbl>,
-#   strain_avg_3_microstrain_avg <dbl>, strain_avg_4_microstrain_avg <dbl>
+glimpse(clean_data)
+Rows: 465
+Columns: 17
+Groups: tare_count_smp [12]
+$ tare_count_smp               <fct> 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 1…
+$ date_time                    <dttm> 2024-03-04 13:12:30, 2024-03-04 13:12:40…
+$ date                         <date> 2024-03-04, 2024-03-04, 2024-03-04, 2024…
+$ time                         <time> 13:12:30, 13:12:40, 13:12:50, 13:13:00, …
+$ air_tc_avg_deg_c_avg         <dbl> 27.74, 27.75, 27.76, 27.76, 27.76, 27.77,…
+$ rh_avg_percent_avg           <dbl> 35.03, 34.93, 34.92, 34.88, 34.91, 34.96,…
+$ tc_avg_deg_c_avg             <dbl> 28.36, 28.34, 28.42, 28.38, 28.38, 28.45,…
+$ set_point_t_avg_avg          <dbl> 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 2…
+$ set_point_vpd_avg_avg        <dbl> 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1…
+$ set_point_abs_h_avg_avg      <dbl> 11.39, 11.39, 11.39, 11.39, 11.39, 11.39,…
+$ vpd_avg_kpa_avg              <dbl> 2.419, 2.424, 2.425, 2.427, 2.425, 2.425,…
+$ abs_h_avg_g_m3_avg           <dbl> 9.39, 9.37, 9.37, 9.36, 9.37, 9.39, 9.36,…
+$ set_point_rh_avg_avg         <dbl> 49.48, 49.48, 49.48, 49.48, 49.48, 49.48,…
+$ strain_avg_1_microstrain_avg <dbl> 2.459589, 2.426686, 2.459547, 2.475988, 2…
+$ strain_avg_2_microstrain_avg <dbl> 2.362792, 2.396814, 2.413695, 2.396552, 2…
+$ strain_avg_3_microstrain_avg <dbl> 2.381156, 2.349218, 2.349285, 2.349285, 2…
+$ strain_avg_4_microstrain_avg <dbl> 2.290644, 2.257162, 2.240449, 2.273988, 2…
 ```
 
 ``` r
