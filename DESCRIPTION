@@ -20,6 +20,7 @@ Imports:
     dplyr (>= 1.1.4),
     ggplot2,
     janitor (>= 2.2.0),
+    magrittr,
     mgsub (>= 1.7.3),
     stringr (>= 1.5.1),
     tidyr (>= 1.3.1)
