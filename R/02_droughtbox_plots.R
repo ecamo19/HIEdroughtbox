@@ -251,11 +251,14 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                        strain_3 = "#0175c3",
                        strain_4 = "#878687")
 
-    # Transform the data into the right format
+    # Transform the data into the right format for the plot
     droughtbox_data %>%
 
         # Select only the necessary variables for the plots
         dplyr::select(date_time, tare_count_smp,
+
+                      # Set and measure temperature inside the box
+                      set_point_t_avg_avg, tc_avg_deg_c_avg,
 
                       # Variable 1
                       strain_avg_1_microstrain_avg,
@@ -264,7 +267,10 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                       strain_avg_4_microstrain_avg)  %>%
 
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(date_time, tare_count_smp),
+        tidyr::pivot_longer(!c(date_time, tare_count_smp, set_point_t_avg_avg,
+                               tc_avg_deg_c_avg),
+
+                            # Create new columns
                             names_to = "strains",
                             values_to = "strain_weight") %>%
 
@@ -279,7 +285,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                        TRUE ~ strains)) %>%
 
         # Filter data based on the show_strain parameter
-        dplyr::filter(strain_number %in% show_strain) %>%
+        dplyr::filter(strain_number %in% show_strain) %>% {
 
         # Create plot
         ggplot2::ggplot(data = ., ggplot2::aes(x = date_time,
@@ -309,7 +315,12 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         ggplot2::ylab("Strain weight (g)") +
         ggplot2::xlab("Time") +
 
+        # Set strain colors
         ggplot2::scale_color_manual(values = strain_colors) +
+
+        # Add median and set temp to the title
+        ggplot2::ggtitle(stringr::str_c("Set temperature: ", .$set_point_t_avg_avg,
+                               " Median temperature: ", median(.$tc_avg_deg_c_avg))) +
 
         # Edit legend
         ggplot2::theme(legend.position = "bottom",
@@ -331,4 +342,5 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                        panel.border = ggplot2::element_rect(colour = "black",
                                                             fill = NA,
                                                             size = 1.3))
+        }
 }
