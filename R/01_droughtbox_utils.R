@@ -36,7 +36,7 @@
 #' @keywords internal
 clean_droughtbox_colnames <- function(path_droughtbox_data){
 
-    # Validate input dataset ---------------------------------------------------
+    # Validate input parameters ------------------------------------------------
 
     # Check that file exists and is not a folder
     base::stopifnot(".dat file not found" = file.exists(path_droughtbox_data ) && !dir.exists(path_droughtbox_data ))
@@ -98,7 +98,7 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' @export
 read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
-    # Validate input dataset ---------------------------------------------------
+    # Validate input parameters ------------------------------------------------
 
     # Check that file exists and is not a folder
     base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data ) && !base::dir.exists(path_droughtbox_data))
