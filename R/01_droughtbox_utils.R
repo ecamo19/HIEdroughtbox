@@ -76,6 +76,30 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
     return(.data)
 }
 
+#' read_hie_droughtbox_leaf_branch_areas
+#'
+#' @description
+#' This function reads csv files
+#'
+#' @param path_droughtbox_leaf_branch_areas String indicating the location of
+#' the .dat file in your computer
+#'
+#' @return A dataframe
+#'
+#' @importFrom magrittr %>%
+#'
+#' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "",
+#'                             package = "HIEdroughtbox")
+#'
+#' read_hie_droughtbox_data(path_droughtbox_leaf_branch_areas)
+#'
+#' @export
+read_hie_droughtbox_leaf_branch_areas <- function(leaf_and_stem_area){
+
+}
+
 #' read_hie_droughtbox_data
 #'
 #' @description
