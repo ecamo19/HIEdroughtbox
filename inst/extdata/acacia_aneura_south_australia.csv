@@ -1,0 +1,29 @@
+,species_name,sample_id,strain_number,set_temperature,branch_basal_diameter_mm,branch_length_cm,leaf_area_cm2,notes
+1,acacia_aneura,1043,1,25,10,NA,9.64,NA
+2,acacia_aneura,1044,2,25,10,NA,10.3,NA
+3,acacia_aneura,1045,3,25,10,NA,6.2,NA
+4,acacia_aneura,1046,4,25,10,NA,10.25,NA
+5,acacia_aneura,1043,1,30,10,NA,17.45,Double check
+6,acacia_aneura,1044,2,30,10,NA,12.7,Double check
+7,acacia_aneura,1045,3,30,10,NA,8.67,NA
+8,acacia_aneura,1046,4,30,10,NA,5.28,NA
+9,acacia_aneura,1043,1,35,10,NA,9.57,NA
+10,acacia_aneura,1044,2,35,10,NA,10.34,NA
+11,acacia_aneura,1045,3,35,10,NA,11.06,NA
+12,acacia_aneura,1046,4,35,10,NA,9.2,NA
+13,acacia_aneura,1043,1,40,10,NA,8.41,NA
+14,acacia_aneura,1044,2,40,10,NA,11.68,NA
+15,acacia_aneura,1045,3,40,10,NA,4.55,NA
+16,acacia_aneura,1046,4,40,10,NA,10.87,NA
+17,acacia_aneura,1043,1,45,10,NA,6.59,NA
+18,acacia_aneura,1044,2,45,10,NA,14.5,NA
+19,acacia_aneura,1045,3,45,10,NA,4.7,NA
+20,acacia_aneura,1046,4,45,10,NA,8.9,NA
+21,acacia_aneura,1043,1,50,10,NA,6.101,NA
+22,acacia_aneura,1044,2,50,10,NA,8.6,NA
+23,acacia_aneura,1045,3,50,10,NA,5.14,NA
+24,acacia_aneura,1046,4,50,10,NA,9.26,NA
+25,acacia_aneura,1043,1,55,10,NA,7.71,NA
+26,acacia_aneura,1044,2,55,10,NA,15.87,NA
+27,acacia_aneura,1045,3,55,10,NA,5.25,NA
+28,acacia_aneura,1046,4,55,10,NA,11,NA
