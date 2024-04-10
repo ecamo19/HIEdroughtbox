@@ -303,7 +303,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                colour = strain_number)) +
 
         # Show tare_count_smp as label if show_tare_group is TRUE
-        {if(show_tare_group == TRUE)ggplot2::geom_text(ggplot2::aes(label = tare_count_smp))}+
+        {if(show_tare_group == TRUE)ggplot2::geom_text(ggplot2::aes(label = tare_count_smp))} +
 
         ggplot2::geom_point() +
 
