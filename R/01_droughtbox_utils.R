@@ -212,7 +212,8 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 
         # Columns with information about the areas
         leaf_area_cm2 = NA,
-        surface_branch_area_cm2 = NA) %>%
+        surface_branch_area_cm2 = NA,
+        notes = NA) %>%
 
         # Arrange dataframe
         dplyr::arrange(., set_temperature, strain_number) %>%
@@ -279,9 +280,63 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #' @export
 read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_areas){
 
-    # validate file is a csv
-    # VALIDA THAT  branch_basal_diameter_mm = NA, branch_length_cm = NA,
-    # OR surface_branch_area_cm2 are present
+    # Validate input parameters ------------------------------------------------
+
+    # Check file is a csv
+    checkmate::assert_file_exists(path_droughtbox_leaf_branch_areas,
+                                  extension = "csv")
+
+    # Read data
+    data_leaf_branch_area <-
+
+        read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
+                 na.strings = NA) %>%
+
+        # Remove notes column
+        dplyr::select(-notes)
+
+    # Check that dataframe has the correct columns
+    base::stopifnot("Missing columns in the dataframe" =  c("sample_id",
+                                                            "set_temperature",
+                                                            "strain_number",
+                                                            "leaf_area_cm2"
+                                                            ) %in% base::colnames(data_leaf_branch_area))
+
+
+
+    # Stop if branch_basal_diameter_mm, branch_length_cm and are all provided
+    if (all(c("branch_basal_diameter_mm",
+              "branch_length_cm",
+              "surface_branch_area_cm2"
+              ) %in% colnames(data_leaf_branch_area)) == TRUE){
+
+        stop("Only provide branch_length_cm and branch_basal_diameter_mm columns OR just the surface_branch_area_cm2")
+    }
+
+    variables_with_all_na <- sapply(data_leaf_branch_area, function(x) all(is.na(x)))
+
+    # Prepare data for calculating gmin/gres -----------------------------------
+    if (variables_with_all_na["branch_basal_diameter_mm"] == FALSE &
+        variables_with_all_na["branch_length_cm"] == FALSE) {
+
+        data_leaf_branch_area %>%
+
+            # Print message about branch_basal_diameter_mm being transformed and
+            # divided by two to get the radius in cm
+            {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
+            dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
+                          .keep = "unused")  %>%
+
+            {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
+            dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
+                          .keep = "unused")  %>%
+
+        return(tibble::as_tibble(.))
+
+    } else{ print("KEEP working here")
+
+    }
+
 }
 
 #' filter_droughtbox_data
