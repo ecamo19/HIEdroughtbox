@@ -76,30 +76,6 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
     return(.data)
 }
 
-#' read_hie_droughtbox_leaf_branch_areas
-#'
-#' @description
-#' This function reads csv files
-#'
-#' @param path_droughtbox_leaf_branch_areas String indicating the location of
-#' the .dat file in your computer
-#'
-#' @return A dataframe
-#'
-#' @importFrom magrittr %>%
-#'
-#' @examples
-#' path_to_droughtbox_data <- system.file("extdata",
-#'                             "",
-#'                             package = "HIEdroughtbox")
-#'
-#' read_hie_droughtbox_data(path_droughtbox_leaf_branch_areas)
-#'
-#' @export
-read_hie_droughtbox_leaf_branch_areas <- function(leaf_and_stem_area){
-
-}
-
 #' read_hie_droughtbox_data
 #'
 #' @description
@@ -177,6 +153,137 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
                          t_sg_avg_3_avg, t_sg_avg_4_avg)) %>%
 
     return(tibble::as_data_frame(.data))
+}
+
+#' read_hie_droughtbox_leaf_branch_areas
+#'
+#' @description
+#' This function reads CSV files containing information about the leaf and/or
+#' branch area of the samples measured in the droughtbox.
+#'
+#' To see an example of how this datasheet should be constructed, run the
+#' function `create_empty_droughtbox_leaf_branch_areas_sheet()`.
+#'
+#' The CSV file MUST contain the following columns:
+#'
+#' tree_id: String with an unique code identifying each sample.
+#'
+#' set_temperature: Integer indicating the temperature at which gmin/gres was
+#' measured.
+#'
+#' strain_number: Integer indicating in which of the four hooks the the sample
+#' was positioned.
+#'
+#' leaf_area: Float in cm2 with the total leaf area of the sample.
+#'
+#' The following columns are optional:
+#'
+#' surface_branch_area: Float in cm2 with the area of the branch without any
+#' leaves attached. If not provided, the total surface_branch_area can be
+#' approximated using the formula A = pi*radius*(length + radius), assuming that
+#' the branch has a cone shape.
+#'
+#' branch_basal_diameter_mm: Float in millimeters indicating the basal diameter of
+#' the sample.
+#'
+#' branch_length_cm: Float in centimeters indicating the total length of the sample.
+#'
+#' @param path_droughtbox_leaf_branch_areas String indicating the location of
+#' the CSV file in your computer.
+#'
+#' @return A dataframe
+#'
+#' @importFrom magrittr %>%
+#'
+#' @examples
+#' path_droughtbox_leaf_branch_areas <- system.file("extdata",
+#'                                                 "",
+#'                                                 package = "HIEdroughtbox")
+#'
+#' read_hie_droughtbox_data(path_droughtbox_leaf_branch_areas)
+#'
+#' @export
+read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_areas){
+
+    # validate file is a csv
+    # VALIDA THAT  branch_basal_diameter_mm = NA, branch_length_cm = NA,
+    # OR surface_branch_area_cm2 are present
+}
+
+
+#' create_empty_droughtbox_leaf_branch_areas_sheet
+#'
+#' @description
+#' The function generates a CSV files filled with NA'S with the required
+#' columns for recording the leaf and branch area data necessary to estimate
+#' gmin/gres.
+#'
+#' @param save_empty_df_at String indicating the path where the empty datasheet
+#' for recording the leaf and branch areas should be saved.
+#'
+#' @return Empty dataframe filled with NA's.
+#'
+#' @examples
+#' \dontrun{create_empty_droughtbox_leaf_branch_areas_sheet("path/to/folder")}
+#'
+#' @export
+create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = NULL){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Create path to the current working directory in case not provided
+    if (is.null(save_empty_df_at)) {
+        path_output_file <- paste0(getwd(),
+                                   '/empty_droughtbox_leaf_branch_areas_sheet.csv')
+    }
+    else {
+
+        # Create path where the output file will be saved in case is provided
+        path_output_file <- paste0(save_empty_df_at,
+                                   '/empty_droughtbox_leaf_branch_areas_sheet.csv')
+    }
+
+
+    # Assert that path_output_file does NOT contain "//"
+    if (stringr::str_detect(string = path_output_file,
+                            pattern = "//")) {
+        print(path_output_file)
+        stop('// detetected in PATH. PATH should be "path/to" NOT "path/to/"')
+
+    }
+
+    # Check if a path is suited for creating an output file
+    checkmate::assert_path_for_output(path_output_file)
+
+    # Create empty dataframe ---------------------------------------------------
+    tidyr::tibble(
+
+        # Columns identifying each sample
+        species_name = NA,
+        sample_id = NA,
+        strain_number = rep(seq(from = 1, to = 4), 7),
+        set_temperature = as.integer(rep(seq(from = 25, to = 55, by = 5), 4)),
+
+        # Columns to calculate the surface_branch_area_cm2
+        branch_basal_diameter_mm = NA,
+        branch_length_cm = NA,
+
+        # Columns with information about the areas
+        leaf_area_cm2 = NA,
+        surface_branch_area_cm2 = NA) %>%
+
+        # Arrange dataframe
+        dplyr::arrange(., set_temperature, strain_number) %>%
+
+        # Print message indicating where the file will be saved
+        {print(paste0("Empty CSV save at: ",
+
+                      # Subtract the total minus the filtered
+                  path_output_file)); .} %>%
+
+        # Save Empty dataframe
+        utils::write.csv(.,
+                         file = path_output_file)
 }
 
 #' filter_droughtbox_data
