@@ -288,7 +288,6 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 
     # Read data
     data_leaf_branch_area <-
-
         read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
                  na.strings = NA) %>%
 
@@ -302,8 +301,6 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
                                                             "leaf_area_cm2"
                                                             ) %in% base::colnames(data_leaf_branch_area))
 
-
-
     # Stop if branch_basal_diameter_mm, branch_length_cm and are all provided
     if (all(c("branch_basal_diameter_mm",
               "branch_length_cm",
@@ -313,9 +310,13 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
         stop("Only provide branch_length_cm and branch_basal_diameter_mm columns OR just the surface_branch_area_cm2")
     }
 
-    variables_with_all_na <- sapply(data_leaf_branch_area, function(x) all(is.na(x)))
+    # Check if the columns have any NA's
+    variables_with_all_na <- sapply(data_leaf_branch_area, function(x) any(is.na(x)))
 
     # Prepare data for calculating gmin/gres -----------------------------------
+
+    # Approximate surface_branch_area_cm2 using branch_basal_diameter_mm and
+    # branch_length_cm
     if (variables_with_all_na["branch_basal_diameter_mm"] == FALSE &
         variables_with_all_na["branch_length_cm"] == FALSE) {
 
