@@ -158,14 +158,14 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 #' create_empty_droughtbox_leaf_branch_areas_sheet
 #'
 #' @description
-#' The function generates a CSV files filled with NA'S with the required
+#' This function generates a CSV files filled with NA'S with the required
 #' columns for recording the leaf and branch area data necessary to estimate
-#' gmin/gres.
+#' gmin or gres.
 #'
 #' @param save_empty_df_at String indicating the path where the empty datasheet
 #' for recording the leaf and branch areas should be saved.
 #'
-#' @return Empty dataframe filled with NA's.
+#' @return Empty dataframe filled with NAs.
 #'
 #' @examples
 #' \dontrun{create_empty_droughtbox_leaf_branch_areas_sheet("path/to/folder")}
@@ -215,18 +215,17 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
         surface_branch_area_cm2 = NA,
         notes = NA) %>%
 
-        # Arrange dataframe
+        # Arrange rows in dataframe
         dplyr::arrange(., set_temperature, strain_number) %>%
 
         # Print message indicating where the file will be saved
-        {print(paste0("Empty CSV save at: ",
+        {print(paste0("Empty CSV saved at: ",
 
-                      # Subtract the total minus the filtered
+                      # Print working directory where csv will be saved
                       path_output_file)); .} %>%
 
         # Save Empty dataframe
-        utils::write.csv(.,
-                         file = path_output_file)
+        utils::write.csv(., file = path_output_file)
 }
 
 #' read_hie_droughtbox_leaf_branch_areas
@@ -272,10 +271,10 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #'
 #' @examples
 #' path_droughtbox_leaf_branch_areas <- system.file("extdata",
-#'                                                 "",
+#'                                                 "acacia_aneura_leaf_branch_areas.csv,
 #'                                                 package = "HIEdroughtbox")
 #'
-#' read_hie_droughtbox_data(path_droughtbox_leaf_branch_areas)
+#' read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
 #'
 #' @export
 read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_areas){
