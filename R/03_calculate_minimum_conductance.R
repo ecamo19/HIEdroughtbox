@@ -90,7 +90,8 @@ residual_conductance <- function(droughtbox_data,
                 dplyr::mutate(slope_vpd_per_second = purrr::map(data, ~coef(lm(vpd_avg_kpa_avg ~ time_seconds,
                                                                          data = .x))[["time_seconds"]])) %>%
                 dplyr::select(-data) %>%
-                tidyr::unnest(cols = slope_vpd_time)
+                tidyr::unnest(cols = slope_vpd_time) %>%
+                dplyr::ungroup()
 
     # Else calculate the mean
     } else if(cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) < 0.60 &
@@ -101,7 +102,8 @@ residual_conductance <- function(droughtbox_data,
                 dplyr::group_by(set_temperature) %>%
 
                 # Get the mean
-                dplyr::summarise(mean_vpd = mean(vpd_avg_kpa_avg))
+                dplyr::summarise(mean_vpd = mean(vpd_avg_kpa_avg)) %>%
+                dplyr::ungroup()
 
     } else{
         stop("Failed in calculating VPD parameter in residual_conductance function")
@@ -171,7 +173,7 @@ residual_conductance <- function(droughtbox_data,
 
         # Print message if positive slope found
         {dplyr::if_else(.$slope_grams_per_second > 0,
-                        print("Positive slope between weight loss and time found. Check your data"),
+                        print("Positive slope between weight loss and time found.Check your data"),
                         "Negative slope. This is OK"); .} %>%
 
         # Estimate transpiration -----------------------------------------------
@@ -186,7 +188,7 @@ residual_conductance <- function(droughtbox_data,
         {if("surface_branch_area_cm2" %in% names(.)) print("Transpiration for gres calculated")else print("Transpiration for gmin calculated"); .} %>%
 
         # Calculate transpiration
-        dplyr::mutate(transpiration_slope_units_cm2 =
+        dplyr::mutate(transpiration_grams_per_sec_cm2 =
                             if("surface_branch_area_cm2" %in% names(.))
 
                                 # Transpiration for gres
@@ -204,7 +206,15 @@ residual_conductance <- function(droughtbox_data,
         dplyr::select(species_name, sample_id, dplyr::everything())
 
     # Estimate residual conductance --------------------------------------------
-    # vpd_parameters
+    # gres = (transpiration_grams_per_sec_cm2 / vpd_parameter)*101.6Kpa
+    #
+    # If vpd_parameter is a slope then gres units are:
+    #
+    # grams*sec*kpa
+    # Kpa*sec*cm2
+    #
+    #
+
 
     return(tibble::as_tibble(.))
 
