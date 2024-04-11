@@ -642,3 +642,24 @@ clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
     return(tibble::as_data_frame(.data))
 
 }
+
+#' merge_droughtbox_data
+#'
+#' @description
+#' This function
+#'
+#'
+#' @param droughtbox_data Dataframe loaded with the function.
+#' `read_hie_droughtbox_data`
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A dataset
+#'
+#' @examples
+#'
+#' @export
+
+merge_droughtbox_data <- function(){
+    #NEEDS to be implemented
+}
