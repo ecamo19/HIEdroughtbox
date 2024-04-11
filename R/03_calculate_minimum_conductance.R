@@ -62,15 +62,58 @@ residual_conductance <- function(droughtbox_data,
                                                                             "sample_id"
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
-    # Calculate leaf residual conductance --------------------------------------
+    # Determine the relationship between VPD and time --------------------------
+    vpd_data <-
+        droughtbox_data %>%
+
+        # Select only the necessary variables
+        dplyr::select(time,
+                      vpd_avg_kpa_avg,
+                      set_point_t_avg_avg) %>%
+
+        # Rename variables
+        dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
+
+                      # Transform time to seconds
+                      time_seconds = (time - dplyr::first(time)),
+                      .keep = "unused")
+
+    # If there is a high correlation then calculate the slope
+    if(cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) >= 0.60){
+
+        vpd_parameters <-
+            vpd_data %>%
+                dplyr::group_by(set_temperature) %>%
+                tidyr::nest(data = -c(set_temperature)) %>%
+
+                # Get the slope
+                dplyr::mutate(slope_vpd_per_second = purrr::map(data, ~coef(lm(vpd_avg_kpa_avg ~ time_seconds,
+                                                                         data = .x))[["time_seconds"]])) %>%
+                dplyr::select(-data) %>%
+                tidyr::unnest(cols = slope_vpd_time)
+
+    # Else calculate the mean
+    } else if(cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) < 0.60 &
+              cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) >= 0) {
+
+        vpd_parameters <-
+            vpd_data %>%
+                dplyr::group_by(set_temperature) %>%
+
+                # Get the mean
+                dplyr::summarise(mean_vpd = mean(vpd_avg_kpa_avg))
+
+    } else{
+        stop("Failed in calculating VPD parameter in residual_conductance function")
+    }
+
+    # Prepare data  ------------------------------------------------------------
 
     # Transform the data into the right format
     droughtbox_data %>%
 
         # Select only the necessary variables calculating
-        dplyr::select(date_time,
-
-                      # Get set temperature inside the box
+        dplyr::select(time,
                       set_point_t_avg_avg,
 
                       # Get weight loss variables
@@ -80,46 +123,89 @@ residual_conductance <- function(droughtbox_data,
                       strain_avg_4_microstrain_avg)  %>%
 
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(date_time, set_point_t_avg_avg),
+        tidyr::pivot_longer(!c(time, set_point_t_avg_avg),
 
                             # Create new columns
                             names_to = "strains",
                             values_to = "strain_weight") %>%
 
-        # Transform strain_number to factor type to keep consistent
-        dplyr::mutate(strains = base::factor(strains)) %>%
-
         # Create new column with the new names for each strain
-        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "strain_1",
-                                                       strains == "strain_avg_2_microstrain_avg"  ~ "strain_2",
-                                                       strains == "strain_avg_3_microstrain_avg"  ~ "strain_3",
-                                                       strains == "strain_avg_4_microstrain_avg"  ~ "strain_4",
+        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "1",
+                                                       strains == "strain_avg_2_microstrain_avg"  ~ "2",
+                                                       strains == "strain_avg_3_microstrain_avg"  ~ "3",
+                                                       strains == "strain_avg_4_microstrain_avg"  ~ "4",
                                                        TRUE ~ strains),
                       # Remove unused col
                       .keep = "unused") %>%
 
-        # Rename column
-        dplyr::rename(., set_temperature = set_point_t_avg_avg) %>%
+        # Step done for transforming time to seconds
+        dplyr::group_by(strain_number, set_point_t_avg_avg) %>%
 
-        ## Get the slope between the measured weight loss and time -------------
+        # Transform columns
+        dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
 
-        # Create a 'mini' dataframes by strain_number, set_temperature
+                      # Get time in seconds
+                      time_seconds = (time - dplyr::first(time)),
+
+                      .keep = "unused") %>%
+
+        dplyr::mutate(strain_number = as.integer(strain_number)) %>%
+
+        # Determine the relationship between weight loss and time --------------
+
+        # Create a nested dataframes by strain_number, set_temperature
         tidyr::nest(data = -c(strain_number, set_temperature)) %>%
 
-        # Calculate the slope
-        dplyr::mutate(slope = purrr::map(data, ~coef(lm(strain_weight ~ date_time, data = .x))[["date_time"]])) %>%
+        # Create column with the slopes by strain_number, set_temperature
+        dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
-        # Remove 'mini' dataframes
+                                                           # Calculate the slope
+                                                     ~coef(lm(strain_weight ~ time_seconds,
+                                                              data = .x))[["time_seconds"]])) %>%
+
+        # Remove nested dataframes
         dplyr::select(-data) %>%
 
-        # Show slope data
-        tidyr::unnest(cols = slope)
+        # Unnest slope data
+        tidyr::unnest(cols = slope_grams_per_second) %>%
 
-    ### Raise warning if Positive slope found
+        # Print message if positive slope found
+        {dplyr::if_else(.$slope_grams_per_second > 0,
+                        print("Positive slope between weight loss and time found. Check your data"),
+                        "Negative slope. This is OK"); .} %>%
 
-    ## Estimate transpiration --------------------------------------------------
-    #e <- -(slope/(total_leaf_area_m2 + branch_surface_area_m2))
+        # Estimate transpiration -----------------------------------------------
 
-    ## Estimate leaf residual conductance --------------------------------------
+        ## Merge leaf and branch areas data with slope data --------------------
+        dplyr::full_join(., areas, by = c("strain_number", "set_temperature")) %>%
+
+        # Without this the code won't run
+        dplyr::ungroup() %>%
+
+        # Print message if surface_branch_area_cm2 is found in the data or not
+        {if("surface_branch_area_cm2" %in% names(.)) print("Transpiration for gres calculated")else print("Transpiration for gmin calculated"); .} %>%
+
+        # Calculate transpiration
+        dplyr::mutate(transpiration_slope_units_cm2 =
+                            if("surface_branch_area_cm2" %in% names(.))
+
+                                # Transpiration for gres
+                                -(.$slope_grams_per_second/(.$leaf_area_cm2 + .$surface_branch_area_cm2))
+
+                            # Transpiration for gmin
+                            else -(.$slope_grams_per_second/(.$leaf_area_cm2))) %>%
+
+        # Remove variables. Done in this way because surface_branch_area_cm2 may or
+        # may not present
+        dplyr::select(-dplyr::any_of(c("slope_grams_per_second","leaf_area_cm2",
+                                       "surface_branch_area_cm2"))) %>%
+
+        # Arrange dataset
+        dplyr::select(species_name, sample_id, dplyr::everything())
+
+    # Estimate residual conductance --------------------------------------------
+    # vpd_parameters
+
+    return(tibble::as_tibble(.))
 
 }
