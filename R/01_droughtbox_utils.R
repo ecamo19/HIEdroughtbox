@@ -271,7 +271,7 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #'
 #' @examples
 #' path_droughtbox_leaf_branch_areas <- system.file("extdata",
-#'                                                 "acacia_aneura_leaf_branch_areas.csv,
+#'                                                 "acacia_aneura_leaf_branch_areas.csv",
 #'                                                 package = "HIEdroughtbox")
 #'
 #' read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
@@ -317,37 +317,43 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 
     # Prepare data for calculating gmin/gres -----------------------------------
 
-    # Approximate surface_branch_area_cm2 using branch_basal_diameter_mm and
-    # branch_length_cm
-    if (variables_with_all_na["branch_basal_diameter_mm"] == FALSE &
-        variables_with_all_na["branch_length_cm"] == FALSE) {
+    if ("branch_length_cm" %in% names(variables_with_all_na) &
+        "branch_basal_diameter_mm" %in% names(variables_with_all_na)) {
 
-        data_leaf_branch_area %>%
+        # Approximate surface_branch_area_cm2 using branch_basal_diameter_mm and
+        # branch_length_cm
+        if (variables_with_all_na["branch_basal_diameter_mm"] == FALSE &
+            variables_with_all_na["branch_length_cm"] == FALSE) {
 
-            # Print message about branch_basal_diameter_mm being transformed and
-            # then divided by two to get the radius in cm
-            {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
-            dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
-                          .keep = "unused")  %>%
+            data_leaf_branch_area %>%
 
-            # Calculate surface_branch_area as the cone
-            {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
-            dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
-                          .keep = "unused")  %>%
+                # Print message about branch_basal_diameter_mm being transformed and
+                # then divided by two to get the radius in cm
+                {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
+                dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
+                              .keep = "unused")  %>%
 
-        return(tibble::as_tibble(.))}
+                # Calculate surface_branch_area as the cone
+                {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
+                dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
+                              .keep = "unused")  %>%
+
+            return(tibble::as_tibble(.))}
+    }
 
     # Select necessary columns if surface_branch_area_cm2 is provided
-    else if(variables_with_all_na["surface_branch_area_cm2"] == FALSE){
+    else if("surface_branch_area_cm2" %in% names(variables_with_all_na) &
+            variables_with_all_na["surface_branch_area_cm2"] == FALSE){
 
         data_leaf_branch_area %>%
 
             dplyr::select(species_name,sample_id, strain_number, set_temperature,
 
                           # Areas
-                          leaf_area_cm2, surface_branch_area_cm2)
+                          leaf_area_cm2, surface_branch_area_cm2) %>%
 
-        return(tibble::as_tibble(.))}
+        return(tibble::as_tibble(.))
+        }
 
     # Stop if some unknown condition is met
     else{
