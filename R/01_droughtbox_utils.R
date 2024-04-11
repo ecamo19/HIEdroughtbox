@@ -294,6 +294,9 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
         # Remove notes column
         dplyr::select(-notes)
 
+        # Remove rows that have NA's in the important variables?
+        # Implement if necessary
+
     # Check that dataframe has the correct columns
     base::stopifnot("Missing columns in the dataframe" =  c("sample_id",
                                                             "set_temperature",
@@ -323,21 +326,34 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
         data_leaf_branch_area %>%
 
             # Print message about branch_basal_diameter_mm being transformed and
-            # divided by two to get the radius in cm
+            # then divided by two to get the radius in cm
             {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
             dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
                           .keep = "unused")  %>%
 
+            # Calculate surface_branch_area as the cone
             {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
             dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
                           .keep = "unused")  %>%
 
-        return(tibble::as_tibble(.))
+        return(tibble::as_tibble(.))}
 
-    } else{ print("KEEP working here")
+    # Select necessary columns if surface_branch_area_cm2 is provided
+    else if(variables_with_all_na["surface_branch_area_cm2"] == FALSE){
 
+        data_leaf_branch_area %>%
+
+            dplyr::select(species_name,sample_id, strain_number, set_temperature,
+
+                          # Areas
+                          leaf_area_cm2, surface_branch_area_cm2)
+
+        return(tibble::as_tibble(.))}
+
+    # Stop if some unknown condition is met
+    else{
+        stop("Failed to read leaf and branch areas csv. Remember that branch_basal_diameter_mm, branch_length_cm or surface_branch_area_cm2 shouldn't conatin ANY NAs ")
     }
-
 }
 
 #' filter_droughtbox_data
