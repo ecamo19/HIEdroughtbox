@@ -28,6 +28,14 @@ test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
                  17)
 })
 
+# Tests for create_empty_droughtbox_leaf_branch_areas_sheet --------------------
+
+# Tests for read_hie_droughtbox_leaf_branch_areas ------------------------------
+
+
+
+
+
 # Tests for filter_droughtbox_data -----------------------------------------
 test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
 
