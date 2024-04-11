@@ -30,8 +30,43 @@ test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
 
 # Tests for create_empty_droughtbox_leaf_branch_areas_sheet --------------------
 
-# Tests for read_hie_droughtbox_leaf_branch_areas ------------------------------
+# Missing tests here
 
+
+# Tests for read_hie_droughtbox_leaf_branch_areas ------------------------------
+test_that("Return object of type data.frame", {
+    expect_equal(class(read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.csv")),
+
+                 # class expected
+                 "data.frame")
+})
+
+test_that("Return columns with no NAs when branch diameter and lenght are provided", {
+
+    # Read data
+    data <- read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.csv") %>%
+
+        # Get columns
+        dplyr::select(surface_branch_area_cm2, leaf_area_cm2)
+
+    # No NAs in columns test.
+    expect_contains(c(FALSE, FALSE), sapply(data, function(x) any(is.na(x))))
+
+})
+
+
+test_that("Return columns with no NAs when branch diameter and lenght are NOT provided", {
+
+    # Read data
+    data <- read_hie_droughtbox_leaf_branch_areas("assets/input_leaf_branch_areas.csv") %>%
+
+        # Get columns
+        dplyr::select(surface_branch_area_cm2, leaf_area_cm2)
+
+    # No NAs in columns test.
+    expect_contains(c(FALSE, FALSE), sapply(data, function(x) any(is.na(x))))
+
+})
 
 
 
