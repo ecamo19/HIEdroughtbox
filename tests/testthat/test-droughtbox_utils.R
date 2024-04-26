@@ -12,7 +12,6 @@ test_that("Return object of length 30 for clean_droughtbox_colnames", {
                  30)
 })
 
-
 # Tests for read_hie_droughtbox_data -------------------------------------------
 test_that("Return object of type data.frame", {
     expect_equal(class(read_hie_droughtbox_data("assets/droughtbox_output.dat")),
@@ -30,8 +29,7 @@ test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
 
 # Tests for create_empty_droughtbox_leaf_branch_areas_sheet --------------------
 
-# Missing tests here
-
+# Missing tests #
 
 # Tests for read_hie_droughtbox_leaf_branch_areas ------------------------------
 test_that("Return object of type data.frame", {
@@ -54,7 +52,6 @@ test_that("Return columns with no NAs when branch diameter and lenght are provid
 
 })
 
-
 test_that("Return columns with no NAs when branch diameter and lenght are NOT provided", {
 
     # Read data
@@ -67,9 +64,6 @@ test_that("Return columns with no NAs when branch diameter and lenght are NOT pr
     expect_contains(c(FALSE, FALSE), sapply(data, function(x) any(is.na(x))))
 
 })
-
-
-
 
 # Tests for filter_droughtbox_data -----------------------------------------
 test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
@@ -90,7 +84,6 @@ test_that("Return an error when one parameter is specified without the other",{
                                             to_end_time = NULL))
 })
 
-
 test_that("Return an error when one parameter is specified without the other",{
     expect_error(filter_droughtbox_data(droughtbox_data = test_data,
                                             from_start_date = NULL,
@@ -98,7 +91,6 @@ test_that("Return an error when one parameter is specified without the other",{
                                             from_start_time = NULL,
                                             to_end_time = "12:51:00"))
 })
-
 
 test_that("Return an error when one parameter is specified without the other",{
     expect_error(filter_droughtbox_data(droughtbox_data = test_data,
@@ -108,7 +100,6 @@ test_that("Return an error when one parameter is specified without the other",{
                                             to_end_time = NULL))
 })
 
-
 test_that("Return an error when one parameter is specified without the other",{
     expect_error(filter_droughtbox_data(droughtbox_data = test_data,
                                             from_start_date = NULL,
@@ -116,7 +107,6 @@ test_that("Return an error when one parameter is specified without the other",{
                                             from_start_time = NULL,
                                             to_end_time = NULL))
 })
-
 
 test_that("Return an error when one parameter is specified without the other",{
     expect_error(filter_droughtbox_data(droughtbox_data = test_data,
@@ -166,59 +156,50 @@ test_that("Return 2 rows out of 796",{
                                                  to_end_time = "12:52:00")), 2)
 })
 
-# filter_droughtbox_data(data, from_start_date = "2024/03/", to_end_date = "2024/03/")
+# filter_droughtbox_data(data, from_start_date = "2024/03/",
+# to_end_date = "2024/03/")
 
 # clean_droughtbox_data --------------------------------------------------------
 test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
 
-
-test_that("Return 1 row from a dataset with 13 rows",{
+test_that("Return 5 row from a dataset with 13 rows",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:23,],
-                                               remove_n_observations = 6)), 1)
+                                               remove_n_observations = 5)), 5)
 
 })
 
-test_that("Return 2 rows from a dataset with 14 rows",{
+test_that("Return 5 rows from a dataset with 14 rows",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:24,],
-                                               remove_n_observations = 6)), 2)
+                                               remove_n_observations = 5)), 5)
 
 })
 
-test_that("Return 3 rows from a dataset with 15 rows",{
+test_that("Return 5 rows from a dataset with 15 rows. remove_n_observations = 6 ",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:25,],
-                                               remove_n_observations = 6)), 3)
+                                               remove_n_observations = 6)), 5)
 
 })
 
-test_that("Return 5 rows from a dataset with 15 rows",{
+test_that("Return 5 rows from a dataset with 15 rows.  remove_n_observations = 5",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:25,],
                                                remove_n_observations = 5)), 5)
 
 })
 
-test_that("Return 30 rows from a dataset with 50 rows",{
+test_that("Return 5 rows from a dataset with 50 rows",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:60,],
-                                               remove_n_observations = 10)), 30)
+                                               remove_n_observations = 10)), 5)
 
 })
 
-
-
-test_that("Return 60 rows from a dataset with 50 rows",{
+test_that("Return 10 rows from a dataset with two tarecounts",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:110,],
-                                               remove_n_observations = 10)), 59)
+                                               remove_n_observations = 10)), 10)
 
 })
-
-
 
 test_that("Return error when tare groups don't have enough tares",{
     expect_error(nrow(clean_droughtbox_data(test_data[1:13,],
                                                remove_n_observations = 6)))
 
 })
-
-
-
-
-
