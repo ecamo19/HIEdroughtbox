@@ -105,55 +105,57 @@ calculate_residual_conductance <- function(droughtbox_data,
 
     # Prepare data  ------------------------------------------------------------
 
-    # Transform the data into the right format
-    droughtbox_data %>%
+    residual_conductance_df <-
 
-        # Select only the necessary variables calculating
-        dplyr::select(time,
-                      set_point_t_avg_avg,
+        # Transform the data into the right format
+        droughtbox_data %>%
 
-                      # Get weight loss variables
-                      strain_avg_1_microstrain_avg,
-                      strain_avg_2_microstrain_avg,
-                      strain_avg_3_microstrain_avg,
-                      strain_avg_4_microstrain_avg)  %>%
+            # Select only the necessary variables calculating
+            dplyr::select(time,
+                          set_point_t_avg_avg,
 
-        # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, set_point_t_avg_avg),
+                          # Get weight loss variables
+                          strain_avg_1_microstrain_avg,
+                          strain_avg_2_microstrain_avg,
+                          strain_avg_3_microstrain_avg,
+                          strain_avg_4_microstrain_avg)  %>%
 
-                            # Create new columns
-                            names_to = "strains",
-                            values_to = "strain_weight") %>%
+            # Reshape data into a long format
+            tidyr::pivot_longer(!c(time, set_point_t_avg_avg),
 
-        # Create new column with the new names for each strain
-        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "1",
-                                                       strains == "strain_avg_2_microstrain_avg"  ~ "2",
-                                                       strains == "strain_avg_3_microstrain_avg"  ~ "3",
-                                                       strains == "strain_avg_4_microstrain_avg"  ~ "4",
-                                                       TRUE ~ strains),
-                      # Remove unused col
-                      .keep = "unused") %>%
+                                # Create new columns
+                                names_to = "strains",
+                                values_to = "strain_weight") %>%
 
-        # Step done for transforming time to seconds
-        dplyr::group_by(strain_number, set_point_t_avg_avg) %>%
+            # Create new column with the new names for each strain
+            dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "1",
+                                                           strains == "strain_avg_2_microstrain_avg"  ~ "2",
+                                                           strains == "strain_avg_3_microstrain_avg"  ~ "3",
+                                                           strains == "strain_avg_4_microstrain_avg"  ~ "4",
+                                                           TRUE ~ strains),
+                          # Remove unused col
+                          .keep = "unused") %>%
 
-        # Transform columns
-        dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
+            # Step done for transforming time to seconds
+            dplyr::group_by(strain_number, set_point_t_avg_avg) %>%
 
-                      # Get time in seconds
-                      time_seconds = (time - dplyr::first(time)),
+            # Transform columns
+            dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
 
-                      .keep = "unused") %>%
+                          # Get time in seconds
+                          time_seconds = (time - dplyr::first(time)),
 
-        dplyr::mutate(strain_number = as.integer(strain_number)) %>%
+                          .keep = "unused") %>%
 
-        # Determine the relationship between weight loss and time --------------
+            dplyr::mutate(strain_number = as.integer(strain_number)) %>%
 
-        # Create a nested dataframes by strain_number, set_temperature
-        tidyr::nest(data = -c(strain_number, set_temperature)) %>%
+            # Determine the relationship between weight loss and time ----------
 
-        # Create column with the slopes by strain_number, set_temperature
-        dplyr::mutate(slope_grams_per_second = purrr::map(data,
+            # Create a nested dataframes by strain_number, set_temperature
+            tidyr::nest(data = -c(strain_number, set_temperature)) %>%
+
+            # Create column with the slopes by strain_number, set_temperature
+            dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
                                                            # Calculate the slope
                                                      ~coef(lm(strain_weight ~ time_seconds,
