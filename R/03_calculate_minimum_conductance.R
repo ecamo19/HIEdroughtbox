@@ -1,12 +1,12 @@
 
-#' residual_conductance
+#' calculate_residual_conductance
 #'
 #' @description
 #' This function calculates residual leaf conductance (gmin) or residual
 #' branch conductance (gres) following equation 2 found the research paper
 #' titled 'The DroughtBox: A new tool for phenotyping residual branch
 #' conductance and its temperature dependence during drought' by Billon and
-#' colleges.
+#' colleagues.
 #'
 #'s @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data()`
@@ -14,20 +14,34 @@
 #' @param leaf_and_stem_area Dataframe loaded with the function
 #' `read_hie_droughtbox_leaf_branch_areas()`
 #'
-#' @param calculate_gres Boolean indicating if residual branch conductance (TRUE)
-#' or leaf residual conductance (FALSE) should be calculated
-#'
 #' @importFrom magrittr %>%
 #'
-#' @return
+#' @return A dataframe with the species_name, sample_id, strain_number,
+#' set_temperature, transpiration_grams_per_sec_cm2 and
+#' median_vpd residual_conductance as columns
 #'
 #' @examples
+#' path_droughtbox_leaf_branch_areas <- system.file("extdata",
+#'                                                 "acacia_aneura_leaf_branch_areas.csv",
+#'                                                 package = "HIEdroughtbox")
+#'
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#' species_areas <- read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
+#'
+#' calculate_residual_conductance(droughtbox_data = droughtbox_data,
+#'                                leaf_and_branch_area_data = species_areas)
 #'
 #' @export
-residual_conductance <- function(droughtbox_data,
-                                 leaf_and_branch_area_data,
-                                 calculate_gres = TRUE
+calculate_residual_conductance <- function(droughtbox_data,
+                                           leaf_and_branch_area_data
                                  ){
+
+    # Atmospheric pressure in the droughtbox constant
+    atmos_pressure_constant = 101.6
 
     # Validate input parameters ------------------------------------------------
 
@@ -87,7 +101,7 @@ residual_conductance <- function(droughtbox_data,
         {print("Make sure VPD conditions were constant"); .} %>%
 
         # Get the median
-        dplyr::summarise(mean_vpd = stats::median(vpd_avg_kpa_avg))
+        dplyr::summarise(median_vpd = stats::median(vpd_avg_kpa_avg))
 
     # Prepare data  ------------------------------------------------------------
 
@@ -153,7 +167,7 @@ residual_conductance <- function(droughtbox_data,
 
         # Print message if positive slope found
         {dplyr::if_else(.$slope_grams_per_second > 0,
-                        print("Positive slope between weight loss and time found.Check your data"),
+                        print("Positive slope between weight loss and time found. Check your data"),
                         "Negative slope. This is OK"); .} %>%
 
         # Estimate transpiration -----------------------------------------------
@@ -183,18 +197,19 @@ residual_conductance <- function(droughtbox_data,
                                        "surface_branch_area_cm2"))) %>%
 
         # Arrange dataset
-        dplyr::select(species_name, sample_id, dplyr::everything())
+        dplyr::select(species_name, sample_id, dplyr::everything()) %>%
 
-    # Estimate residual conductance --------------------------------------------
-    # gres = (transpiration_grams_per_sec_cm2 / vpd_parameter)*101.6Kpa
-    #
-    # If vpd_parameter is a slope then gres units are:
-    #
-    # grams*sec*kpa
-    # Kpa*sec*cm2
-    #
-    #
 
+        # Add VPD parameter in the dataset
+        dplyr::full_join(., vpd_parameter, by = c("set_temperature")) %>%
+
+        # Estimate residual conductance ----------------------------------------
+
+        # Print message residual conductance units
+        {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
+
+        # Residual conductance
+        dplyr::mutate(residual_conductance = (transpiration_grams_per_sec_cm2 / median_vpd)*atmos_pressure_constant) %>%
 
     return(tibble::as_tibble(.))
 
