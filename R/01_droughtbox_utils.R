@@ -294,7 +294,8 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 
     # Read data
     data_leaf_branch_area <-
-        read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
+
+        utils::read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
                  na.strings = NA) %>%
 
             # Remove notes column
@@ -563,7 +564,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' `read_hie_droughtbox_data`
 #'
 #' @param remove_n_observations Integer indicating the number of values that
-#' need to be removed at the beginning and at the end of each tare_count group.
+#' need to be removed at the beginning each tare_count group.
 #'
 #' @param threshold Float indicating the threshold at which values should be
 #' removed
@@ -587,7 +588,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #'
 #' @export
 clean_droughtbox_data <- function(droughtbox_data,
-                                  remove_n_observations,
+                                  remove_n_observations = 5,
                                   threshold = 0.2){
 
     # Validate input parameters ------------------------------------------------
@@ -636,10 +637,11 @@ clean_droughtbox_data <- function(droughtbox_data,
 
     # Clean data ---------------------------------------------------------------
     cleaned_data <-
+
         droughtbox_data %>%
 
             # Remove values equal or lower than threshold across strain_avg vars
-            dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
+            dplyr::filter_at(dplyr::vars(dplyr::starts_with('strain_avg')),
 
                              # Remove values
                              dplyr::any_vars(. >= {{threshold}})) %>%
@@ -647,15 +649,15 @@ clean_droughtbox_data <- function(droughtbox_data,
             # Identify the firsts and lasts values of each group (tare_count)
             dplyr::group_by(tare_count_smp) %>%
 
-            # Remove measurements at the beginning and at the end of the dataframe.
+            # Remove the first 5 measurements at the beginning of each
+            # tare_count and then only consider the next 5 observations.
             # For example, if a dataframe has 13 measurements and
-            # remove_n_observations is equal to 6, 6 measurements at the beginning
-            # and 6 measurements at the end will be removed returning the just one
-            # row
-            dplyr::slice(({{remove_n_observations}} + 1):(dplyr::n() - {{remove_n_observations}})) %>%
+            # remove_n_observations is equal to 5, then only the observations
+            # 6,7,8,9 and 10 will be returned.
+            dplyr::slice(({{remove_n_observations}} + 1):10) %>%
 
             # Print the total number of rows filtered
-        {print(paste0("Total number of rows removed: ",
+            {print(paste0("Total number of rows removed: ",
 
                       # Subtract the total minus the filtered
                       base::nrow(droughtbox_data) - base::nrow(.))); .}
