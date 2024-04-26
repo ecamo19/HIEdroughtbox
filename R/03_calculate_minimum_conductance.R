@@ -173,7 +173,8 @@ calculate_residual_conductance <- function(droughtbox_data,
         # Estimate transpiration -----------------------------------------------
 
         ## Merge leaf and branch areas data with slope data --------------------
-        dplyr::full_join(., areas, by = c("strain_number", "set_temperature")) %>%
+        dplyr::full_join(., leaf_and_branch_area_data,
+                         by = c("strain_number", "set_temperature")) %>%
 
         # Without this the code won't run
         dplyr::ungroup() %>%
