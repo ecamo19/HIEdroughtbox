@@ -4,14 +4,18 @@
 \alias{clean_droughtbox_data}
 \title{clean_droughtbox_data}
 \usage{
-clean_droughtbox_data(droughtbox_data, remove_n_observations, threshold = 0.2)
+clean_droughtbox_data(
+  droughtbox_data,
+  remove_n_observations = 5,
+  threshold = 0.2
+)
 }
 \arguments{
 \item{droughtbox_data}{Dataframe loaded with the function.
 `read_hie_droughtbox_data`}
 
 \item{remove_n_observations}{Integer indicating the number of values that
-need to be removed at the beginning and at the end of each tare_count group.}
+need to be removed at the beginning each tare_count group.}
 
 \item{threshold}{Float indicating the threshold at which values should be
 removed}
