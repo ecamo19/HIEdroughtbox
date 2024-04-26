@@ -101,7 +101,7 @@ calculate_residual_conductance <- function(droughtbox_data,
         {print("Make sure VPD conditions were constant"); .} %>%
 
         # Get the median
-        dplyr::summarise(median_vpd = median(vpd_avg_kpa_avg))
+        dplyr::summarise(median_vpd = stats::median(vpd_avg_kpa_avg))
 
     # Prepare data  ------------------------------------------------------------
 
