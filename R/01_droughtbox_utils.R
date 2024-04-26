@@ -46,8 +46,10 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 
     # Clean colnames -----------------------------------------------------------
 
-    # Read data
-    utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
+    clean_colnames <-
+
+        # Read data
+        utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
                       sep = ",") %>%
 
         janitor::clean_names() %>%
@@ -71,9 +73,9 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
         mgsub::mgsub(., c("-_", " ", "-", "/"), c("_", "_", "_", "_")) %>%
 
         # Remove names ending with a underscore
-        stringr::str_remove(., "\\_\\d?$") %>%
+        stringr::str_remove(., "\\_\\d?$")
 
-    return(.data)
+    return(clean_colnames)
 }
 
 #' read_hie_droughtbox_data
@@ -110,7 +112,10 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
     base::stopifnot("File not recognized. Check example files located in the data folder of the github package" =  "TOA5" %in% utils::read.table(path_droughtbox_data, nrows = 1, )[1,1])
 
     # Read data ----------------------------------------------------------------
-    utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
+
+    dat_file <-
+
+        utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
                       sep = ",") %>%
 
         # Substitute the old names with a clean ones
@@ -150,9 +155,9 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
                          # Hook temperature columns
                          t_sg_avg_1_avg, t_sg_avg_2_avg,
-                         t_sg_avg_3_avg, t_sg_avg_4_avg)) %>%
+                         t_sg_avg_3_avg, t_sg_avg_4_avg))
 
-    return(tibble::as_data_frame(.data))
+    return(base::data.frame(dat_file))
 }
 
 #' create_empty_droughtbox_leaf_branch_areas_sheet
@@ -198,34 +203,36 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
     checkmate::assert_path_for_output(path_output_file)
 
     # Create empty dataframe ---------------------------------------------------
-    tidyr::tibble(
 
-        # Columns identifying each sample
-        species_name = NA,
-        sample_id = NA,
-        strain_number = rep(seq(from = 1, to = 4), 7),
-        set_temperature = as.integer(rep(seq(from = 25, to = 55, by = 5), 4)),
+    empty_sheet <-
+        tidyr::tibble(
 
-        # Columns to calculate the surface_branch_area_cm2
-        branch_basal_diameter_mm = NA,
-        branch_length_cm = NA,
+            # Columns identifying each sample
+            species_name = NA,
+            sample_id = NA,
+            strain_number = rep(seq(from = 1, to = 4), 7),
+            set_temperature = as.integer(rep(seq(from = 25, to = 55, by = 5), 4)),
 
-        # Columns with information about the areas
-        leaf_area_cm2 = NA,
-        surface_branch_area_cm2 = NA,
-        notes = NA) %>%
+            # Columns to calculate the surface_branch_area_cm2
+            branch_basal_diameter_mm = NA,
+            branch_length_cm = NA,
 
-        # Arrange rows in dataframe
-        dplyr::arrange(., set_temperature, strain_number) %>%
+            # Columns with information about the areas
+            leaf_area_cm2 = NA,
+            surface_branch_area_cm2 = NA,
+            notes = NA) %>%
 
-        # Print message indicating where the file will be saved
-        {print(paste0("Empty CSV saved at: ",
+            # Arrange rows in dataframe
+            dplyr::arrange(., set_temperature, strain_number) %>%
+
+            # Print message indicating where the file will be saved
+            {print(paste0("Empty CSV saved at: ",
 
                       # Print working directory where csv will be saved
-                      path_output_file)); .} %>%
+                      path_output_file)); .}
 
-        # Save Empty dataframe
-        utils::write.csv(., file = path_output_file)
+    # Save Empty dataframe
+    utils::write.csv(empty_sheet, file = path_output_file)
 }
 
 #' read_hie_droughtbox_leaf_branch_areas
@@ -290,8 +297,8 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
         read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
                  na.strings = NA) %>%
 
-        # Remove notes column
-        dplyr::select(-notes)
+            # Remove notes column
+            dplyr::select(-notes)
 
         # Remove rows that have NA's in the important variables?
         # Implement if necessary
@@ -325,34 +332,38 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
         if (variables_with_all_na["branch_basal_diameter_mm"] == FALSE &
             variables_with_all_na["branch_length_cm"] == FALSE) {
 
-            data_leaf_branch_area %>%
+            leaf_branch_area_data <-
+                data_leaf_branch_area %>%
 
-                # Print message about branch_basal_diameter_mm being transformed and
-                # then divided by two to get the radius in cm
-                {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
-                dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
-                              .keep = "unused")  %>%
+                    # Print message about branch_basal_diameter_mm being transformed and
+                    # then divided by two to get the radius in cm
+                    {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
+                    dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
+                                .keep = "unused")  %>%
 
-                # Calculate surface_branch_area as the cone
-                {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
-                dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
-                              .keep = "unused")  %>%
+                    # Calculate surface_branch_area as the cone
+                    {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
+                    dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
+                                .keep = "unused")
 
-            return(tibble::as_tibble(.))}
+            return(base::data.frame(leaf_branch_area_data))}
     }
 
     # Select necessary columns if surface_branch_area_cm2 is provided
     else if("surface_branch_area_cm2" %in% names(variables_with_all_na) &
             variables_with_all_na["surface_branch_area_cm2"] == FALSE){
 
-        data_leaf_branch_area %>%
+        leaf_branch_area_data <-
 
-            dplyr::select(species_name,sample_id, strain_number, set_temperature,
+            data_leaf_branch_area %>%
 
-                          # Areas
-                          leaf_area_cm2, surface_branch_area_cm2) %>%
+                dplyr::select(species_name, sample_id, strain_number,
+                              set_temperature,
 
-        return(tibble::as_tibble(.))
+                              # Areas
+                              leaf_area_cm2, surface_branch_area_cm2)
+
+        return(base::data.frame(leaf_branch_area_data))
         }
 
     # Stop if some unknown condition is met
@@ -415,10 +426,10 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 #'
 #' @export
 filter_droughtbox_data <- function(droughtbox_data,
-                                       from_start_date = NULL,
-                                       to_end_date = NULL,
-                                       from_start_time = NULL,
-                                       to_end_time = NULL){
+                                   from_start_date = NULL,
+                                   to_end_date = NULL,
+                                   from_start_time = NULL,
+                                   to_end_time = NULL){
 
     print(crayon::cyan("Times must have a HH:MM:SS format i.e. 13:53:00"))
     print(crayon::cyan("Dates must have a YYYY-MM-DD format i.e. 1991-10-19"))
@@ -486,9 +497,12 @@ filter_droughtbox_data <- function(droughtbox_data,
         to_end_date <- lubridate::ymd(to_end_date)
 
         # Filter data
-        droughtbox_data %>%
-            dplyr::filter(date %in% (from_start_date:to_end_date)) %>%
-            return(tibble::as_data_frame(.data))
+        filtered_data <-
+
+            droughtbox_data %>%
+                dplyr::filter(date %in% (from_start_date:to_end_date))
+
+        return(base::data.frame(filtered_data))
 
     # Filter based on time parameters
     } else if(is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
@@ -501,9 +515,12 @@ filter_droughtbox_data <- function(droughtbox_data,
         to_end_time <- hms::parse_hms(to_end_time)
 
         # Filter data
-        droughtbox_data %>%
-            dplyr::filter(time %in% (from_start_time:to_end_time)) %>%
-            return(tibble::as_data_frame(.data))
+        filtered_data <-
+
+            droughtbox_data %>%
+                dplyr::filter(time %in% (from_start_time:to_end_time))
+
+        return(base::data.frame(filtered_data))
 
 
     # Filter based on date and time parameters
@@ -517,10 +534,13 @@ filter_droughtbox_data <- function(droughtbox_data,
 
         to_end <- lubridate::ymd_hms(paste(to_end_date,to_end_time))
 
-        # Filter
-        droughtbox_data %>%
-            dplyr::filter(date_time %in% (from_start:to_end)) %>%
-            return(tibble::as_data_frame(.data))
+        # Filter data
+        filtered_data <-
+
+            droughtbox_data %>%
+                dplyr::filter(date_time %in% (from_start:to_end))
+
+        return(base::data.frame(filtered_data))
 
     } else{
 
@@ -566,8 +586,9 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' clean_droughtbox_data(droughtbox_data, remove_n_observations = 6)
 #'
 #' @export
-clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
-                                     threshold = 0.2){
+clean_droughtbox_data <- function(droughtbox_data,
+                                  remove_n_observations,
+                                  threshold = 0.2){
 
     # Validate input parameters ------------------------------------------------
     # Stop of droughtbox_data is not a data frame
@@ -614,32 +635,32 @@ clean_droughtbox_data <- function(droughtbox_data, remove_n_observations,
         }
 
     # Clean data ---------------------------------------------------------------
+    cleaned_data <-
+        droughtbox_data %>%
 
-    droughtbox_data %>%
+            # Remove values equal or lower than threshold across strain_avg vars
+            dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
 
-        # Remove values equal or lower than threshold across strain_avg vars
-        dplyr::filter_at(dplyr::vars(starts_with('strain_avg')),
+                             # Remove values
+                             dplyr::any_vars(. >= {{threshold}})) %>%
 
-                         # Remove values
-                         dplyr::any_vars(. >= {{threshold}})) %>%
+            # Identify the firsts and lasts values of each group (tare_count)
+            dplyr::group_by(tare_count_smp) %>%
 
-        # Identify the firsts and lasts values of each group (tare_count)
-        dplyr::group_by(tare_count_smp) %>%
+            # Remove measurements at the beginning and at the end of the dataframe.
+            # For example, if a dataframe has 13 measurements and
+            # remove_n_observations is equal to 6, 6 measurements at the beginning
+            # and 6 measurements at the end will be removed returning the just one
+            # row
+            dplyr::slice(({{remove_n_observations}} + 1):(dplyr::n() - {{remove_n_observations}})) %>%
 
-        # Remove measurements at the beginning and at the end of the dataframe.
-        # For example, if a dataframe has 13 measurements and
-        # remove_n_observations is equal to 6, 6 measurements at the beginning
-        # and 6 measurements at the end will be removed returning the just one
-        # row
-        dplyr::slice(({{remove_n_observations}} + 1):(dplyr::n() - {{remove_n_observations}})) %>%
-
-        # Print the total number of rows filtered
+            # Print the total number of rows filtered
         {print(paste0("Total number of rows removed: ",
 
                       # Subtract the total minus the filtered
-                      base::nrow(droughtbox_data) - base::nrow(.))); .} %>%
+                      base::nrow(droughtbox_data) - base::nrow(.))); .}
 
-    return(tibble::as_data_frame(.data))
+    return(base::data.frame(cleaned_data))
 
 }
 
