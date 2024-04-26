@@ -62,8 +62,10 @@ residual_conductance <- function(droughtbox_data,
                                                                             "sample_id"
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
-    # Determine the relationship between VPD and time --------------------------
-    vpd_data <-
+    # Get VPD parameter --------------------------------------------------------
+    # This parameter will be later used in estimating gres.
+
+    vpd_parameter <-
         droughtbox_data %>%
 
         # Select only the necessary variables
@@ -76,38 +78,16 @@ residual_conductance <- function(droughtbox_data,
 
                       # Transform time to seconds
                       time_seconds = (time - dplyr::first(time)),
-                      .keep = "unused")
+                      .keep = "unused") %>%
 
-    # If there is a high correlation then calculate the slope
-    if(cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) >= 0.60){
+        # Group by temperature
+        dplyr::group_by(set_temperature) %>%
 
-        vpd_parameters <-
-            vpd_data %>%
-                dplyr::group_by(set_temperature) %>%
-                tidyr::nest(data = -c(set_temperature)) %>%
+        # Print message
+        {print("Make sure VPD conditions were constant"); .} %>%
 
-                # Get the slope
-                dplyr::mutate(slope_vpd_per_second = purrr::map(data, ~coef(lm(vpd_avg_kpa_avg ~ time_seconds,
-                                                                         data = .x))[["time_seconds"]])) %>%
-                dplyr::select(-data) %>%
-                tidyr::unnest(cols = slope_vpd_time) %>%
-                dplyr::ungroup()
-
-    # Else calculate the mean
-    } else if(cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) < 0.60 &
-              cor(vpd_data$vpd_avg_kpa_avg , as.numeric(vpd_data$time_seconds)) >= 0) {
-
-        vpd_parameters <-
-            vpd_data %>%
-                dplyr::group_by(set_temperature) %>%
-
-                # Get the mean
-                dplyr::summarise(mean_vpd = mean(vpd_avg_kpa_avg)) %>%
-                dplyr::ungroup()
-
-    } else{
-        stop("Failed in calculating VPD parameter in residual_conductance function")
-    }
+        # Get the median
+        dplyr::summarise(mean_vpd = stats::median(vpd_avg_kpa_avg))
 
     # Prepare data  ------------------------------------------------------------
 
