@@ -617,13 +617,13 @@ clean_droughtbox_data <- function(droughtbox_data,
         # For example if the user wants to remove the first and last minute of
         # observations of each tare, the group should contain at least 13
         # measurements to return one value.
-        dplyr::mutate(comparison =  dplyr::if_else(n < ((2*{{remove_n_observations}}) + 1),
+        dplyr::mutate(enough_observations =  dplyr::if_else(n > ((2*{{remove_n_observations}}) + 1),
                                                    TRUE, FALSE)) %>%
 
         # Get the tares that don't have enough measurements
-        dplyr::filter(comparison == TRUE)
+        dplyr::filter(enough_observations == FALSE)
 
-        # Stop if any TRUE is found
+        # Stop if any FALSE is found
         if (nrow(number_measurements_in_each_tare_group) > 0) {
 
             print("tare_count group with not enough meaureaments found!")
@@ -650,11 +650,11 @@ clean_droughtbox_data <- function(droughtbox_data,
             dplyr::group_by(tare_count_smp) %>%
 
             # Remove the first 5 measurements at the beginning of each
-            # tare_count and then only consider the next 5 observations.
+            # tare_count and then return the next 5 observations.
             # For example, if a dataframe has 13 measurements and
             # remove_n_observations is equal to 5, then only the observations
             # 6,7,8,9 and 10 will be returned.
-            dplyr::slice(({{remove_n_observations}} + 1):10) %>%
+            dplyr::slice(({{remove_n_observations}} + 1):({{remove_n_observations}} + 5)) %>%
 
             # Print the total number of rows filtered
             {print(paste0("Total number of rows removed: ",
