@@ -330,7 +330,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
 
         # Add median and set temp to the title
         ggplot2::ggtitle(stringr::str_c("Set temperature: ", .$set_point_t_avg_avg,
-                               " Median temperature: ", median(.$tc_avg_deg_c_avg))) +
+                               " Median temperature: ", stats::median(.$tc_avg_deg_c_avg))) +
 
         # Edit legend
         ggplot2::theme(legend.position = "bottom",
