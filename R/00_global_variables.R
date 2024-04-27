@@ -1,6 +1,6 @@
 #' @description
 #' This script is meant to solve the 'no visible binding for global variable'
-#' warning when check() is run
+#' warning when check() is run.
 #'
 #' @noRd
 #'

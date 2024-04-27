@@ -85,7 +85,8 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #' This function reads the raw .dat file downloaded from the droughtbox located
 #' at the Hawkesbury Institute for the Environment.
 #'
-#' @param path_droughtbox_data String indicating the location of the .dat file in your computer.
+#' @param path_droughtbox_data String indicating the location of the .dat file
+#' in your computer.
 #'
 #' @return A dataframe with 25 columns.
 #'
@@ -265,10 +266,11 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #' approximated using the formula A = pi*radius*(length + radius), assuming that
 #' the branch has a cone shape.
 #'
-#' branch_basal_diameter_mm: Float in millimeters indicating the basal diameter of
-#' the sample.
+#' branch_basal_diameter_mm: Float in millimeters indicating the basal diameter
+#' of the sample.
 #'
-#' branch_length_cm: Float in centimeters indicating the total length of the sample.
+#' branch_length_cm: Float in centimeters indicating the total length of the
+#' sample.
 #'
 #' @param path_droughtbox_leaf_branch_areas String indicating the location of
 #' the CSV file in your computer.
@@ -391,8 +393,8 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 #' @param to_end_date String indicating the final Year, Month and Day to filter
 #' in the dataset. It must have a YYYY-MM-DD format.
 #'
-#' @param from_start_time String indicating the initial hour, minutes and seconds
-#' to filter in the dataset. It must have a HH:MM:SS format.
+#' @param from_start_time String indicating the initial hour, minutes and
+#' seconds to filter in the dataset. It must have a HH:MM:SS format.
 #'
 #' @param to_end_time String indicating the final hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format.

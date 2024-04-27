@@ -8,16 +8,16 @@
 #' colleagues.
 #'
 #'s @param droughtbox_data Dataframe loaded with the function
-#' `read_hie_droughtbox_data()`
+#' `read_hie_droughtbox_data()`.
 #'
 #' @param leaf_and_branch_area_data Dataframe loaded with the function
-#' `read_hie_droughtbox_leaf_branch_areas()`
+#' `read_hie_droughtbox_leaf_branch_areas()`.
 #'
 #' @importFrom magrittr %>%
 #'
 #' @return A dataframe with the species_name, sample_id, strain_number,
 #' set_temperature, transpiration_grams_per_sec_cm2 and
-#' median_vpd residual_conductance as columns
+#' median_vpd residual_conductance as columns.
 #'
 #' @examples
 #' path_droughtbox_leaf_branch_areas <- system.file("extdata",

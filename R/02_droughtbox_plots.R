@@ -3,7 +3,7 @@
 #' @description
 #' This function plots the change across time of the climatic controls specified
 #' by the user (shown in red) and the climatic controls measured inside of the
-#' Droughtbox
+#' Droughtbox.
 #'
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data`
@@ -11,9 +11,10 @@
 #' @importFrom magrittr %>%
 #'
 #' @param cowplot Boolean indicating if plots should be arranged in one single
-#' figure with 2 columns and 3 rows (TRUE) or if should be arranged individually
+#' figure with 2 columns and 3 rows (TRUE) or if should be arranged
+#' individually.
 #'
-#' @return A ggplot2 object with a total of 5 figures
+#' @return A ggplot2 object with a total of 5 figures.
 #'
 #'
 #' @examples
@@ -184,26 +185,28 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' plot_strains_weights
 #'
 #' @description
-#' This function displays the raw weights (grams) measured inside the Droughtbox
+#' This function displays the raw weights (grams) measured inside the
+#' Droughtbox.
 #'
 #' @importFrom magrittr %>%
 #'
-#' @param droughtbox_data Dataframe loaded with the function
+#' @param droughtbox_data Dataframe loaded with the function.
 #' `read_hie_droughtbox_data`
 #'
 #' @param show_strain String (i.e. "strain_1") or vector of strings
-#' (c("strain_2", "strain_3")) indicating which strain to plot. Default is "all"
+#' (c("strain_2", "strain_3")) indicating which strain to plot.
+#' Default is "all".
 #'
 #' @param time_breaks String indicating the resolution at which the x-axis
 #' should show the tick marks. Choose one of "sec", "min", "hour", "day",
-#' "week", "month", "year"
+#' "week", "month", "year".
 #'
 #' @param show_tare_group Boolean (TRUE/FALSE) indicating if data should
 #' be shown as points or as labels with the tare_count to which they
 #' belong to.
 #'
 #' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
-#' total) inside the Droughtbox
+#' total) inside the Droughtbox.
 #'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
