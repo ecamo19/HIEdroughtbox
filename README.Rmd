@@ -222,6 +222,7 @@ glimpse(acacia_aneura_leaf_branch_areas)
 
 ```{r}
 calculate_residual_conductance(droughtbox_data =  acacia_aneura_merged_data, 
-                               leaf_and_branch_area_data = acacia_aneura_leaf_branch_areas)
+                               leaf_and_branch_area_data = acacia_aneura_leaf_branch_areas) %>% 
+    glimpse()
 ```
 

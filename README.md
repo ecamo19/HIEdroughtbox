@@ -265,67 +265,19 @@ $ surface_branch_area_cm2 <dbl> 16.49336, 16.49336, 16.49336, 16.49336, 16.493�
 
 ``` r
 calculate_residual_conductance(droughtbox_data =  acacia_aneura_merged_data, 
-                               leaf_and_branch_area_data = acacia_aneura_leaf_branch_areas)
+                               leaf_and_branch_area_data = acacia_aneura_leaf_branch_areas) %>% 
+    glimpse()
 [1] "Make sure VPD conditions were constant"
 [1] "Residual conductance units: grams * s-1 * cm-2"
 [1] "Positive slope between weight loss and time found. Check your data"
 [1] "Transpiration for gres calculated"
-    species_name sample_id strain_number set_temperature
-1  acacia_aneura      1043             1              25
-2  acacia_aneura      1044             2              25
-3  acacia_aneura      1045             3              25
-4  acacia_aneura      1046             4              25
-5  acacia_aneura      1043             1              30
-6  acacia_aneura      1044             2              30
-7  acacia_aneura      1045             3              30
-8  acacia_aneura      1046             4              30
-9  acacia_aneura      1043             1              35
-10 acacia_aneura      1044             2              35
-11 acacia_aneura      1045             3              35
-12 acacia_aneura      1046             4              35
-13 acacia_aneura      1043             1              40
-14 acacia_aneura      1044             2              40
-15 acacia_aneura      1045             3              40
-16 acacia_aneura      1046             4              40
-17 acacia_aneura      1043             1              45
-18 acacia_aneura      1044             2              45
-19 acacia_aneura      1045             3              45
-20 acacia_aneura      1046             4              45
-21 acacia_aneura      1043             1              50
-22 acacia_aneura      1044             2              50
-23 acacia_aneura      1045             3              50
-24 acacia_aneura      1046             4              50
-25 acacia_aneura      1043             1              55
-26 acacia_aneura      1044             2              55
-27 acacia_aneura      1045             3              55
-28 acacia_aneura      1046             4              55
-   transpiration_grams_per_sec_cm2 median_vpd residual_conductance
-1                     5.351936e-07      3.049         1.783393e-05
-2                    -1.163451e-08      3.049        -3.876898e-07
-3                     6.956038e-07      3.049         2.317919e-05
-4                     1.293035e-06      3.049         4.308704e-05
-5                     5.129813e-07      2.520         2.068210e-05
-6                     1.701932e-06      2.520         6.861759e-05
-7                     6.547752e-07      2.520         2.639887e-05
-8                     1.797532e-06      2.520         7.247192e-05
-9                               NA         NA                   NA
-10                              NA         NA                   NA
-11                              NA         NA                   NA
-12                              NA         NA                   NA
-13                              NA         NA                   NA
-14                              NA         NA                   NA
-15                              NA         NA                   NA
-16                              NA         NA                   NA
-17                              NA         NA                   NA
-18                              NA         NA                   NA
-19                              NA         NA                   NA
-20                              NA         NA                   NA
-21                              NA         NA                   NA
-22                              NA         NA                   NA
-23                              NA         NA                   NA
-24                              NA         NA                   NA
-25                              NA         NA                   NA
-26                              NA         NA                   NA
-27                              NA         NA                   NA
-28                              NA         NA                   NA
+Rows: 28
+Columns: 7
+$ species_name                    <chr> "acacia_aneura", "acacia_aneura", "aca…
+$ sample_id                       <int> 1043, 1044, 1045, 1046, 1043, 1044, 10…
+$ strain_number                   <int> 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1,…
+$ set_temperature                 <int> 25, 25, 25, 25, 30, 30, 30, 30, 35, 35…
+$ transpiration_grams_per_sec_cm2 <dbl> 5.351936e-07, -1.163451e-08, 6.956038e…
+$ median_vpd                      <dbl> 3.049, 3.049, 3.049, 3.049, 2.520, 2.5…
+$ residual_conductance            <dbl> 1.783393e-05, -3.876898e-07, 2.317919e…
 ```
