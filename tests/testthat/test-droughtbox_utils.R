@@ -1,5 +1,5 @@
 
-# Tests for clean_droughtbox_colnames ------------------------------------------
+# Tests for clean_droughtbox_colnames() ----------------------------------------
 
 test_that("Return object of type character for clean_droughtbox_colnames", {
   expect_type(clean_droughtbox_colnames("assets/droughtbox_output.dat"), "character")
@@ -12,7 +12,7 @@ test_that("Return object of length 30 for clean_droughtbox_colnames", {
                  30)
 })
 
-# Tests for read_hie_droughtbox_data -------------------------------------------
+# Tests for read_hie_droughtbox_data() -----------------------------------------
 test_that("Return object of type data.frame", {
     expect_equal(class(read_hie_droughtbox_data("assets/droughtbox_output.dat")),
 
@@ -27,11 +27,11 @@ test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
                  17)
 })
 
-# Tests for create_empty_droughtbox_leaf_branch_areas_sheet --------------------
+# Tests for create_empty_droughtbox_leaf_branch_areas_sheet() ------------------
 
 # Missing tests #
 
-# Tests for read_hie_droughtbox_leaf_branch_areas ------------------------------
+# Tests for read_hie_droughtbox_leaf_branch_areas() ----------------------------
 test_that("Return object of type data.frame", {
     expect_equal(class(read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.csv")),
 
@@ -65,7 +65,7 @@ test_that("Return columns with no NAs when branch diameter and lenght are NOT pr
 
 })
 
-# Tests for filter_droughtbox_data -----------------------------------------
+# Tests for filter_droughtbox_data() -------------------------------------------
 test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
 
 test_that("Return an error when all parameters are set to NULL",{
@@ -159,7 +159,7 @@ test_that("Return 2 rows out of 796",{
 # filter_droughtbox_data(data, from_start_date = "2024/03/",
 # to_end_date = "2024/03/")
 
-# clean_droughtbox_data --------------------------------------------------------
+# Test for clean_droughtbox_data() ---------------------------------------------
 test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
 
 test_that("Return 5 row from a dataset with 13 rows",{
@@ -203,3 +203,26 @@ test_that("Return error when tare groups don't have enough tares",{
                                                remove_n_observations = 6)))
 
 })
+
+# Tests for merge_droughtbox_data() --------------------------------------------
+
+test_that("Return error when only a dataframe is specified",{
+
+    test_data_1 <- read_hie_droughtbox_data('assets//acacia_aneura_25c.dat')
+
+    expect_error(merge_droughtbox_data(test_data_1))
+})
+
+test_that("Return dataframe with 16 rows",{
+
+    test_data_1 <- read_hie_droughtbox_data('assets//acacia_aneura_25c.dat')
+
+    test_data_2 <- read_hie_droughtbox_data('assets//acacia_aneura_30c.dat')
+
+    expect_equal(nrow(merge_droughtbox_data(test_data_1[1:3,],
+                                            test_data_2[1:3,],
+                                            test_data_1[31:40,])), 16)
+})
+
+
+
