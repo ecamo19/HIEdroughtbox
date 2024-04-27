@@ -1,4 +1,3 @@
-
 #' calculate_residual_conductance
 #'
 #' @description
@@ -11,7 +10,7 @@
 #'s @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data()`
 #'
-#' @param leaf_and_stem_area Dataframe loaded with the function
+#' @param leaf_and_branch_area_data Dataframe loaded with the function
 #' `read_hie_droughtbox_leaf_branch_areas()`
 #'
 #' @importFrom magrittr %>%

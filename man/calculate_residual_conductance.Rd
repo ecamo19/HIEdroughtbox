@@ -7,7 +7,7 @@
 calculate_residual_conductance(droughtbox_data, leaf_and_branch_area_data)
 }
 \arguments{
-\item{leaf_and_stem_area}{Dataframe loaded with the function
+\item{leaf_and_branch_area_data}{Dataframe loaded with the function
 `read_hie_droughtbox_leaf_branch_areas()`}
 }
 \value{
