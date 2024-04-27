@@ -27,10 +27,6 @@ utils::globalVariables(c('time', 'vpd_avg_kpa_avg', "set_point_t_avg_avg", '.',
                          't_sg_avg_2_avg', 't_sg_avg_3_avg', 't_sg_avg_4_avg',
                          'branch_basal_diameter_mm', 'branch_length_cm',
                          'leaf_area_cm2', 'surface_branch_area_cm2',
-                         'branch_basal_radius_cm', 'data'
-
-
-
+                         'branch_basal_radius_cm', 'data', 'n', 'notes'
 
                          ))
-
