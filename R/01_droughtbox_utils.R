@@ -666,8 +666,23 @@ clean_droughtbox_data <- function(droughtbox_data,
 
 }
 
-
-# ADD FUNCTION
-#merge_droughtbox_data <- function(){
+#' merge_droughtbox_data
+#'
+#' @description
+#'
+#' @param
+#'
+#' @param
+#'
+#' @param
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return
+#'
+#' @examples
+#'
+#' @export
+merge_droughtbox_data <- function(...){
     #NEEDS to be implemented
-#}
+}
