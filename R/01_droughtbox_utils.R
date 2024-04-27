@@ -1,3 +1,4 @@
+
 #' clean_droughtbox_colnames
 #'
 #' @description
@@ -8,7 +9,7 @@
 #' type of each column) of the .dat file. and then merges those merged rows with
 #' each colname.
 #'
-#' The .dat file is downloaded from the the droughtbox
+#' The .dat file is downloaded from the the droughtbox.
 #'
 #' The pattern of the new colname is varname_unit_data_type. For example
 #' "air_tc_avg_deg_c_avg" the varname is air_tc_avg, the unit is deg_c and the
@@ -17,12 +18,12 @@
 #' Some colnames don`t have a units or data type. For example tare_count_sm,
 #' where the varname is tare_count and the data_type is sm.
 #'
-#' @param path_droughtbox_data  String indicating the location of the .dat file
-#' in your computer
+#' @param path_droughtbox_data String indicating the location of the .dat file
+#' in your computer.
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return  Vector of strings with a length 30 elements
+#' @return Vector of strings with a length 30 elements.
 #'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
@@ -82,11 +83,11 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
 #'
 #' @description
 #' This function reads the raw .dat file downloaded from the droughtbox located
-#' at the Hawkesbury Institute for the Environment
+#' at the Hawkesbury Institute for the Environment.
 #'
-#' @param path_droughtbox_data String indicating the location of the .dat file in your computer
+#' @param path_droughtbox_data String indicating the location of the .dat file in your computer.
 #'
-#' @return A dataframe with 25 columns
+#' @return A dataframe with 25 columns.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -272,7 +273,7 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #' @param path_droughtbox_leaf_branch_areas String indicating the location of
 #' the CSV file in your computer.
 #'
-#' @return A dataframe
+#' @return A dataframe.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -379,24 +380,24 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 #' This function is meant to be used to removed chunks of data that is collected
 #' when the droughtbox has not reach the climatic conditions desired.
 #'
-#' This functions does not remove individual observations
+#' This functions does not remove individual observations.
 #'
 #' @param droughtbox_data Dataframe loaded with the function
-#' `read_hie_droughtbox_data`
+#' `read_hie_droughtbox_data`.
 #'
 #' @param from_start_date String indicating the initial Year, Month and Day to
-#' filter in the dataset. It must have a YYYY-MM-DD format
+#' filter in the dataset. It must have a YYYY-MM-DD format.
 #'
 #' @param to_end_date String indicating the final Year, Month and Day to filter
-#' in the dataset. It must have a YYYY-MM-DD format
+#' in the dataset. It must have a YYYY-MM-DD format.
 #'
 #' @param from_start_time String indicating the initial hour, minutes and seconds
-#' to filter in the dataset. It must have a HH:MM:SS format
+#' to filter in the dataset. It must have a HH:MM:SS format.
 #'
 #' @param to_end_time String indicating the final hour, minutes and seconds
-#' to filter in the dataset. It must have a HH:MM:SS format
+#' to filter in the dataset. It must have a HH:MM:SS format.
 #'
-#' @return Dataframe with the selected dates and times
+#' @return Dataframe with the selected dates and times.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -555,7 +556,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' This function removes wrong data points that are produced by the Droughtbox
 #' after each taring process. First it removes values lower than a `threshold`,
 #' (which is in grams) and then it removes the first and last values of each
-#' tare_count
+#' tare_count.
 #'
 #' The function `plot_raw_strains_weights` can be used to visualize the data
 #' points might need to be removed.
@@ -567,11 +568,11 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' need to be removed at the beginning each tare_count group.
 #'
 #' @param threshold Float indicating the threshold at which values should be
-#' removed
+#' removed.
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return A dataset
+#' @return A dataset.
 #'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
@@ -592,6 +593,7 @@ clean_droughtbox_data <- function(droughtbox_data,
                                   threshold = 0.2){
 
     # Validate input parameters ------------------------------------------------
+
     # Stop of droughtbox_data is not a data frame
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
@@ -669,20 +671,71 @@ clean_droughtbox_data <- function(droughtbox_data,
 #' merge_droughtbox_data
 #'
 #' @description
+#' This function is meant to be used as the last step previously to calculate
+#' the residual conductace. It takes any number of prevously cleaned .dat files
+#' and merge them into a single data frame.
 #'
-#' @param
-#'
-#' @param
-#'
-#' @param
+#' @param ... n number of objects of class data.frame.
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return
+#' @return A single data.frame object.
 #'
 #' @examples
+#' \dontrun{merge_droughtbox_data(clean_data_1, clean_data_2, clean_data_n)}
 #'
 #' @export
 merge_droughtbox_data <- function(...){
-    #NEEDS to be implemented
+
+    # Store in a list all the objects passed in function parameters
+    list_with_dataframes <- base::list(...)
+
+    # Validate input parameters ------------------------------------------------
+
+    # Stop if only one object is specified
+    if (base::length(list_with_dataframes) <= 1 ) {
+        base::stop("At least two dataframes should specified i.e. merge_droughtbox_data(clean_data_1, clean_data_2)")
+    }
+
+    # Stop if elements in the list are not dataframes
+
+    # Get the class of each element in the list
+    vector_with_classes <- c(purrr::map_chr(list_with_dataframes, class))
+
+    # if not all are equal to data.frame then stop
+    if (!all(vector_with_classes == "data.frame")) {
+
+        # Print the classes found
+        base::print(paste0('Object with class ', vector_with_classes, ' found'))
+
+        # stop
+        base::stop("All input dataframes should be of class data.frame")
+    }
+
+    # Stop if elements in the list have different number of columns
+
+    # Get the number of columns of each element in the list
+    vector_with_ncol <- purrr::map_dbl(list_with_dataframes, ncol)
+
+    # if not all are equal to data.frame then stop
+    if (length(unique(vector_with_ncol)) > 1) {
+
+        # Print the number of columns of each data frame
+        base::print(paste0('Dataframe with ', vector_with_ncol, ' columns found'))
+
+        # stop
+        base::stop("All input dataframes should have the same number of columns")
+    }
+
+    # Merge n number of objects given ------------------------------------------
+
+    merged_droughtbox_data <-
+
+        list_with_dataframes %>%
+
+        # Merge data
+        # reduce(left_join, by = "i")
+        purrr::reduce(dplyr::full_join)
+
+    return(merged_droughtbox_data)
 }
