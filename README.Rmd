@@ -68,6 +68,7 @@ devtools::install_github("ecamo19/HIEdroughtbox")
 ```{r libraries, message = FALSE,warning = FALSE}
 library(HIEdroughtbox)
 library(dplyr)
+library(knitr)
 ```
 
 ### Read droughtbox data
@@ -160,8 +161,8 @@ Finally, after filtering the data by the interval of time desired the last
 step is to remove the values close to zero and the first and last points within 
 each taring process. 
 
-The following code will remove the values lower than 0.2 grams and the first 10 
-and last 10 values of each taring group.  
+The following code will remove the values lower than 0.2 grams and the first 5 
+observations and last values of each taring group.  
 
 ```{r}
 acacia_aneura_25c_cleaned_data <- 
@@ -199,6 +200,8 @@ plot_strains_weights(acacia_aneura_30c_cleaned_data,
 
 ### Merge droughtbox data
 
+After the raw data has been cleaned each .dat files can be merged. 
+
 ```{r warning=FALSE, message=FALSE}
 acacia_aneura_merged_data <-
     merge_droughtbox_data(acacia_aneura_25c_cleaned_data,
@@ -208,9 +211,7 @@ acacia_aneura_merged_data <-
 
 ## Calculate the residual conductance of Acacia Aneura
 
-After the raw data has been cleaned 
-
-### Load data with the areas
+### Load CSV with the leaf and stem areas
 
 ```{r}
 acacia_aneura_leaf_branch_areas <-
@@ -219,10 +220,10 @@ acacia_aneura_leaf_branch_areas <-
 glimpse(acacia_aneura_leaf_branch_areas)
 ```
 
-
 ```{r}
 calculate_residual_conductance(droughtbox_data =  acacia_aneura_merged_data, 
                                leaf_and_branch_area_data = acacia_aneura_leaf_branch_areas) %>% 
-    glimpse()
+    kable()
 ```
 
+### Visualize residual conductance

@@ -58,6 +58,7 @@ devtools::install_github("ecamo19/HIEdroughtbox")
 ``` r
 library(HIEdroughtbox)
 library(dplyr)
+library(knitr)
 ```
 
 ### Read droughtbox data
@@ -188,7 +189,7 @@ last step is to remove the values close to zero and the first and last
 points within each taring process.
 
 The following code will remove the values lower than 0.2 grams and the
-first 10 and last 10 values of each taring group.
+first 5 observations and last values of each taring group.
 
 ``` r
 acacia_aneura_25c_cleaned_data <- 
@@ -234,6 +235,8 @@ plot_strains_weights(acacia_aneura_25c_cleaned_data,
 
 ### Merge droughtbox data
 
+After the raw data has been cleaned each .dat files can be merged.
+
 ``` r
 acacia_aneura_merged_data <-
     merge_droughtbox_data(acacia_aneura_25c_cleaned_data,
@@ -242,9 +245,7 @@ acacia_aneura_merged_data <-
 
 ## Calculate the residual conductance of Acacia Aneura
 
-After the raw data has been cleaned
-
-### Load data with the areas
+### Load CSV with the leaf and stem areas
 
 ``` r
 acacia_aneura_leaf_branch_areas <-
@@ -266,18 +267,42 @@ $ surface_branch_area_cm2 <dbl> 16.49336, 16.49336, 16.49336, 16.49336, 16.493�
 ``` r
 calculate_residual_conductance(droughtbox_data =  acacia_aneura_merged_data, 
                                leaf_and_branch_area_data = acacia_aneura_leaf_branch_areas) %>% 
-    glimpse()
+    kable()
 [1] "Make sure VPD conditions were constant"
 [1] "Residual conductance units: grams * s-1 * cm-2"
 [1] "Positive slope between weight loss and time found. Check your data"
 [1] "Transpiration for gres calculated"
-Rows: 28
-Columns: 7
-$ species_name                    <chr> "acacia_aneura", "acacia_aneura", "aca…
-$ sample_id                       <int> 1043, 1044, 1045, 1046, 1043, 1044, 10…
-$ strain_number                   <int> 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1,…
-$ set_temperature                 <int> 25, 25, 25, 25, 30, 30, 30, 30, 35, 35…
-$ transpiration_grams_per_sec_cm2 <dbl> 5.351936e-07, -1.163451e-08, 6.956038e…
-$ median_vpd                      <dbl> 3.049, 3.049, 3.049, 3.049, 2.520, 2.5…
-$ residual_conductance            <dbl> 1.783393e-05, -3.876898e-07, 2.317919e…
 ```
+
+| species_name  | sample_id | strain_number | set_temperature | transpiration_grams_per_sec_cm2 | median_vpd | residual_conductance |
+|:--------------|----------:|--------------:|----------------:|--------------------------------:|-----------:|---------------------:|
+| acacia_aneura |      1043 |             1 |              25 |                         5.0e-07 |      3.049 |             1.78e-05 |
+| acacia_aneura |      1044 |             2 |              25 |                         0.0e+00 |      3.049 |            -4.00e-07 |
+| acacia_aneura |      1045 |             3 |              25 |                         7.0e-07 |      3.049 |             2.32e-05 |
+| acacia_aneura |      1046 |             4 |              25 |                         1.3e-06 |      3.049 |             4.31e-05 |
+| acacia_aneura |      1043 |             1 |              30 |                         5.0e-07 |      2.520 |             2.07e-05 |
+| acacia_aneura |      1044 |             2 |              30 |                         1.7e-06 |      2.520 |             6.86e-05 |
+| acacia_aneura |      1045 |             3 |              30 |                         7.0e-07 |      2.520 |             2.64e-05 |
+| acacia_aneura |      1046 |             4 |              30 |                         1.8e-06 |      2.520 |             7.25e-05 |
+| acacia_aneura |      1043 |             1 |              35 |                              NA |         NA |                   NA |
+| acacia_aneura |      1044 |             2 |              35 |                              NA |         NA |                   NA |
+| acacia_aneura |      1045 |             3 |              35 |                              NA |         NA |                   NA |
+| acacia_aneura |      1046 |             4 |              35 |                              NA |         NA |                   NA |
+| acacia_aneura |      1043 |             1 |              40 |                              NA |         NA |                   NA |
+| acacia_aneura |      1044 |             2 |              40 |                              NA |         NA |                   NA |
+| acacia_aneura |      1045 |             3 |              40 |                              NA |         NA |                   NA |
+| acacia_aneura |      1046 |             4 |              40 |                              NA |         NA |                   NA |
+| acacia_aneura |      1043 |             1 |              45 |                              NA |         NA |                   NA |
+| acacia_aneura |      1044 |             2 |              45 |                              NA |         NA |                   NA |
+| acacia_aneura |      1045 |             3 |              45 |                              NA |         NA |                   NA |
+| acacia_aneura |      1046 |             4 |              45 |                              NA |         NA |                   NA |
+| acacia_aneura |      1043 |             1 |              50 |                              NA |         NA |                   NA |
+| acacia_aneura |      1044 |             2 |              50 |                              NA |         NA |                   NA |
+| acacia_aneura |      1045 |             3 |              50 |                              NA |         NA |                   NA |
+| acacia_aneura |      1046 |             4 |              50 |                              NA |         NA |                   NA |
+| acacia_aneura |      1043 |             1 |              55 |                              NA |         NA |                   NA |
+| acacia_aneura |      1044 |             2 |              55 |                              NA |         NA |                   NA |
+| acacia_aneura |      1045 |             3 |              55 |                              NA |         NA |                   NA |
+| acacia_aneura |      1046 |             4 |              55 |                              NA |         NA |                   NA |
+
+### Visualize residual conductance
