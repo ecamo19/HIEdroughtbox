@@ -7,14 +7,15 @@
 read_hie_droughtbox_data(path_droughtbox_data)
 }
 \arguments{
-\item{path_droughtbox_data}{String indicating the location of the .dat file in your computer}
+\item{path_droughtbox_data}{String indicating the location of the .dat file
+in your computer.}
 }
 \value{
-A dataframe with 25 columns
+A dataframe with 25 columns.
 }
 \description{
 This function reads the raw .dat file downloaded from the droughtbox located
-at the Hawkesbury Institute for the Environment
+at the Hawkesbury Institute for the Environment.
 }
 \examples{
 path_to_droughtbox_data <- system.file("extdata",

@@ -11,7 +11,7 @@ read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
 the CSV file in your computer.}
 }
 \value{
-A dataframe
+A dataframe.
 }
 \description{
 This function reads CSV files containing information about the leaf and/or
@@ -40,10 +40,11 @@ leaves attached. If not provided, the total surface_branch_area can be
 approximated using the formula A = pi*radius*(length + radius), assuming that
 the branch has a cone shape.
 
-branch_basal_diameter_mm: Float in millimeters indicating the basal diameter of
-the sample.
+branch_basal_diameter_mm: Float in millimeters indicating the basal diameter
+of the sample.
 
-branch_length_cm: Float in centimeters indicating the total length of the sample.
+branch_length_cm: Float in centimeters indicating the total length of the
+sample.
 }
 \examples{
 path_droughtbox_leaf_branch_areas <- system.file("extdata",

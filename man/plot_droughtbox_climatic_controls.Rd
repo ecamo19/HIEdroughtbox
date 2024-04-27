@@ -11,15 +11,16 @@ plot_droughtbox_climatic_controls(droughtbox_data, cowplot = TRUE)
 `read_hie_droughtbox_data`}
 
 \item{cowplot}{Boolean indicating if plots should be arranged in one single
-figure with 2 columns and 3 rows (TRUE) or if should be arranged individually}
+figure with 2 columns and 3 rows (TRUE) or if should be arranged
+individually.}
 }
 \value{
-A ggplot2 object with a total of 5 figures
+A ggplot2 object with a total of 5 figures.
 }
 \description{
 This function plots the change across time of the climatic controls specified
 by the user (shown in red) and the climatic controls measured inside of the
-Droughtbox
+Droughtbox.
 }
 \examples{
 path_to_droughtbox_data <- system.file("extdata",

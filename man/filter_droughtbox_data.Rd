@@ -14,28 +14,28 @@ filter_droughtbox_data(
 }
 \arguments{
 \item{droughtbox_data}{Dataframe loaded with the function
-`read_hie_droughtbox_data`}
+`read_hie_droughtbox_data`.}
 
 \item{from_start_date}{String indicating the initial Year, Month and Day to
-filter in the dataset. It must have a YYYY-MM-DD format}
+filter in the dataset. It must have a YYYY-MM-DD format.}
 
 \item{to_end_date}{String indicating the final Year, Month and Day to filter
-in the dataset. It must have a YYYY-MM-DD format}
+in the dataset. It must have a YYYY-MM-DD format.}
 
-\item{from_start_time}{String indicating the initial hour, minutes and seconds
-to filter in the dataset. It must have a HH:MM:SS format}
+\item{from_start_time}{String indicating the initial hour, minutes and
+seconds to filter in the dataset. It must have a HH:MM:SS format.}
 
 \item{to_end_time}{String indicating the final hour, minutes and seconds
-to filter in the dataset. It must have a HH:MM:SS format}
+to filter in the dataset. It must have a HH:MM:SS format.}
 }
 \value{
-Dataframe with the selected dates and times
+Dataframe with the selected dates and times.
 }
 \description{
 This function is meant to be used to removed chunks of data that is collected
 when the droughtbox has not reach the climatic conditions desired.
 
-This functions does not remove individual observations
+This functions does not remove individual observations.
 }
 \examples{
 path_to_droughtbox_data <- system.file("extdata",

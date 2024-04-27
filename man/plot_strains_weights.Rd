@@ -12,11 +12,12 @@ plot_strains_weights(
 )
 }
 \arguments{
-\item{droughtbox_data}{Dataframe loaded with the function
+\item{droughtbox_data}{Dataframe loaded with the function.
 `read_hie_droughtbox_data`}
 
 \item{show_strain}{String (i.e. "strain_1") or vector of strings
-(c("strain_2", "strain_3")) indicating which strain to plot. Default is "all"}
+(c("strain_2", "strain_3")) indicating which strain to plot.
+Default is "all".}
 
 \item{show_tare_group}{Boolean (TRUE/FALSE) indicating if data should
 be shown as points or as labels with the tare_count to which they
@@ -24,14 +25,15 @@ belong to.}
 
 \item{time_breaks}{String indicating the resolution at which the x-axis
 should show the tick marks. Choose one of "sec", "min", "hour", "day",
-"week", "month", "year"}
+"week", "month", "year".}
 }
 \value{
 A ggplot2 object with the weight (grams) measured by each strain (4 in
-total) inside the Droughtbox
+total) inside the Droughtbox.
 }
 \description{
-This function displays the raw weights (grams) measured inside the Droughtbox
+This function displays the raw weights (grams) measured inside the
+Droughtbox.
 }
 \examples{
 path_to_droughtbox_data <- system.file("extdata",

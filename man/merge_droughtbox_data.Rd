@@ -7,10 +7,10 @@
 merge_droughtbox_data(...)
 }
 \arguments{
-\item{...}{n number of objects of class data.frame}
+\item{...}{n number of objects of class data.frame.}
 }
 \value{
-A single data.frame object
+A single data.frame object.
 }
 \description{
 This function is meant to be used as the last step previously to calculate

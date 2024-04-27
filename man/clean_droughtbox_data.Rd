@@ -18,16 +18,16 @@ clean_droughtbox_data(
 need to be removed at the beginning each tare_count group.}
 
 \item{threshold}{Float indicating the threshold at which values should be
-removed}
+removed.}
 }
 \value{
-A dataset
+A dataset.
 }
 \description{
 This function removes wrong data points that are produced by the Droughtbox
 after each taring process. First it removes values lower than a `threshold`,
 (which is in grams) and then it removes the first and last values of each
-tare_count
+tare_count.
 
 The function `plot_raw_strains_weights` can be used to visualize the data
 points might need to be removed.
