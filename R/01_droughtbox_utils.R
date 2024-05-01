@@ -1,0 +1,743 @@
+
+#' clean_droughtbox_colnames
+#'
+#' @description
+#' This is an internal function meant to be used inside the
+#' `clean_droughtbox_data` function.
+#'
+#' First it merges the the first two rows (which contain the units and the data
+#' type of each column) of the .dat file. and then merges those merged rows with
+#' each colname.
+#'
+#' The .dat file is downloaded from the the droughtbox.
+#'
+#' The pattern of the new colname is varname_unit_data_type. For example
+#' "air_tc_avg_deg_c_avg" the varname is air_tc_avg, the unit is deg_c and the
+#' data_type is avg.
+#'
+#' Some colnames don`t have a units or data type. For example tare_count_sm,
+#' where the varname is tare_count and the data_type is sm.
+#'
+#' @param path_droughtbox_data String indicating the location of the .dat file
+#' in your computer.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return Vector of strings with a length 30 elements.
+#'
+#' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' clean_droughtbox_colnames(path_to_droughtbox_data)
+#'
+#' @noRd
+#'
+#' @keywords internal
+clean_droughtbox_colnames <- function(path_droughtbox_data){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Check that file exists and is not a folder
+    base::stopifnot(".dat file not found" = file.exists(path_droughtbox_data ) && !dir.exists(path_droughtbox_data ))
+
+    # Check is a .dat file
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
+
+    # Clean colnames -----------------------------------------------------------
+
+    clean_colnames <-
+
+        # Read data
+        utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
+                      sep = ",") %>%
+
+        janitor::clean_names() %>%
+
+        dplyr::filter(dplyr::row_number() %in% c(1, 2)) %>%
+
+        # Merge all rows with units with data-type (i.e. Avg, min)
+        dplyr::summarise(dplyr::across(tidyselect::where(is.character),
+                                   stringr::str_c, collapse = "_")) %>%
+
+        # Get the first row
+        dplyr::filter(dplyr::row_number() == 1) %>%
+
+        # Combine colnames with the first row
+        stringr::str_c(base::colnames(.), ., sep = "-") %>%
+
+        # Remove uppercase letters
+        stringr::str_to_lower(.) %>%
+
+        # Replace -_, spaces, - and / with a underscore
+        mgsub::mgsub(., c("-_", " ", "-", "/"), c("_", "_", "_", "_")) %>%
+
+        # Remove names ending with a underscore
+        stringr::str_remove(., "\\_\\d?$")
+
+    return(clean_colnames)
+}
+
+#' read_hie_droughtbox_data
+#'
+#' @description
+#' This function reads the raw .dat file downloaded from the droughtbox located
+#' at the Hawkesbury Institute for the Environment.
+#'
+#' @param path_droughtbox_data String indicating the location of the .dat file
+#' in your computer.
+#'
+#' @return A dataframe with 25 columns.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' read_hie_droughtbox_data(path_to_droughtbox_data)
+#'
+#' @export
+read_hie_droughtbox_data <- function(path_droughtbox_data ){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Check that file exists and is not a folder
+    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data ) && !base::dir.exists(path_droughtbox_data))
+
+    # Check is a .dat file
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
+
+    # Check that first cell in .dat file is TOA5
+    base::stopifnot("File not recognized. Check example files located in the data folder of the github package" =  "TOA5" %in% utils::read.table(path_droughtbox_data, nrows = 1, )[1,1])
+
+    # Read data ----------------------------------------------------------------
+
+    dat_file <-
+
+        utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
+                      sep = ",") %>%
+
+        # Substitute the old names with a clean ones
+        magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data )) %>%
+
+        # Remove rows with units and comments
+        dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
+
+        # Change colnames to lowercase
+        janitor::clean_names() %>%
+
+        # separate timestamp column into date and time
+        tidyr::separate(timestamp_ts, c("date", "time"), sep = " ") %>%
+
+        # Convert columns to the right format
+        dplyr::mutate(date = lubridate::as_date(lubridate::ymd(date)),
+                      time = hms::as_hms(time),
+                      tare_count_smp = base::factor(tare_count_smp)) %>%
+
+        # Convert character columns to numeric
+        dplyr::mutate(dplyr::across(dplyr::where(is.character), as.numeric)) %>%
+
+        # Join date and time and create new column
+        dplyr::mutate(date_time = lubridate::ymd_hms(paste(date, time))) %>%
+
+        # Set date_column as the first column in the dataframe
+        dplyr::select(tare_count_smp, date_time, dplyr::everything()) %>%
+
+        # Remove not used variables
+        dplyr::select(-c(record_rn, p_output_avg_avg, d_output_avg_avg,
+                         i_avg_avg, batt_v_min_volts_min, i_output_avg_avg,
+                         duty_cycle_avg_avg,
+
+                         # Volt columns
+                         vr1000_avg_1_mv_v_avg, vr1000_avg_2_mv_v_avg,
+                         vr1000_avg_3_mv_v_avg,vr1000_avg_4_mv_v_avg,
+
+                         # Hook temperature columns
+                         t_sg_avg_1_avg, t_sg_avg_2_avg,
+                         t_sg_avg_3_avg, t_sg_avg_4_avg))
+
+    return(base::data.frame(dat_file))
+}
+
+#' create_empty_droughtbox_leaf_branch_areas_sheet
+#'
+#' @description
+#' This function generates a CSV files filled with NA'S with the required
+#' columns for recording the leaf and branch area data necessary to estimate
+#' gmin or gres.
+#'
+#' @param save_empty_df_at String indicating the path where the empty datasheet
+#' for recording the leaf and branch areas should be saved.
+#'
+#' @return Empty dataframe filled with NAs.
+#'
+#' @examples
+#' \dontrun{create_empty_droughtbox_leaf_branch_areas_sheet("path/to/folder")}
+#'
+#' @export
+create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = NULL){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Create path to the current working directory in case not provided
+    if (is.null(save_empty_df_at)) {
+        path_output_file <- paste0(getwd(),
+                                   '/empty_droughtbox_leaf_branch_areas_sheet.csv')
+    }
+    else {
+
+        # Create path where the output file will be saved in case is provided
+        path_output_file <- paste0(save_empty_df_at,
+                                   '/empty_droughtbox_leaf_branch_areas_sheet.csv')
+    }
+
+    # Assert that path_output_file does NOT contain "//"
+    if (stringr::str_detect(string = path_output_file,
+                            pattern = "//")) {
+        print(path_output_file)
+        stop('// detetected in PATH. PATH should be "path/to" NOT "path/to/"')
+    }
+
+    # Check if a path is suited for creating an output file
+    checkmate::assert_path_for_output(path_output_file)
+
+    # Create empty dataframe ---------------------------------------------------
+
+    empty_sheet <-
+        tidyr::tibble(
+
+            # Columns identifying each sample
+            species_name = NA,
+            sample_id = NA,
+            strain_number = rep(seq(from = 1, to = 4), 7),
+            set_temperature = as.integer(rep(seq(from = 25, to = 55, by = 5), 4)),
+
+            # Columns to calculate the surface_branch_area_cm2
+            branch_basal_diameter_mm = NA,
+            branch_length_cm = NA,
+
+            # Columns with information about the areas
+            leaf_area_cm2 = NA,
+            surface_branch_area_cm2 = NA,
+            notes = NA) %>%
+
+            # Arrange rows in dataframe
+            dplyr::arrange(., set_temperature, strain_number) %>%
+
+            # Print message indicating where the file will be saved
+            {print(paste0("Empty CSV saved at: ",
+
+                      # Print working directory where csv will be saved
+                      path_output_file)); .}
+
+    # Save Empty dataframe
+    utils::write.csv(empty_sheet, file = path_output_file)
+}
+
+#' read_hie_droughtbox_leaf_branch_areas
+#'
+#' @description
+#' This function reads CSV files containing information about the leaf and/or
+#' branch area of the samples measured in the droughtbox.
+#'
+#' To create a datasheet with the required information, run the
+#' function `create_empty_droughtbox_leaf_branch_areas_sheet('path/to/folder')`.
+#' with the path to the folder where the datasheet should be saved.
+#'
+#' The CSV file MUST contain the following columns:
+#'
+#' set_temperature: Integer indicating the temperature at which gmin/gres was
+#' measured.
+#'
+#' strain_number: Integer indicating in which of the four hooks the the sample
+#' was positioned.
+#'
+#' leaf_area: Float in cm2 with the total leaf area of the sample.
+#'
+#' The following columns are optional:
+#'
+#' tree_id: String with an unique code identifying each sample.
+#'
+#' surface_branch_area: Float in cm2 with the area of the branch without any
+#' leaves attached. If not provided, the total surface_branch_area can be
+#' approximated using the formula A = pi*radius*(length + radius), assuming that
+#' the branch has a cone shape.
+#'
+#' branch_basal_diameter_mm: Float in millimeters indicating the basal diameter
+#' of the sample.
+#'
+#' branch_length_cm: Float in centimeters indicating the total length of the
+#' sample.
+#'
+#' @param path_droughtbox_leaf_branch_areas String indicating the location of
+#' the CSV file in your computer.
+#'
+#' @return A dataframe.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @examples
+#' path_droughtbox_leaf_branch_areas <- system.file("extdata",
+#'                                                 "acacia_aneura_leaf_branch_areas.csv",
+#'                                                 package = "HIEdroughtbox")
+#'
+#' read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
+#'
+#' @export
+read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_areas){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Check file is a csv
+    checkmate::assert_file_exists(path_droughtbox_leaf_branch_areas,
+                                  extension = "csv")
+
+    # Read data
+    data_leaf_branch_area <-
+
+        utils::read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
+                 na.strings = NA) %>%
+
+            # Remove notes column
+            dplyr::select(-notes)
+
+        # Remove rows that have NA's in the important variables?
+        # Implement if necessary
+
+    # Check that dataframe has the correct columns
+    base::stopifnot("Missing columns in the dataframe" =  c("sample_id",
+                                                            "set_temperature",
+                                                            "strain_number",
+                                                            "leaf_area_cm2"
+                                                            ) %in% base::colnames(data_leaf_branch_area))
+
+    # Stop if branch_basal_diameter_mm, branch_length_cm and are all provided
+    if (all(c("branch_basal_diameter_mm",
+              "branch_length_cm",
+              "surface_branch_area_cm2"
+              ) %in% colnames(data_leaf_branch_area)) == TRUE){
+
+        stop("Only provide branch_length_cm and branch_basal_diameter_mm columns OR just the surface_branch_area_cm2")
+    }
+
+    # Check if the columns have any NA's
+    variables_with_all_na <- sapply(data_leaf_branch_area, function(x) any(is.na(x)))
+
+    # Prepare data for calculating gmin/gres -----------------------------------
+
+    if ("branch_length_cm" %in% names(variables_with_all_na) &
+        "branch_basal_diameter_mm" %in% names(variables_with_all_na)) {
+
+        # Approximate surface_branch_area_cm2 using branch_basal_diameter_mm and
+        # branch_length_cm
+        if (variables_with_all_na["branch_basal_diameter_mm"] == FALSE &
+            variables_with_all_na["branch_length_cm"] == FALSE) {
+
+            leaf_branch_area_data <-
+                data_leaf_branch_area %>%
+
+                    # Print message about branch_basal_diameter_mm being transformed and
+                    # then divided by two to get the radius in cm
+                    {print("branch_basal_diameter_mm converted to cm and divided by two to get the radius"); .} %>%
+                    dplyr::mutate(branch_basal_radius_cm = (branch_basal_diameter_mm*0.1)/2,
+                                .keep = "unused")  %>%
+
+                    # Calculate surface_branch_area as the cone
+                    {print("surface_branch_area_cm2 aproximated using pi*radius*(length + radius) formula"); .} %>%
+                    dplyr::mutate(surface_branch_area_cm2 = pi*branch_basal_radius_cm*(branch_length_cm + branch_basal_radius_cm),
+                                .keep = "unused")
+
+            return(base::data.frame(leaf_branch_area_data))}
+    }
+
+    # Select necessary columns if surface_branch_area_cm2 is provided
+    else if("surface_branch_area_cm2" %in% names(variables_with_all_na) &
+            variables_with_all_na["surface_branch_area_cm2"] == FALSE){
+
+        leaf_branch_area_data <-
+
+            data_leaf_branch_area %>%
+
+                dplyr::select(species_name, sample_id, strain_number,
+                              set_temperature,
+
+                              # Areas
+                              leaf_area_cm2, surface_branch_area_cm2)
+
+        return(base::data.frame(leaf_branch_area_data))
+        }
+
+    # Stop if some unknown condition is met
+    else{
+        stop("Failed to read leaf and branch areas csv. Remember that branch_basal_diameter_mm, branch_length_cm or surface_branch_area_cm2 shouldn't conatin ANY NAs ")
+    }
+}
+
+#' filter_droughtbox_data
+#'
+#' @description
+#' This function is meant to be used to removed chunks of data that is collected
+#' when the droughtbox has not reach the climatic conditions desired.
+#'
+#' This functions does not remove individual observations.
+#'
+#' @param droughtbox_data Dataframe loaded with the function
+#' `read_hie_droughtbox_data`.
+#'
+#' @param from_start_date String indicating the initial Year, Month and Day to
+#' filter in the dataset. It must have a YYYY-MM-DD format.
+#'
+#' @param to_end_date String indicating the final Year, Month and Day to filter
+#' in the dataset. It must have a YYYY-MM-DD format.
+#'
+#' @param from_start_time String indicating the initial hour, minutes and
+#' seconds to filter in the dataset. It must have a HH:MM:SS format.
+#'
+#' @param to_end_time String indicating the final hour, minutes and seconds
+#' to filter in the dataset. It must have a HH:MM:SS format.
+#'
+#' @return Dataframe with the selected dates and times.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#'
+#' filter_droughtbox_data(droughtbox_data,
+#'                             from_start_date = "2024/03/04",
+#'                             to_end_date = "2024/03/04",
+#'                             from_start_time = NULL,
+#'                             to_end_time = NULL)
+#'
+#' filter_droughtbox_data(droughtbox_data,
+#'                             from_start_date = "2024/03/04",
+#'                             to_end_date = "2024/03/04",
+#'                             from_start_time = "12:51:00",
+#'                             to_end_time = "12:52:00")
+#'
+#' filter_droughtbox_data(droughtbox_data,
+#'                             from_start_date = NULL,
+#'                             to_end_date = NULL,
+#'                             from_start_time = "12:51:00",
+#'                             to_end_time = "12:52:00")
+#'
+#' @export
+filter_droughtbox_data <- function(droughtbox_data,
+                                   from_start_date = NULL,
+                                   to_end_date = NULL,
+                                   from_start_time = NULL,
+                                   to_end_time = NULL){
+
+    print(crayon::cyan("Times must have a HH:MM:SS format i.e. 13:53:00"))
+    print(crayon::cyan("Dates must have a YYYY-MM-DD format i.e. 1991-10-19"))
+
+    # Validate input parameters ------------------------------------------------
+
+    # Stop if all parameters are NULL
+    if (all(is.null(from_start_date) & is.null(to_end_date) &
+            is.null(from_start_time) & is.null(to_end_time))) {
+
+        stop("from_start_date and to_end_date or from_start_time and to_end_time must be specified.")
+    }
+
+    # Stop if one of the times is not specified
+    if (is.null(from_start_date) & is.null(to_end_date)) {
+
+        if (any(is.null(from_start_time) | is.null(to_end_time))){
+            stop("from_start_time and to_end_time must be both specified or set both to NULL. Time parameters must have a HH:MM:SS format i.e. 13:53:00")
+        }
+    }
+
+    # Stop if one of the dates is not specified
+    if (is.null(from_start_time) & is.null(to_end_time)) {
+
+        if (any(is.null(from_start_date) | is.null(to_end_date))){
+            stop("from_start_date and to_end_date must be both specified or set both to NULL. Date parameters must have a YYYY-MM-DD format i.e. 1991-10-19")
+        }
+    }
+
+    # Stop if time parameters are NA
+    if (!is.null(from_start_time) & !is.null(to_end_time)){
+
+        if (is.na(hms::parse_hms(from_start_time)) | is.na(hms::parse_hms(to_end_time))) {
+            stop("from_start_time or to_end_time are not in the correct format. Make sure the format is in 24h HH:MM:SS i.e. 13:53:00")
+        }
+    }
+
+    # Stop if date parameters are NA
+    if (all(!is.null(from_start_date) & !is.null(to_end_date))){
+
+        if (is.na(lubridate::ymd(from_start_date)) | is.na(lubridate::ymd(to_end_date))) {
+            stop("from_start_date or to_end_date are not in the correct format. Make sure the format is YYYY-MM-DD i.e. 1991-10-19")
+        }
+    }
+
+    # Stop of droughtbox_data is not a data frame
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Assert date column in droughtbox_data
+    checkmate::assert_date(droughtbox_data$date)
+
+    # Assert time column in droughtbox_data
+    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+
+    # Filter data --------------------------------------------------------------
+
+    # Filter based on date parameters
+    if (!is.null(c(from_start_date,to_end_date)) & is.null(c(from_start_time,to_end_time))){
+
+        print(crayon::cyan(paste0("Filtering data by date from: ",
+                                  from_start_date, " to: ", to_end_date)))
+
+        # Convert parameters to the right format
+        from_start_date <- lubridate::ymd(from_start_date )
+        to_end_date <- lubridate::ymd(to_end_date)
+
+        # Filter data
+        filtered_data <-
+
+            droughtbox_data %>%
+                dplyr::filter(date %in% (from_start_date:to_end_date))
+
+        return(base::data.frame(filtered_data))
+
+    # Filter based on time parameters
+    } else if(is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
+
+        print(crayon::cyan(paste0("Filtering data by hour from: ",
+                                  from_start_time, " to: ", to_end_time)))
+
+        # Convert parameters to the right format
+        from_start_time  <- hms::parse_hms(from_start_time)
+        to_end_time <- hms::parse_hms(to_end_time)
+
+        # Filter data
+        filtered_data <-
+
+            droughtbox_data %>%
+                dplyr::filter(time %in% (from_start_time:to_end_time))
+
+        return(base::data.frame(filtered_data))
+
+
+    # Filter based on date and time parameters
+    } else if(!is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
+
+        print(crayon::cyan(paste0("Filtering data by hour and date from: ", from_start_date,
+                                  " to: ", to_end_date)))
+
+        # Join parameters
+        from_start <- lubridate::ymd_hms(paste(from_start_date,from_start_time))
+
+        to_end <- lubridate::ymd_hms(paste(to_end_date,to_end_time))
+
+        # Filter data
+        filtered_data <-
+
+            droughtbox_data %>%
+                dplyr::filter(date_time %in% (from_start:to_end))
+
+        return(base::data.frame(filtered_data))
+
+    } else{
+
+        # Break the code if some unknown condition is found
+        stop('Filtering in filter_droughtbox_data function failed')}
+}
+
+#' clean_droughtbox_data
+#'
+#' @description
+#' This function removes wrong data points that are produced by the Droughtbox
+#' after each taring process. First it removes values lower than a `threshold`,
+#' (which is in grams) and then it removes the first and last values of each
+#' tare_count.
+#'
+#' The function `plot_raw_strains_weights` can be used to visualize the data
+#' points might need to be removed.
+#'
+#' @param droughtbox_data Dataframe loaded with the function.
+#' `read_hie_droughtbox_data`
+#'
+#' @param remove_n_observations Integer indicating the number of values that
+#' need to be removed at the beginning each tare_count group.
+#'
+#' @param threshold Float indicating the threshold at which values should be
+#' removed.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A dataset.
+#'
+#' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#'
+#' # Remove tare_counts without enough measurements
+#' droughtbox_data <- droughtbox_data |> dplyr::filter(!tare_count_smp %in% c("13","14","28"))
+#'
+#' # Clean data
+#' clean_droughtbox_data(droughtbox_data, remove_n_observations = 6)
+#'
+#' @export
+clean_droughtbox_data <- function(droughtbox_data,
+                                  remove_n_observations = 5,
+                                  threshold = 0.2){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Stop of droughtbox_data is not a data frame
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Make sure that the data is in the dataframe
+    base::stopifnot("Missing columns in the dataframe" =  c("strain_avg_1_microstrain_avg",
+                                                            "strain_avg_2_microstrain_avg",
+                                                            "strain_avg_3_microstrain_avg",
+                                                            "strain_avg_4_microstrain_avg",
+
+                                                            "tare_count_smp"
+                                                            ) %in% base::colnames(droughtbox_data))
+
+    # Make sure remove_n_observations is an integer
+    checkmate::assert_int(remove_n_observations)
+
+    # Check if each tare_group has enough measurements
+    number_measurements_in_each_tare_group <-
+
+        # Count the number of measurements in each tare
+        droughtbox_data %>% dplyr::count(tare_count_smp) %>%
+
+        # Label if tare count has enough data points to remove.
+        # For example if the user wants to remove the first and last minute of
+        # observations of each tare, the group should contain at least 13
+        # measurements to return one value.
+        dplyr::mutate(enough_observations =  dplyr::if_else(n > ((2*{{remove_n_observations}}) + 1),
+                                                   TRUE, FALSE)) %>%
+
+        # Get the tares that don't have enough measurements
+        dplyr::filter(enough_observations == FALSE)
+
+        # Stop if any FALSE is found
+        if (nrow(number_measurements_in_each_tare_group) > 0) {
+
+            print("tare_count group with not enough meaureaments found!")
+            print(number_measurements_in_each_tare_group)
+            print("Consider removing the tares or reduce the number of observations to be removed")
+
+            # Remove object
+            rm(number_measurements_in_each_tare_group)
+            stop("tare_count group don't have enough meaureaments")
+        }
+
+    # Clean data ---------------------------------------------------------------
+    cleaned_data <-
+
+        droughtbox_data %>%
+
+            # Remove values equal or lower than threshold across strain_avg vars
+            dplyr::filter_at(dplyr::vars(dplyr::starts_with('strain_avg')),
+
+                             # Remove values
+                             dplyr::any_vars(. >= {{threshold}})) %>%
+
+            # Identify the firsts and lasts values of each group (tare_count)
+            dplyr::group_by(tare_count_smp) %>%
+
+            # Remove the first 5 measurements at the beginning of each
+            # tare_count and then return the next 5 observations.
+            # For example, if a dataframe has 13 measurements and
+            # remove_n_observations is equal to 5, then only the observations
+            # 6,7,8,9 and 10 will be returned.
+            dplyr::slice(({{remove_n_observations}} + 1):({{remove_n_observations}} + 5)) %>%
+
+            # Print the total number of rows filtered
+            {print(paste0("Total number of rows removed: ",
+
+                      # Subtract the total minus the filtered
+                      base::nrow(droughtbox_data) - base::nrow(.))); .}
+
+    return(base::data.frame(cleaned_data))
+
+}
+
+#' merge_droughtbox_data
+#'
+#' @description
+#' This function is meant to be used as the last step previously to calculate
+#' the residual conductace. It takes any number of prevously cleaned .dat files
+#' and merge them into a single data frame.
+#'
+#' @param ... n number of objects of class data.frame.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A single data.frame object.
+#'
+#' @examples
+#' \dontrun{merge_droughtbox_data(clean_data_1, clean_data_2, clean_data_n)}
+#'
+#' @export
+merge_droughtbox_data <- function(...){
+
+    # Store in a list all the objects passed in function parameters
+    list_with_dataframes <- base::list(...)
+
+    # Validate input parameters ------------------------------------------------
+
+    # Stop if only one object is specified
+    if (base::length(list_with_dataframes) <= 1 ) {
+        base::stop("At least two dataframes should specified i.e. merge_droughtbox_data(clean_data_1, clean_data_2)")
+    }
+
+    # Stop if elements in the list are not dataframes
+
+    # Get the class of each element in the list
+    vector_with_classes <- c(purrr::map_chr(list_with_dataframes, class))
+
+    # if not all are equal to data.frame then stop
+    if (!all(vector_with_classes == "data.frame")) {
+
+        # Print the classes found
+        base::print(paste0('Object with class ', vector_with_classes, ' found'))
+
+        # stop
+        base::stop("All input dataframes should be of class data.frame")
+    }
+
+    # Stop if elements in the list have different number of columns
+
+    # Get the number of columns of each element in the list
+    vector_with_ncol <- purrr::map_dbl(list_with_dataframes, ncol)
+
+    # if not all are equal to data.frame then stop
+    if (length(unique(vector_with_ncol)) > 1) {
+
+        # Print the number of columns of each data frame
+        base::print(paste0('Dataframe with ', vector_with_ncol, ' columns found'))
+
+        # stop
+        base::stop("All input dataframes should have the same number of columns")
+    }
+
+    # Merge n number of objects given ------------------------------------------
+
+    merged_droughtbox_data <-
+
+        list_with_dataframes %>%
+
+        # Merge data
+        # reduce(left_join, by = "i")
+        purrr::reduce(dplyr::full_join)
+
+    return(merged_droughtbox_data)
+}

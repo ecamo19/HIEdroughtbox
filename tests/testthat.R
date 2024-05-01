@@ -8,5 +8,4 @@
 
 library(testthat)
 library(HIEdroughtbox)
-
 test_check("HIEdroughtbox")
