@@ -42,7 +42,7 @@ path_to_droughtbox_data <- system.file("extdata",
                             "acacia_aneura_25c.dat",
                             package = "HIEdroughtbox")
 
-droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 
 filter_droughtbox_data(droughtbox_data,
                             from_start_date = "2024/03/04",

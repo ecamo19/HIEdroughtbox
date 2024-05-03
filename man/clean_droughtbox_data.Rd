@@ -12,7 +12,7 @@ clean_droughtbox_data(
 }
 \arguments{
 \item{droughtbox_data}{Dataframe loaded with the function.
-`read_hie_droughtbox_data`}
+`read_hie_droughtbox_data_file`}
 
 \item{remove_n_observations}{Integer indicating the number of values that
 need to be removed at the beginning each tare_count group.}
@@ -37,7 +37,7 @@ path_to_droughtbox_data <- system.file("extdata",
                             "acacia_aneura_25c.dat",
                             package = "HIEdroughtbox")
 
-droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 
 # Remove tare_counts without enough measurements
 droughtbox_data <- droughtbox_data |> dplyr::filter(!tare_count_smp \%in\% c("13","14","28"))
