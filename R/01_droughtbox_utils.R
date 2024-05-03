@@ -18,39 +18,39 @@
 #' Some colnames don`t have a units or data type. For example tare_count_sm,
 #' where the varname is tare_count and the data_type is sm.
 #'
-#' @param path_droughtbox_data String indicating the location of the .dat file
-#' in your computer.
+#' @param path_droughtbox_data_file String indicating the location of the .dat
+#' file in your computer.
 #'
 #' @importFrom magrittr %>%
 #'
 #' @return Vector of strings with a length 30 elements.
 #'
 #' @examples
-#' path_to_droughtbox_data <- system.file("extdata",
-#'                             "acacia_aneura_25c.dat",
-#'                             package = "HIEdroughtbox")
+#' path_to_droughtbox_data_file <- system.file("extdata",
+#'                                            "acacia_aneura_25c.dat",
+#'                                             package = "HIEdroughtbox")
 #'
-#' clean_droughtbox_colnames(path_to_droughtbox_data)
+#' clean_droughtbox_colnames(path_to_droughtbox_data_file)
 #'
 #' @noRd
 #'
 #' @keywords internal
-clean_droughtbox_colnames <- function(path_droughtbox_data){
+clean_droughtbox_colnames <- function(path_droughtbox_data_file){
 
     # Validate input parameters ------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot(".dat file not found" = file.exists(path_droughtbox_data ) && !dir.exists(path_droughtbox_data ))
+    base::stopifnot(".dat file not found" = file.exists(path_droughtbox_data_file ) && !dir.exists(path_droughtbox_data_file ))
 
     # Check is a .dat file
-    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
+    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data_file ) == 'dat' )
 
     # Clean colnames -----------------------------------------------------------
 
     clean_colnames <-
 
         # Read data
-        utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
+        utils::read.table(path_droughtbox_data_file, header = TRUE, skip = 1,
                       sep = ",") %>%
 
         janitor::clean_names() %>%
@@ -105,13 +105,13 @@ read_hie_droughtbox_data_file <- function(path_droughtbox_data_file ){
     # Validate input parameters ------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data_file ) && !base::dir.exists(path_droughtbox_data))
+    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data_file ) && !base::dir.exists(path_droughtbox_data_file))
 
     # Check is a .dat file
     base::stopifnot("Input must be a .dat file" = tools::file_ext(path_droughtbox_data_file ) == 'dat' )
 
     # Check that first cell in .dat file is TOA5
-    base::stopifnot("File not recognized. Check example files located in the data folder of the github package" =  "TOA5" %in% utils::read.table(path_droughtbox_data, nrows = 1, )[1,1])
+    base::stopifnot("File not recognized. Check example files located in the data folder of the github package" =  "TOA5" %in% utils::read.table(path_droughtbox_data_file, nrows = 1, )[1,1])
 
     # Read data ----------------------------------------------------------------
 

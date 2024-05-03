@@ -12,16 +12,16 @@ test_that("Return object of length 30 for clean_droughtbox_colnames", {
                  30)
 })
 
-# Tests for read_hie_droughtbox_data() -----------------------------------------
+# Tests for read_hie_droughtbox_data_file() -----------------------------------------
 test_that("Return object of type data.frame", {
-    expect_equal(class(read_hie_droughtbox_data("assets/droughtbox_output.dat")),
+    expect_equal(class(read_hie_droughtbox_data_file("assets/droughtbox_output.dat")),
 
                  # class expected
                  "data.frame")
 })
 
 test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
-    expect_equal(length(read_hie_droughtbox_data("assets/droughtbox_output.dat")),
+    expect_equal(length(read_hie_droughtbox_data_file("assets/droughtbox_output.dat")),
 
                  # Number of columns expected
                  17)
@@ -66,7 +66,7 @@ test_that("Return columns with no NAs when branch diameter and lenght are NOT pr
 })
 
 # Tests for filter_droughtbox_data() -------------------------------------------
-test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
+test_data <- read_hie_droughtbox_data_file("assets/droughtbox_output.dat")
 
 test_that("Return an error when all parameters are set to NULL",{
     expect_error(filter_droughtbox_data(droughtbox_data = test_data,
@@ -160,7 +160,7 @@ test_that("Return 2 rows out of 796",{
 # to_end_date = "2024/03/")
 
 # Test for clean_droughtbox_data() ---------------------------------------------
-test_data <- read_hie_droughtbox_data("assets/droughtbox_output.dat")
+test_data <- read_hie_droughtbox_data_file("assets/droughtbox_output.dat")
 
 test_that("Return 5 row from a dataset with 13 rows",{
     expect_equal(nrow(clean_droughtbox_data(test_data[11:23,],
@@ -208,16 +208,16 @@ test_that("Return error when tare groups don't have enough tares",{
 
 test_that("Return error when only a dataframe is specified",{
 
-    test_data_1 <- read_hie_droughtbox_data('assets//acacia_aneura_25c.dat')
+    test_data_1 <- read_hie_droughtbox_data_file('assets//acacia_aneura_25c.dat')
 
     expect_error(merge_droughtbox_data(test_data_1))
 })
 
 test_that("Return dataframe with 16 rows",{
 
-    test_data_1 <- read_hie_droughtbox_data('assets//acacia_aneura_25c.dat')
+    test_data_1 <- read_hie_droughtbox_data_file('assets//acacia_aneura_25c.dat')
 
-    test_data_2 <- read_hie_droughtbox_data('assets//acacia_aneura_30c.dat')
+    test_data_2 <- read_hie_droughtbox_data_file('assets//acacia_aneura_30c.dat')
 
     expect_equal(nrow(merge_droughtbox_data(test_data_1[1:3,],
                                             test_data_2[1:3,],
