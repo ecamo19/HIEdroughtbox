@@ -185,7 +185,7 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
     # If path ends with /
     if (grepl("/$", path_droughtbox_data_folder)) {
 
-        # Remove the /
+        # Remove the / at the end
         path_droughtbox_data_folder <-  stringr::str_sub(path_droughtbox_data_folder,
                                                          end = -2)}
     else {
@@ -225,7 +225,6 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
 
         # Print message indicating the total number of files read
         {print(paste0("Reading: ", .)); .} %>%
-
 
         # Set the name for each dataframe in the list
         purrr::set_names(., file_names) %>%
