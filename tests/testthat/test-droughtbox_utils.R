@@ -12,7 +12,7 @@ test_that("Return object of length 30 for clean_droughtbox_colnames", {
                  30)
 })
 
-# Tests for read_hie_droughtbox_data_file() -----------------------------------------
+# Tests for read_hie_droughtbox_data_file() ------------------------------------
 test_that("Return object of type data.frame", {
     expect_equal(class(read_hie_droughtbox_data_file("assets/droughtbox_output.dat")),
 
@@ -26,6 +26,32 @@ test_that("Return object of lenght 25 for clean_droughtbox_colnames", {
                  # Number of columns expected
                  17)
 })
+
+# Tests for read_hie_droughtbox_data_folder() ----------------------------------
+
+test_that("Return error of folder does not contain .dat files", {
+    expect_error(read_hie_droughtbox_data_folder("assets/empty_folder_for_test"))
+    })
+
+test_that("Return error of folder does not exist", {
+    expect_error(read_hie_droughtbox_data_folder("assets/no_folder"))
+})
+
+
+test_that("Read only .dat files", {
+    expect_equal(length(read_hie_droughtbox_data_folder("assets/")),
+
+                 # Number of .dat files in the folder
+                 3
+    )
+})
+
+test_that("Test that path/to/file is the same as path/to/file/", {
+    expect_equal(length(read_hie_droughtbox_data_folder("assets/")),
+                 length(read_hie_droughtbox_data_folder("assets"))
+                 )
+})
+
 
 # Tests for create_empty_droughtbox_leaf_branch_areas_sheet() ------------------
 
