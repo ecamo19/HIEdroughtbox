@@ -22,7 +22,7 @@
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #'
 #' plot_droughtbox_climatic_controls(droughtbox_data, cowplot = TRUE)
 #'
@@ -213,7 +213,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #'
 #' plot_strains_weights(droughtbox_data)
 #'

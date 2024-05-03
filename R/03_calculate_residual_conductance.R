@@ -28,7 +28,7 @@
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #' species_areas <- read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
 #'
 #' calculate_residual_conductance(droughtbox_data = droughtbox_data,
