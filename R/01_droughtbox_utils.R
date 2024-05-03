@@ -179,9 +179,19 @@ read_hie_droughtbox_data_file <- function(path_droughtbox_data_file ){
 #'
 #' read_hie_droughtbox_data_folder(path_to_droughtbox_data_folder)
 #'
-#' @exports
+#' @export
 read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
 
+    # If path ends with /
+    if (grepl("/$", path_droughtbox_data_folder)) {
+
+        # Remove the /
+        path_droughtbox_data_folder <-  stringr::str_sub(path_droughtbox_data_folder,
+                                                         end = -2)}
+    else {
+        # Leave it as it is
+        path_droughtbox_data_folder <- path_droughtbox_data_folder
+    }
     # Validate input parameters ------------------------------------------------
 
     # Check folder exits
@@ -211,7 +221,7 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
         file_names %>%
 
         # Merge path with each file name found in the folder
-        base::paste0(path_droughtbox_data_folder, .) %>%
+        base::paste0(path_droughtbox_data_folder, "/", .) %>%
 
         # Print message indicating the total number of files read
         {print(paste0("Reading: ", .)); .} %>%
@@ -475,7 +485,7 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #'
 #' filter_droughtbox_data(droughtbox_data,
 #'                             from_start_date = "2024/03/04",
@@ -631,7 +641,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #' points might need to be removed.
 #'
 #' @param droughtbox_data Dataframe loaded with the function.
-#' `read_hie_droughtbox_data`
+#' `read_hie_droughtbox_data_file`
 #'
 #' @param remove_n_observations Integer indicating the number of values that
 #' need to be removed at the beginning each tare_count group.
@@ -648,7 +658,7 @@ filter_droughtbox_data <- function(droughtbox_data,
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
-#' droughtbox_data <- read_hie_droughtbox_data(path_to_droughtbox_data)
+#' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #'
 #' # Remove tare_counts without enough measurements
 #' droughtbox_data <- droughtbox_data |> dplyr::filter(!tare_count_smp %in% c("13","14","28"))
