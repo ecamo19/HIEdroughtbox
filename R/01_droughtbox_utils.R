@@ -79,36 +79,36 @@ clean_droughtbox_colnames <- function(path_droughtbox_data){
     return(clean_colnames)
 }
 
-#' read_hie_droughtbox_data
+#' read_hie_droughtbox_data_file
 #'
 #' @description
 #' This function reads the raw .dat file downloaded from the droughtbox located
 #' at the Hawkesbury Institute for the Environment.
 #'
-#' @param path_droughtbox_data String indicating the location of the .dat file
-#' in your computer.
+#' @param path_droughtbox_data_file String indicating the location of the .dat
+#' file in your computer.
 #'
 #' @return A dataframe with 25 columns.
 #'
 #' @importFrom magrittr %>%
 #'
 #' @examples
-#' path_to_droughtbox_data <- system.file("extdata",
-#'                             "acacia_aneura_25c.dat",
-#'                             package = "HIEdroughtbox")
+#' path_to_droughtbox_data_file <- system.file("extdata",
+#'                                             "acacia_aneura_25c.dat",
+#'                                             package = "HIEdroughtbox")
 #'
-#' read_hie_droughtbox_data(path_to_droughtbox_data)
+#' read_hie_droughtbox_data_file(path_to_droughtbox_data_file)
 #'
 #' @export
-read_hie_droughtbox_data <- function(path_droughtbox_data ){
+read_hie_droughtbox_data_file <- function(path_droughtbox_data_file ){
 
     # Validate input parameters ------------------------------------------------
 
     # Check that file exists and is not a folder
-    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data ) && !base::dir.exists(path_droughtbox_data))
+    base::stopifnot(".dat file not found" = base::file.exists(path_droughtbox_data_file ) && !base::dir.exists(path_droughtbox_data))
 
     # Check is a .dat file
-    base::stopifnot("Input must must be a .dat file" = tools::file_ext(path_droughtbox_data ) == 'dat' )
+    base::stopifnot("Input must be a .dat file" = tools::file_ext(path_droughtbox_data_file ) == 'dat' )
 
     # Check that first cell in .dat file is TOA5
     base::stopifnot("File not recognized. Check example files located in the data folder of the github package" =  "TOA5" %in% utils::read.table(path_droughtbox_data, nrows = 1, )[1,1])
@@ -117,11 +117,11 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
 
     dat_file <-
 
-        utils::read.table(path_droughtbox_data , header = TRUE, skip = 1,
+        utils::read.table(path_droughtbox_data_file, header = TRUE, skip = 1,
                       sep = ",") %>%
 
         # Substitute the old names with a clean ones
-        magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data )) %>%
+        magrittr::set_colnames(., clean_droughtbox_colnames(path_droughtbox_data_file )) %>%
 
         # Remove rows with units and comments
         dplyr::filter(!dplyr::row_number() %in% c(1, 2)) %>%
@@ -160,6 +160,73 @@ read_hie_droughtbox_data <- function(path_droughtbox_data ){
                          t_sg_avg_3_avg, t_sg_avg_4_avg))
 
     return(base::data.frame(dat_file))
+}
+
+#' read_hie_droughtbox_data_folder
+#'
+#' @description
+#' This function reads 2 or more raw .dat files downloaded from the
+#' droughtbox located at the Hawkesbury Institute for the Environment.
+#'
+#' @param path_droughtbox_data_folder String indicating the location of a folder
+#' containing 2 or more .dat files in your computer.
+#'
+#' @return A single list with 2 or more data frames.
+#'
+#' @examples
+#' path_to_droughtbox_data_folder <- system.file("extdata",
+#'                                                package = "HIEdroughtbox")
+#'
+#' read_hie_droughtbox_data_folder(path_to_droughtbox_data_folder)
+#'
+#' @exports
+read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Check folder exits
+    base::stopifnot("Folder not found" = base::dir.exists(path_droughtbox_data_folder))
+
+    # Check there are several .dat files in the folder
+    if (length(base::list.files(path = path_droughtbox_data_folder,
+                                pattern = '.dat')) <= 1) {
+
+        stop("Folder MUST contain at least 2 or more .dat files")}
+
+    else if (length(base::list.files(path = path_droughtbox_data_folder,
+                                     pattern = '.dat')) > 1) {
+
+        # Get the names of each .dat file found in the folder
+        file_names <- base::list.files(path = path_droughtbox_data_folder,
+                                       pattern = '.dat')}
+
+    else {
+        stop("Failed in read_all_hie_droughtbox_files function")}
+
+    # Create list with all the dataframes --------------------------------------
+
+    # Create list of dataframes
+    list_with_data_frames <-
+
+        file_names %>%
+
+        # Merge path with each file name found in the folder
+        base::paste0(path_droughtbox_data_folder, .) %>%
+
+        # Print message indicating the total number of files read
+        {print(paste0("Reading: ", .)); .} %>%
+
+
+        # Set the name for each dataframe in the list
+        purrr::set_names(., file_names) %>%
+
+        # Read each file
+        purrr::map(read_hie_droughtbox_data_file) %>%
+
+        # Print message indicating the total number of files read
+        {print(paste0("Sucess! Total number of .dat files read: ", base::length(.))); .}
+
+    return(list_with_data_frames)
 }
 
 #' create_empty_droughtbox_leaf_branch_areas_sheet
