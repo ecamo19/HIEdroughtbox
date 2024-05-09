@@ -27,7 +27,7 @@ s @param droughtbox_data Dataframe loaded with the function
 }
 \examples{
 path_droughtbox_leaf_branch_areas <- system.file("extdata",
-                                                "acacia_aneura_leaf_branch_areas.csv",
+                                                "acacia_aneura_leaf_branch_areas.xlsx",
                                                 package = "HIEdroughtbox")
 
 path_to_droughtbox_data <- system.file("extdata",

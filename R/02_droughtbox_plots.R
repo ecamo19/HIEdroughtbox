@@ -87,8 +87,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                             fill = NA,
                                                             size = 1)) +
         # Add median and set temp to the title
-        ggplot2::ggtitle(stringr::str_c("Set temperature: ", .$set_point_t_avg_avg,
-                                        " Median temperature: ", stats::median(.$tc_avg_deg_c_avg))) +
+        ggplot2::ggtitle(stringr::str_c("Set temperature: ", {{droughtbox_data}}$set_point_t_avg_avg,
+                                        " Median temperature: ", stats::median({{droughtbox_data}}$tc_avg_deg_c_avg)))
 
     ## VPD plot ----------------------------------------------------------------
     vpd_plot <-
