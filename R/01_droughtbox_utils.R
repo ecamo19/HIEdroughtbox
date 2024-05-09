@@ -371,11 +371,10 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
     checkmate::assert_file_exists(path_droughtbox_leaf_branch_areas,
                                   extension = "xlsx")
 
-    # Read data
+    # Read data ----------------------------------------------------------------
     data_leaf_branch_area <-
 
-        utils::read.csv(path_droughtbox_leaf_branch_areas, header = TRUE,
-                 na.strings = NA) %>%
+        readxl::read_excel(path_droughtbox_leaf_branch_areas) %>%
 
             # Remove notes column
             dplyr::select(-notes)
