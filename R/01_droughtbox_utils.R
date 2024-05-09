@@ -233,7 +233,7 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
         purrr::map(read_hie_droughtbox_data_file) %>%
 
         # Print message indicating the total number of files read
-        {print(paste0("Sucess! Total number of .dat files read: ", base::length(.))); .}
+        {print(paste0("Success! Total number of .dat files read: ", base::length(.))); .}
 
     return(list_with_data_frames)
 }
@@ -369,7 +369,7 @@ read_hie_droughtbox_leaf_branch_areas <- function(path_droughtbox_leaf_branch_ar
 
     # Check file is a csv
     checkmate::assert_file_exists(path_droughtbox_leaf_branch_areas,
-                                  extension = "csv")
+                                  extension = "xlsx")
 
     # Read data
     data_leaf_branch_area <-
