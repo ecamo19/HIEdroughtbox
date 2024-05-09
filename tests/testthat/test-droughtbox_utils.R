@@ -59,7 +59,7 @@ test_that("Test that path/to/file is the same as path/to/file/", {
 
 # Tests for read_hie_droughtbox_leaf_branch_areas() ----------------------------
 test_that("Return object of type data.frame", {
-    expect_equal(class(read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.csv")),
+    expect_equal(class(read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.xlsx")),
 
                  # class expected
                  "data.frame")
@@ -68,7 +68,7 @@ test_that("Return object of type data.frame", {
 test_that("Return columns with no NAs when branch diameter and lenght are provided", {
 
     # Read data
-    data <- read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.csv") %>%
+    data <- read_hie_droughtbox_leaf_branch_areas("assets/input_branch_length_diameter.xlsx") %>%
 
         # Get columns
         dplyr::select(surface_branch_area_cm2, leaf_area_cm2)
