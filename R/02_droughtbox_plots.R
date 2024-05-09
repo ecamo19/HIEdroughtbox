@@ -68,7 +68,9 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
     }
 
     # Create base plot
-    base_plot <- ggplot2::ggplot(data = {{droughtbox_data}}) +
+    base_plot <-
+
+        ggplot2::ggplot(data = {{droughtbox_data}}) +
         ggplot2::theme_bw() +
         ggplot2::xlab("Time") +
         ggplot2::theme(legend.position = "bottom",
@@ -83,7 +85,10 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                          colour = "black"),
                        panel.border = ggplot2::element_rect(colour = "black",
                                                             fill = NA,
-                                                            size = 1))
+                                                            size = 1)) +
+        # Add median and set temp to the title
+        ggplot2::ggtitle(stringr::str_c("Set temperature: ", .$set_point_t_avg_avg,
+                                        " Median temperature: ", stats::median(.$tc_avg_deg_c_avg))) +
 
     ## VPD plot ----------------------------------------------------------------
     vpd_plot <-
@@ -143,8 +148,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot2::geom_point(ggplot2::aes(x = date_time, y = rh_avg_percent_avg)) +
 
         # Set conditions for the box
-        ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_rh_avg_avg),
-                                color = "red") +
+        #ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_rh_avg_avg),
+        #                        color = "red") +
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$rh_avg_percent_avg)) +
@@ -160,8 +165,8 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
         ggplot2::geom_point(ggplot2::aes(x = date_time, y = abs_h_avg_g_m3_avg)) +
 
         # Set conditions for the box
-        ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_abs_h_avg_avg),
-                            color = "red") +
+        #ggplot2::geom_point(ggplot2::aes(x = date_time, y = set_point_abs_h_avg_avg),
+        #                    color = "red") +
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$abs_h_avg_g_m3_avg)) +
@@ -171,10 +176,10 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
     if (cowplot == TRUE) {
         return(cowplot::plot_grid(ncol = 2, vpd_plot, temp_plot,
                                   absolute_humidity_plot, relative_humidity_plot,
-                                  air_temp_plot))
+                                  air_temp_plot))}
 
     # Return each plot individually
-    }else {
+    else {
         print(vpd_plot)
         print(temp_plot)
         print(absolute_humidity_plot)
