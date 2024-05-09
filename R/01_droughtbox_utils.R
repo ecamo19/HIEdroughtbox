@@ -357,7 +357,7 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #'
 #' @examples
 #' path_droughtbox_leaf_branch_areas <- system.file("extdata",
-#'                                                 "acacia_aneura_leaf_branch_areas.csv",
+#'                                                 "acacia_aneura_leaf_branch_areas.xlsx",
 #'                                                 package = "HIEdroughtbox")
 #'
 #' read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
