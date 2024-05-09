@@ -81,7 +81,7 @@ test_that("Return columns with no NAs when branch diameter and lenght are provid
 test_that("Return columns with no NAs when branch diameter and lenght are NOT provided", {
 
     # Read data
-    data <- read_hie_droughtbox_leaf_branch_areas("assets/input_leaf_branch_areas.csv") %>%
+    data <- read_hie_droughtbox_leaf_branch_areas("assets/input_leaf_branch_areas.xlsx") %>%
 
         # Get columns
         dplyr::select(surface_branch_area_cm2, leaf_area_cm2)
