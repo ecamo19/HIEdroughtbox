@@ -64,6 +64,7 @@ library(dplyr)
 library(ggplot2)
 library(here)
 library(purrr)
+library(reticulate)
 ```
 
 ```{r}
@@ -326,7 +327,126 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
                                           [sp_name]_55c_cleaned)
 ```
 
-# 3. Calculate Residual conductance
+
+# 3. Calculate Branch areas
+
+```{python}
+import cv2
+import os
+from os.path import join
+from os import listdir
+```
+
+```{python}
+# Function for cropping images
+def crop_images_for_imagej(path, blur = 25):
+
+    # Validate inputs ---------------------------------------------------------
+
+    # Make sure dir exists
+    if not os.path.isdir(path):
+        raise ValueError(
+            f'Directory: {path} not found exist. Check presence or spelling'
+        )
+
+    # Crop images -------------------------------------------------------------
+
+    # Set working directory
+    os.chdir(path)
+
+    # Set image coordiantes for removing 2x2 squared tag in all images.
+    # The coordinates were obtained using gThumb
+    width = 2504
+    height = 2961
+    x = 46
+    y = 546
+
+    file_count = 0
+
+    # Loop over each file
+    for each_file in listdir(path):
+
+        # Create folder to store the cropped images
+        if not os.path.isdir('cropped_images_for_imagej'):
+            os.mkdir(f'./cropped_images_for_imagej')
+
+        if each_file.endswith('.jpg'):
+
+            # Create path to image
+            image_path = join(path, each_file)
+
+            print(f'Cropping: {each_file}')
+
+            # Read image
+            img = cv2.imread(image_path, 0)
+
+            # Crop image
+            cropped_image = img[y:y + height, x:x + width]
+
+            # Apply filter to image for improving quality
+            cropped_image = cv2.medianBlur(cropped_image, blur)
+
+            # Save image
+            cv2.imwrite(f'./cropped_images_for_imagej/cropped_{each_file}', cropped_image)
+
+            # Count the number of files read
+            file_count += 1
+
+        else:
+            print(f'{each_file} is not jpg file')
+
+    return(f'Total number of images cropped: {file_count}')
+```
+
+```{python}
+path = "path/to/scanned_images"
+crop_images_for_imagej(path = path)
+```
+
+```{r, ImageJ code, eval = FALSE, echo = FALSE}
+# Save the code below as leaf_area_300dpi.txt
+# 
+# Then open ImageJ, go to Plugins -> Macros -> Run -> Select leaf_area_300dpi.txt
+# 
+# Then select the folder with the cropped images
+
+macro "Leaf batch [b]" {
+  dir1 = getDirectory("Choose Source Directory ");
+  list = getFileList(dir1);
+  for (i=0; i<list.length; i++) {
+     showProgress(i+1, list.length);
+	open(dir1+list[i]);
+	leafArea();
+     close();
+  }
+}
+
+macro "Leaf area [a]" 
+{
+	leafArea();
+}
+
+function leafArea()
+ {
+var dpi = 300;
+var pixelsPerCentimeter = dpi / 2.54; // 300 dpi
+run("Clear Results");
+run("Set Scale...", "distance=" + pixelsPerCentimeter + " known=1 pixel=1 unit=cm");
+//run("Subtract Background...", "rolling=50 light");
+run("Make Binary");
+//run("Fill Holes");
+//run("Remove Outliers...", "radius=10 threshold=50 which=Dark");
+run("Create Selection");
+run("Set Measurements...", "area redirect=None decimal=3");
+run("Analyze Particles...", "size=0-Infinity circularity=0.00-1.00 show=Nothing display clear");
+run("Summarize");
+var area = getResult("Area"); // this will get the last line of the results, the max
+getStatistics(area);
+print(getTitle(), area);
+}
+```
+
+# 4. Calculate Residual conductance
 
 ## Load Areas data
 
