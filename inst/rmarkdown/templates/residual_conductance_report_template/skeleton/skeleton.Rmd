@@ -330,6 +330,8 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 
 # 3. Calculate Branch areas
 
+## Crop images for calculating surface area
+
 ```{python}
 import cv2
 import os
