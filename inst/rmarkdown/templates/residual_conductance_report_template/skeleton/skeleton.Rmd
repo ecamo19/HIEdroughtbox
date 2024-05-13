@@ -18,8 +18,8 @@ knitr::opts_chunk$set(echo = FALSE, comment = "",
 ```
 
 ```{r, setup_wd, include=FALSE}
-# Set knit directory in case rmarkdown fails to render
-#knitr::opts_knit$set(root.dir = '/')
+# Set knit directory
+knitr::opts_knit$set(root.dir = 'path/to/root/dir')
 ```
 
 ```{r knitr, include = FALSE}
@@ -68,7 +68,8 @@ library(reticulate)
 ```
 
 ```{r}
-getwd()
+# Set conda env for working with python
+use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
 ```
 
 # 1. Load Droughtbox data
@@ -333,17 +334,17 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 ## Crop images for calculating surface area
 
 ```{python}
+# Load python packages
 import cv2
 import os
 from os.path import join
 from os import listdir
-```
 
-```{python}
+
 # Function for cropping images
 def crop_images_for_imagej(path, blur = 25):
 
-    # Validate inputs ---------------------------------------------------------
+    # Validate inputs ----------------------------------------------------------
 
     # Make sure dir exists
     if not os.path.isdir(path):
@@ -351,7 +352,7 @@ def crop_images_for_imagej(path, blur = 25):
             f'Directory: {path} not found exist. Check presence or spelling'
         )
 
-    # Crop images -------------------------------------------------------------
+    # Crop images --------------------------------------------------------------
 
     # Set working directory
     os.chdir(path)
@@ -397,55 +398,63 @@ def crop_images_for_imagej(path, blur = 25):
         else:
             print(f'{each_file} is not jpg file')
 
-    return(f'Total number of images cropped: {file_count}')
+    print(f'Total number of images cropped: {file_count}')
+
+    # Save ImageJ code as TXT --------------------------------------------------
+    # Create file
+    imagej_file = open(f"../leaf_area_300dpi.txt", "x")
+
+    # Write code to file
+    imagej_file.write('''
+
+        // Run this code by Opening ImageJ
+
+        // Then go to Plugins -> Macros -> Run -> Select leaf_area_300dpi.txt
+
+        // Then select the folder with the cropped images
+        macro "Leaf batch [b]" {
+        dir1 = getDirectory("Choose Source Directory ");
+        list = getFileList(dir1);
+        for (i=0; i<list.length; i++) {
+        showProgress(i+1, list.length);
+	    open(dir1+list[i]);
+	    leafArea();
+         close();
+         }
+         }
+
+        macro "Leaf area [a]"
+        {
+	    leafArea();
+        }
+
+        function leafArea()
+        {
+        var dpi = 300;
+        var pixelsPerCentimeter = dpi / 2.54; // 300 dpi
+        run("Clear Results");
+        run("Set Scale...", "distance=" + pixelsPerCentimeter + " known=1 pixel=1 unit=cm");
+        //run("Subtract Background...", "rolling=50 light");
+        run("Make Binary");
+        //run("Fill Holes");
+        //run("Remove Outliers...", "radius=10 threshold=50 which=Dark");
+        run("Create Selection");
+        run("Set Measurements...", "area redirect=None decimal=3");
+        run("Analyze Particles...", "size=0-Infinity circularity=0.00-1.00 show=Nothing display clear");
+        run("Summarize");
+        var area = getResult("Area"); // this will get the last line of the results, the max
+        getStatistics(area);
+        print(getTitle(), area);
+        }''')
+
+    # Close file
+    imagej_file.close()
+    print(f'Code for ImageJ created')
 ```
 
 ```{python}
 path = "path/to/scanned_images"
 crop_images_for_imagej(path = path)
-```
-
-```{r, ImageJ code, eval = FALSE, echo = FALSE}
-# Save the code below as leaf_area_300dpi.txt
-# 
-# Then open ImageJ, go to Plugins -> Macros -> Run -> Select leaf_area_300dpi.txt
-# 
-# Then select the folder with the cropped images
-
-macro "Leaf batch [b]" {
-  dir1 = getDirectory("Choose Source Directory ");
-  list = getFileList(dir1);
-  for (i=0; i<list.length; i++) {
-     showProgress(i+1, list.length);
-	open(dir1+list[i]);
-	leafArea();
-     close();
-  }
-}
-
-macro "Leaf area [a]" 
-{
-	leafArea();
-}
-
-function leafArea()
- {
-var dpi = 300;
-var pixelsPerCentimeter = dpi / 2.54; // 300 dpi
-run("Clear Results");
-run("Set Scale...", "distance=" + pixelsPerCentimeter + " known=1 pixel=1 unit=cm");
-//run("Subtract Background...", "rolling=50 light");
-run("Make Binary");
-//run("Fill Holes");
-//run("Remove Outliers...", "radius=10 threshold=50 which=Dark");
-run("Create Selection");
-run("Set Measurements...", "area redirect=None decimal=3");
-run("Analyze Particles...", "size=0-Infinity circularity=0.00-1.00 show=Nothing display clear");
-run("Summarize");
-var area = getResult("Area"); // this will get the last line of the results, the max
-getStatistics(area);
-print(getTitle(), area);
-}
 ```
 
 # 4. Calculate Residual conductance
