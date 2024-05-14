@@ -589,7 +589,6 @@ pwd
 
 # Copy path to cropped_images_for_imagej
 
-
 # ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
 
