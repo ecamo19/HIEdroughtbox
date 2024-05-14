@@ -667,7 +667,8 @@ pwd
 
 ```{r}
 [sp_name]_dry_weights_areas_data <- 
-    inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data)
+    inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data,
+               by = join_by(spcode, tree_id, set_temperature))
 ```
 
 ## Calculate Residual conductance

@@ -26,7 +26,7 @@ s @param droughtbox_data Dataframe loaded with the function
 `read_hie_droughtbox_data()`.
 }
 \examples{
-path_droughtbox_leaf_branch_areas <- system.file("extdata",
+\dontrun{path_droughtbox_leaf_branch_areas <- system.file("extdata",
                                                 "acacia_aneura_leaf_branch_areas.xlsx",
                                                 package = "HIEdroughtbox")
 
@@ -38,6 +38,6 @@ droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 species_areas <- readxl::read_excel(path_droughtbox_leaf_branch_areas)
 
 calculate_residual_conductance(droughtbox_data = droughtbox_data,
-                               leaf_and_branch_area_data = species_areas)
+                               leaf_and_branch_area_data = species_areas)}
 
 }
