@@ -2,7 +2,7 @@
 % Please edit documentation in R/01_droughtbox_utils.R
 \name{filter_droughtbox_data}
 \alias{filter_droughtbox_data}
-\title{filter_droughtbox_data}
+\title{read_hie_droughtbox_leaf_branch_areas}
 \usage{
 filter_droughtbox_data(
   droughtbox_data,
@@ -36,6 +36,57 @@ This function is meant to be used to removed chunks of data that is collected
 when the droughtbox has not reach the climatic conditions desired.
 
 This functions does not remove individual observations.
+}
+\details{
+description
+This function reads CSV files containing information about the leaf and/or
+branch area of the samples measured in the droughtbox.
+
+To create a datasheet with the required information, run the
+function `create_empty_droughtbox_leaf_branch_areas_sheet('path/to/folder')`.
+with the path to the folder where the datasheet should be saved.
+
+The CSV file MUST contain the following columns:
+
+set_temperature: Integer indicating the temperature at which gmin/gres was
+measured.
+
+strain_number: Integer indicating in which of the four hooks the the sample
+was positioned.
+
+leaf_area: Float in cm2 with the total leaf area of the sample.
+
+The following columns are optional:
+
+tree_id: String with an unique code identifying each sample.
+
+surface_branch_area: Float in cm2 with the area of the branch without any
+leaves attached. If not provided, the total surface_branch_area can be
+approximated using the formula A = pi*radius*(length + radius), assuming that
+the branch has a cone shape.
+
+branch_basal_diameter_mm: Float in millimeters indicating the basal diameter
+of the sample.
+
+branch_length_cm: Float in centimeters indicating the total length of the
+sample.
+
+param path_droughtbox_leaf_branch_areas String indicating the location of
+the CSV file in your computer.
+
+return A dataframe.
+
+importFrom magrittr %>%
+
+examples
+path_droughtbox_leaf_branch_areas <- system.file("extdata",
+                                                "acacia_aneura_leaf_branch_areas.xlsx",
+                                                package = "HIEdroughtbox")
+
+read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
+
+export
+filter_droughtbox_data
 }
 \examples{
 path_to_droughtbox_data <- system.file("extdata",
