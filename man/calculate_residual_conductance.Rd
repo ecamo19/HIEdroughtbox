@@ -11,7 +11,7 @@ calculate_residual_conductance(droughtbox_data, leaf_and_branch_area_data)
 `read_hie_droughtbox_leaf_branch_areas()`.}
 }
 \value{
-A dataframe with the species_name, sample_id, strain_number,
+A dataframe with the species_name, tree_id, strain_number,
 set_temperature, transpiration_grams_per_sec_cm2 and
 median_vpd residual_conductance as columns.
 }
@@ -35,7 +35,7 @@ path_to_droughtbox_data <- system.file("extdata",
                             package = "HIEdroughtbox")
 
 droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
-species_areas <- read_hie_droughtbox_leaf_branch_areas(path_droughtbox_leaf_branch_areas)
+species_areas <- readxl::read_excel(path_droughtbox_leaf_branch_areas)
 
 calculate_residual_conductance(droughtbox_data = droughtbox_data,
                                leaf_and_branch_area_data = species_areas)
