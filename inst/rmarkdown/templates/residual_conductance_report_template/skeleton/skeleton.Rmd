@@ -117,7 +117,7 @@ Remember to remove the `eval=FALSE` from each chunk
 ### File 1
 
 ```{r, eval=FALSE}
-[sp_name]_25c_cleaned <- 
+#[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_25c.dat"] %>% 
@@ -147,7 +147,7 @@ plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 ### File 2
 
 ```{r , eval=FALSE}
-[sp_name]_30c_cleaned <-
+#[sp_name]_30c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_30c.dat"] %>%
@@ -177,7 +177,7 @@ plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
 ### File 3
 
 ```{r, eval=FALSE}
-[sp_name]_35c_cleaned <-
+#[sp_name]_35c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_35c.dat"] %>%
@@ -207,7 +207,7 @@ plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 ### File 4
 
 ```{r, eval=FALSE}
-[sp_name]_40c_cleaned <-
+#[sp_name]_40c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_40c.dat"] %>%
@@ -237,7 +237,7 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 ### File 5
 
 ```{r, eval=FALSE}
-[sp_name]_45c_cleaned <-
+#[sp_name]_45c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_45c.dat"] %>%
@@ -267,7 +267,7 @@ plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 ### File 6
 
 ```{r, eval=FALSE}
-[sp_name]_50c_cleaned <- 
+#[sp_name]_50c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_50c.dat"] %>% 
@@ -297,7 +297,7 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 ### File 7
 
 ```{r, eval=FALSE}
-[sp_name]_55c_cleaned <- 
+#[sp_name]_55c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_55c.dat"] %>% 
