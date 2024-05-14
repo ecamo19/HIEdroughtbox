@@ -60,6 +60,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
 
 ```{r libaries, message = FALSE, warning = FALSE, cache = FALSE}
 library(HIEdroughtbox)
+library(ggplot2)
 
 # For data manipulation
 library(dplyr)
@@ -674,9 +675,13 @@ pwd
 ## Calculate Residual conductance
 
 ```{r}
-calculate_residual_conductance(droughtbox_data =  [sp_name]_cleaned_data,
-                               leaf_and_branch_area_data = [sp_name]_dry_weights_areas_data)
-
+[sp_name]_residual_conductance <- 
+    calculate_residual_conductance(droughtbox_data =  [sp_name]_cleaned_data,
+                                   leaf_and_branch_area_data = [sp_name]_dry_weights_areas_data)
 ```
 
-
+```{r residual_conductance_plot}
+ggplot(data = [sp_name]_residual_conductance, aes(x =  set_temperature,
+                                                    y = residual_conductance)) +
+        geom_point()
+```
