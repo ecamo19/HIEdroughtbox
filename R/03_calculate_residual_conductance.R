@@ -68,11 +68,10 @@ calculate_residual_conductance <- function(droughtbox_data,
                                                               ) %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("leaf_area_cm2",
-                                                                            "surface_branch_area_cm2",
+    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("area_cm2",
                                                                             "strain_number",
                                                                             "set_temperature",
-                                                                            "sample_id"
+                                                                            "tree_id"
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
     # Get VPD parameter --------------------------------------------------------
