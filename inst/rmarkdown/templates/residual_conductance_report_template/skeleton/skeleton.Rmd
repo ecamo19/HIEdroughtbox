@@ -348,7 +348,7 @@ from os import listdir
 import pathlib
 
 # Function for cropping images
-def crop_images_for_imagej(path, blur = 25):
+def crop_images_for_imagej(path, blur = 15):
 
     # Validate inputs ---------------------------------------------------------
 
@@ -584,7 +584,9 @@ crop_images_for_imagej(path = path)
 ```{bash, bash_code, results = "hide", eval=FALSE}
 pwd
 # Enter the path where Fiji was installed
+
 # Locate leaf_area_300dpi.ijm macro
+
 # Copy path to cropped_images_for_imagej
 
 
@@ -610,23 +612,30 @@ pwd
              into = c('image', 'genera', 'specie', 'tree_id',  'set_temperature'),
              sep = '_') %>%
 
-    # Unite Genera and specie columns
+   # Unite Genera and specie columns
     unite("spcode", genera:specie, sep = "_", remove = TRUE) %>%
 
-    # Remove unused columns
-    select(-c(file_extension, image)) %>%
-
     # Remove leading zeros inside column
-    mutate(tree_id = factor(str_remove(tree_id, "^0+")),
+    mutate(tree_id = as.numeric(str_remove(tree_id, "^0+")),
 
            # Remove the last character in set_temperature column
-           set_temperature = factor(str_sub(set_temperature, end = -2)))
+           set_temperature = as.numeric(str_sub(set_temperature, end = -2))
+           ) %>%
+
+    # Rename column
+    rename(areas_cm2 = area)  %>%
+
+    # Remove unused columns
+    select(-c(file_extension, image))
+
+glimpse()
 ```
 
 ## Load dry weights data
 
 ```{r, eval=FALSE}
 [sp_name]_dry_weights_data <- read_excel("./[sp_name]_dry_weights.xlsx")
+glimpse()
 ```
 
 ### Merge area and dry weights dataframes
@@ -635,6 +644,7 @@ pwd
 [sp_name]_dry_weights_areas_data <- 
     inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data,
                by = join_by(spcode, tree_id, set_temperature))
+glimpse()
 ```
 
 ## Calculate Residual conductance
