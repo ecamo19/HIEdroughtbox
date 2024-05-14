@@ -656,6 +656,7 @@ glimpse()
 
 ```{r residual_conductance_plot, eval=FALSE}
 ggplot(data = [sp_name]_residual_conductance, aes(x =  set_temperature,
-                                                    y = residual_conductance)) +
+                                                  colour = factor(tree_id),
+                                                  y = residual_conductance)) +
         geom_point()
 ```
