@@ -20,7 +20,7 @@
 #' median_vpd residual_conductance as columns.
 #'
 #' @examples
-#' path_droughtbox_leaf_branch_areas <- system.file("extdata",
+#' \dontrun{path_droughtbox_leaf_branch_areas <- system.file("extdata",
 #'                                                 "acacia_aneura_leaf_branch_areas.xlsx",
 #'                                                 package = "HIEdroughtbox")
 #'
@@ -32,7 +32,7 @@
 #' species_areas <- readxl::read_excel(path_droughtbox_leaf_branch_areas)
 #'
 #' calculate_residual_conductance(droughtbox_data = droughtbox_data,
-#'                                leaf_and_branch_area_data = species_areas)
+#'                                leaf_and_branch_area_data = species_areas)}
 #'
 #' @export
 calculate_residual_conductance <- function(droughtbox_data,
@@ -68,10 +68,10 @@ calculate_residual_conductance <- function(droughtbox_data,
                                                               ) %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("area_cm2",
+    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
                                                                             #"surface_branch_area_cm2",
                                                                             "strain_number",
-                                                                            "set_temperature",
+                                                                           "set_temperature",
                                                                             "tree_id"
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
@@ -168,50 +168,50 @@ calculate_residual_conductance <- function(droughtbox_data,
 
         # Print message if positive slope found
         {dplyr::if_else(.$slope_grams_per_second > 0,
-                        print("Positive slope between weight loss and time found. Check your data"),
-                        "Negative slope. This is OK"); .} %>%
+                         print("Positive slope between weight loss and time found. Check your data"),
+                         "Negative slope. This is OK"); .} %>%
 
-        # Estimate transpiration -----------------------------------------------
+         # Estimate transpiration -----------------------------------------------
 
-        ## Merge leaf and branch areas data with slope data --------------------
-        dplyr::full_join(., leaf_and_branch_area_data,
-                         by = c("strain_number", "set_temperature")) %>%
+         ## Merge leaf and branch areas data with slope data --------------------
+         dplyr::full_join(., leaf_and_branch_area_data,
+                          by = c("strain_number", "set_temperature")) %>%
 
-        # Without this the code won't run
-        dplyr::ungroup() %>%
+         # Without this the code won't run
+         dplyr::ungroup() %>%
 
-        # Print message if surface_branch_area_cm2 is found in the data or not
-        {if("surface_branch_area_cm2" %in% names(.)) print("Transpiration for gres calculated")else print("Transpiration for gres calculated. Make sure branch area is included"); .} %>%
+         # Print message if surface_branch_area_cm2 is found in the data or not
+         #{if("surface_branch_area_cm2" %in% names(.)) print("Transpiration for gres calculated")else print("Transpiration for gres calculated. Make sure branch area is included"); .} %>%
 
-        # Calculate transpiration
-        dplyr::mutate(transpiration_grams_per_sec_cm2 =
-                            if("surface_branch_area_cm2" %in% names(.))
+         # Calculate transpiration
+         dplyr::mutate(transpiration_grams_per_sec_cm2 =
+                             if("surface_branch_area_cm2" %in% names(.))
 
-                                # Transpiration
-                                -(.$slope_grams_per_second/(.$area_cm2 + .$surface_branch_area_cm2))
+                                 # Transpiration
+                                 -(.$slope_grams_per_second/(.$areas_cm2 + .$surface_branch_area_cm2))
 
-                            # Transpiration for using area
-                            else -(.$slope_grams_per_second/(.$area_cm2))) %>%
+                             # Transpiration for using area
+                             else -(.$slope_grams_per_second/(.$areas_cm2))) %>%
 
-        # Remove variables. Done in this way because surface_branch_area_cm2 may or
-        # may not present
-        dplyr::select(-dplyr::any_of(c("slope_grams_per_second","area_cm2",
-                                       "surface_branch_area_cm2"))) %>%
+         # Remove variables. Done in this way because surface_branch_area_cm2 may or
+         # may not present
+         dplyr::select(-dplyr::any_of(c("slope_grams_per_second","areas_cm2",
+                                        "surface_branch_area_cm2"))) %>%
 
         # Arrange dataset
-        dplyr::select(species_name, tree_id, dplyr::everything()) %>%
+         dplyr::select(spcode, tree_id, dplyr::everything()) %>%
 
 
         # Add VPD parameter in the dataset
-        dplyr::full_join(., vpd_parameter, by = c("set_temperature")) %>%
+         dplyr::full_join(., vpd_parameter, by = c("set_temperature")) %>%
 
-        # Estimate residual conductance ----------------------------------------
+         # Estimate residual conductance ----------------------------------------
 
-        # Print message residual conductance units
-        {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
+         # Print message residual conductance units
+         {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
 
-        # Residual conductance
-        dplyr::mutate(residual_conductance = (transpiration_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant)
+         # Residual conductance
+         dplyr::mutate(residual_conductance = (transpiration_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant)
 
     return(base::data.frame(residual_conductance_df))
 
