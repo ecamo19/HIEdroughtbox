@@ -328,23 +328,20 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
                                           [sp_name]_55c_cleaned)
 ```
 
-
 # 3. Calculate Branch areas
 
-## Crop images for calculating surface area
-
-```{python}
-# Load python packages
+```{python, python_code, echo=FALSE}
 import cv2
 import os
+import shutil
 from os.path import join
 from os import listdir
-
+import pathlib
 
 # Function for cropping images
 def crop_images_for_imagej(path, blur = 25):
 
-    # Validate inputs ----------------------------------------------------------
+    # Validate inputs ---------------------------------------------------------
 
     # Make sure dir exists
     if not os.path.isdir(path):
@@ -352,7 +349,7 @@ def crop_images_for_imagej(path, blur = 25):
             f'Directory: {path} not found exist. Check presence or spelling'
         )
 
-    # Crop images --------------------------------------------------------------
+    # Crop images -------------------------------------------------------------
 
     # Set working directory
     os.chdir(path)
@@ -366,12 +363,23 @@ def crop_images_for_imagej(path, blur = 25):
 
     file_count = 0
 
+    # Overwrite folder if does exists
+    if os.path.exists('../cropped_images_for_imagej'):
+        print("Overwrinting cropped_images_for_imagej folder")
+        shutil.rmtree('../cropped_images_for_imagej')
+        os.mkdir('../cropped_images_for_imagej')
+
+    # Create folder to store the cropped images
+    elif not os.path.isdir('../cropped_images_for_imagej'):
+            os.mkdir('../cropped_images_for_imagej')
+
+    else:
+       raise ValueError(
+            print("Failed creating cropped_images_for_imagej folder")
+        )
+
     # Loop over each file
     for each_file in listdir(path):
-
-        # Create folder to store the cropped images
-        if not os.path.isdir('cropped_images_for_imagej'):
-            os.mkdir(f'./cropped_images_for_imagej')
 
         if each_file.endswith('.jpg'):
 
@@ -390,7 +398,7 @@ def crop_images_for_imagej(path, blur = 25):
             cropped_image = cv2.medianBlur(cropped_image, blur)
 
             # Save image
-            cv2.imwrite(f'./cropped_images_for_imagej/cropped_{each_file}', cropped_image)
+            cv2.imwrite(f'../cropped_images_for_imagej/cropped_{each_file}', cropped_image)
 
             # Count the number of files read
             file_count += 1
@@ -400,66 +408,183 @@ def crop_images_for_imagej(path, blur = 25):
 
     print(f'Total number of images cropped: {file_count}')
 
-    # Save ImageJ code as TXT --------------------------------------------------
+
+    # Generate a full path to cropped images folder which will be use in
+    # imagej macro
+
+    print("\nUse the following path for the ImageJ macro:")
+    path_to_cropped_images_folder = os.path.dirname(os.path.abspath("../cropped_images_for_imagej"))
+    print(f'{path_to_cropped_images_folder}/cropped_images_for_imagej')
+
+    # Save ImageJ code as .ijm ------------------------------------------------
+
+    # Check if file exist
+    if os.path.exists("../leaf_area_300dpi.ijm"):
+
+        print(f'\nMacro Code for ImageJ already exist')
+
     # Create file
-    imagej_file = open(f"../leaf_area_300dpi.txt", "x")
+    else:
+        imagej_macro_file = open(f"../leaf_area_300dpi.ijm", "x")
 
-    # Write code to file
-    imagej_file.write('''
+        # Write code to file
+        imagej_macro_file.write('''
 
-        // Run this code by Opening ImageJ
+// Description -----------------------------------------------------------------
+//
+// ImageJ macro for calculating the area (cm2) of scanned leaves at a resolution
+// of 300 dpi.
+//
+// This macro is meant to be run in headless mode using Fiji
+//
+// Download Fiji from: https://imagej.net/software/fiji/downloads
+//
+// The function takes 1 parameter (i.e. path/to/folder) which is the full path
+// where .jpg scans are saved locally.
+//
+// The function returns a .csv file containing the name of the image file and
+// the area in cm2
+//
+// Examples of a input_path ----------------------------------------------------
+//
+// VALID input path
+//
+// input_path = "/home/images_for_imagej"
+//
+// INVALID input paths
+//
+// input_path = "./cropped_images_for_imagej"
+//
+// Not recommended
+// Notice the "/" at the end of the path
+//
+// input_path = "/home/images_for_imagej/"
 
-        // Then go to Plugins -> Macros -> Run -> Select leaf_area_300dpi.txt
+// Get input path --------------------------------------------------------------
+print("Remember to provide the full path");
+input_path = getArgument();
+print("Reading files inside "+input_path);
 
-        // Then select the folder with the cropped images
-        macro "Leaf batch [b]" {
-        dir1 = getDirectory("Choose Source Directory ");
-        list = getFileList(dir1);
-        for (i=0; i<list.length; i++) {
-        showProgress(i+1, list.length);
-	    open(dir1+list[i]);
-	    leafArea();
-         close();
-         }
-         }
+// Set working directory -------------------------------------------------------
+File.setDefaultDir(input_path)
 
-        macro "Leaf area [a]"
-        {
-	    leafArea();
-        }
+//1- Function for calculating the leaf area ------------------------------------
+function leaf_area(){
+            var dpi = 300;
 
-        function leafArea()
-        {
-        var dpi = 300;
-        var pixelsPerCentimeter = dpi / 2.54; // 300 dpi
-        run("Clear Results");
-        run("Set Scale...", "distance=" + pixelsPerCentimeter + " known=1 pixel=1 unit=cm");
-        //run("Subtract Background...", "rolling=50 light");
-        run("Make Binary");
-        //run("Fill Holes");
-        //run("Remove Outliers...", "radius=10 threshold=50 which=Dark");
-        run("Create Selection");
-        run("Set Measurements...", "area redirect=None decimal=3");
-        run("Analyze Particles...", "size=0-Infinity circularity=0.00-1.00 show=Nothing display clear");
-        run("Summarize");
-        var area = getResult("Area"); // this will get the last line of the results, the max
-        getStatistics(area);
-        print(getTitle(), area);
-        }''')
+            // 300 dpi
+            var pixels_per_centimeter = dpi / 2.54;
 
-    # Close file
-    imagej_file.close()
-    print(f'Code for ImageJ created')
+            // ImageJ functions
+            run("Clear Results");
+            run("Set Scale...", "distance=" + pixels_per_centimeter + " known=1 pixel=1 unit=cm");
+            run("Make Binary");
+            run("Create Selection");
+            run("Set Measurements...", "area redirect=None decimal=3");
+            run("Analyze Particles...", "size=0-Infinity circularity=0.00-1.00 show=Nothing display clear");
+            run("Summarize");
+
+            // This will get the last line of the results, the max
+            var area_cm2 = getResult("Area");
+
+			// Get image name
+			var image_name = getTitle();
+
+			// Combine file name and area
+			var result = image_name + "," +area_cm2;
+			return result;
+			}
+
+//2- Function for reading and processing each image ----------------------------
+function process_file(input, file){
+
+	// Create full path to file
+	input_path = input + File.separator + file;
+
+	// Open images and get the leaf area
+	if(endsWith(input, file_extension))
+		showProgress(i+1, list.length);
+
+		// Open image
+		open(input_path);
+
+		// Calculate Leaf area and append results to file
+		File.append(leaf_area(), output_path);
+
+		// Close each each
+		close();
+
+	// Return error if something goes wrong
+	//else {print("Failed processiing file.");}
+	}
+
+//3- Get the area of each file -------------------------------------------------
+process_folder(input_path);
+
+	function process_folder(input){
+
+		// Define the file images' file extention to read
+		file_extension = ".jpg";
+
+		// Create output file inside input folder
+		output_path = input + File.separator + "areas_cm2.csv";
+
+		// Create header to the output file
+		headline = "file_name, area";
+
+		// Append header to output file
+		File.append(headline, output_path);
+
+		// Get each file stored in the input folder
+		list = getFileList(input);
+
+		// Print total number of files inside folder
+		print(list.length+" files found inside "+ input_path);
+
+		// Loop over the files found in the input folder
+		for (i = 0; i < list.length; i++) {
+
+			// Read folders
+			//if (endsWith(list[i], "/"))
+			//	process_folder(input + File.separator + list[i]);
+
+			// Process each file
+			if(endsWith(list[i], file_extension)){
+			process_file(input, list[i]);}
+
+			else{print("Warning! Failed processing "+list[i]+". Files must have a "+file_extension + " extension");}
+
+		}
+		print("Done! Output file created at:"+output_path);
+	}
+''')
+        # Close file
+        imagej_macro_file.close()
+        print('\nMacro code for ImageJ created')
 ```
+
+## Use python function to crop images
 
 ```{python}
 path = "path/to/scanned_images"
 crop_images_for_imagej(path = path)
 ```
 
+## Calculate leaf area using ImageJ macro in bash
+
+```{bash, bash_code, results = "hide"}
+pwd
+# Enter the path where Fiji was installed
+# Locate leaf_area_300dpi.ijm macro
+# Copy path to cropped_images_for_imagej
+
+
+# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
+```
+
 # 4. Calculate Residual conductance
 
-## Load Areas data
+## Load Areas data csv
 
 ```{r}
 [sp_name]_areas_data <-
