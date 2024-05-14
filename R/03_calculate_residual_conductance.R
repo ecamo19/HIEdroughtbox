@@ -15,7 +15,7 @@
 #'
 #' @importFrom magrittr %>%
 #'
-#' @return A dataframe with the species_name, sample_id, strain_number,
+#' @return A dataframe with the species_name, tree_id, strain_number,
 #' set_temperature, transpiration_grams_per_sec_cm2 and
 #' median_vpd residual_conductance as columns.
 #'
@@ -69,6 +69,7 @@ calculate_residual_conductance <- function(droughtbox_data,
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("area_cm2",
+                                                                            #"surface_branch_area_cm2",
                                                                             "strain_number",
                                                                             "set_temperature",
                                                                             "tree_id"
@@ -180,25 +181,25 @@ calculate_residual_conductance <- function(droughtbox_data,
         dplyr::ungroup() %>%
 
         # Print message if surface_branch_area_cm2 is found in the data or not
-        {if("surface_branch_area_cm2" %in% names(.)) print("Transpiration for gres calculated")else print("Transpiration for gmin calculated"); .} %>%
+        {if("surface_branch_area_cm2" %in% names(.)) print("Transpiration for gres calculated")else print("Transpiration for gres calculated. Make sure branch area is included"); .} %>%
 
         # Calculate transpiration
         dplyr::mutate(transpiration_grams_per_sec_cm2 =
                             if("surface_branch_area_cm2" %in% names(.))
 
-                                # Transpiration for gres
-                                -(.$slope_grams_per_second/(.$leaf_area_cm2 + .$surface_branch_area_cm2))
+                                # Transpiration
+                                -(.$slope_grams_per_second/(.$area_cm2 + .$surface_branch_area_cm2))
 
-                            # Transpiration for gmin
-                            else -(.$slope_grams_per_second/(.$leaf_area_cm2))) %>%
+                            # Transpiration for using area
+                            else -(.$slope_grams_per_second/(.$area_cm2))) %>%
 
         # Remove variables. Done in this way because surface_branch_area_cm2 may or
         # may not present
-        dplyr::select(-dplyr::any_of(c("slope_grams_per_second","leaf_area_cm2",
+        dplyr::select(-dplyr::any_of(c("slope_grams_per_second","area_cm2",
                                        "surface_branch_area_cm2"))) %>%
 
         # Arrange dataset
-        dplyr::select(species_name, sample_id, dplyr::everything()) %>%
+        dplyr::select(species_name, tree_id, dplyr::everything()) %>%
 
 
         # Add VPD parameter in the dataset
