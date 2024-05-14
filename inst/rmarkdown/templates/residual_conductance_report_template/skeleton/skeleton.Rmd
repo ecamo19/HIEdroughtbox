@@ -1,7 +1,7 @@
 ---
 title: 'Species Name'
 author: 'Your Name'
-date: '`r format(Sys.time(), '%d %B, %Y')`'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   prettydoc::html_pretty:
     highlight: pygments
@@ -112,12 +112,12 @@ map([sp_name]_raw_data, plot_strains_weights)
 
 ## Clean data
 
-Remember for remove the `eval=FALSE` from each chunk
+Remember to remove the `eval=FALSE` from each chunk
 
 ### File 1
 
 ```{r, eval=FALSE}
-[sp_name]_25c_cleaned <- 
+#[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_25c.dat"] %>% 
@@ -147,7 +147,7 @@ plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 ### File 2
 
 ```{r , eval=FALSE}
-[sp_name]_30c_cleaned <-
+#[sp_name]_30c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_30c.dat"] %>%
@@ -177,7 +177,7 @@ plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
 ### File 3
 
 ```{r, eval=FALSE}
-[sp_name]_35c_cleaned <-
+#[sp_name]_35c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_35c.dat"] %>%
@@ -207,7 +207,7 @@ plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 ### File 4
 
 ```{r, eval=FALSE}
-[sp_name]_40c_cleaned <-
+#[sp_name]_40c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_40c.dat"] %>%
@@ -237,7 +237,7 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 ### File 5
 
 ```{r, eval=FALSE}
-[sp_name]_45c_cleaned <-
+#[sp_name]_45c_cleaned <-
 
     # Select the data to be clean
     [sp_name]_raw_data["file_name_45c.dat"] %>%
@@ -267,7 +267,7 @@ plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 ### File 6
 
 ```{r, eval=FALSE}
-[sp_name]_50c_cleaned <- 
+#[sp_name]_50c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_50c.dat"] %>% 
@@ -297,7 +297,7 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 ### File 7
 
 ```{r, eval=FALSE}
-[sp_name]_55c_cleaned <- 
+#[sp_name]_55c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_55c.dat"] %>% 
@@ -327,8 +327,8 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 ## Merge cleaned dataframes
 
 ```{r, eval=FALSE}
-[sp_name]_cleaned_data <- 
-                    merge_droughtbox_data([sp_name]_25c_cleaned,
+[sp_name]_merged_cleaned_data <- 
+                    merge_droughtbox_data(#[sp_name]_25c_cleaned,
                                           [sp_name]_30c_cleaned,
                                           [sp_name]_35c_cleaned,
                                           [sp_name]_40c_cleaned,
@@ -348,7 +348,7 @@ from os import listdir
 import pathlib
 
 # Function for cropping images
-def crop_images_for_imagej(path, blur = 25):
+def crop_images_for_imagej(path, blur = 15):
 
     # Validate inputs ---------------------------------------------------------
 
@@ -584,9 +584,10 @@ crop_images_for_imagej(path = path)
 ```{bash, bash_code, results = "hide", eval=FALSE}
 pwd
 # Enter the path where Fiji was installed
-# Locate leaf_area_300dpi.ijm macro
-# Copy path to cropped_images_for_imagej
 
+# Locate leaf_area_300dpi.ijm macro
+
+# Copy path to cropped_images_for_imagej
 
 # ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
@@ -610,23 +611,30 @@ pwd
              into = c('image', 'genera', 'specie', 'tree_id',  'set_temperature'),
              sep = '_') %>%
 
-    # Unite Genera and specie columns
+   # Unite Genera and specie columns
     unite("spcode", genera:specie, sep = "_", remove = TRUE) %>%
 
-    # Remove unused columns
-    select(-c(file_extension, image)) %>%
-
     # Remove leading zeros inside column
-    mutate(tree_id = factor(str_remove(tree_id, "^0+")),
+    mutate(tree_id = as.numeric(str_remove(tree_id, "^0+")),
 
            # Remove the last character in set_temperature column
-           set_temperature = factor(str_sub(set_temperature, end = -2)))
+           set_temperature = as.numeric(str_sub(set_temperature, end = -2))
+           ) %>%
+
+    # Rename column
+    rename(areas_cm2 = area)  %>%
+
+    # Remove unused columns
+    select(-c(file_extension, image))
+
+glimpse()
 ```
 
 ## Load dry weights data
 
 ```{r, eval=FALSE}
 [sp_name]_dry_weights_data <- read_excel("./[sp_name]_dry_weights.xlsx")
+glimpse()
 ```
 
 ### Merge area and dry weights dataframes
@@ -635,18 +643,20 @@ pwd
 [sp_name]_dry_weights_areas_data <- 
     inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data,
                by = join_by(spcode, tree_id, set_temperature))
+glimpse()
 ```
 
 ## Calculate Residual conductance
 
 ```{r, eval=FALSE}
 [sp_name]_residual_conductance <- 
-    calculate_residual_conductance(droughtbox_data =  [sp_name]_cleaned_data,
+    calculate_residual_conductance(droughtbox_data =  [sp_name]_merged_cleaned_data,
                                    leaf_and_branch_area_data = [sp_name]_dry_weights_areas_data)
 ```
 
 ```{r residual_conductance_plot, eval=FALSE}
 ggplot(data = [sp_name]_residual_conductance, aes(x =  set_temperature,
-                                                    y = residual_conductance)) +
+                                                  colour = factor(tree_id),
+                                                  y = residual_conductance)) +
         geom_point()
 ```
