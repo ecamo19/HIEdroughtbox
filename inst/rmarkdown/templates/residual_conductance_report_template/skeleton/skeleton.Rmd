@@ -40,7 +40,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # Path where figures are going to be store pdf single 
                       # figures
                       Edit path in line 44 and comment out this line   
-                      fig.path       = paste0("./figures_[sp_name]_gres", "/"),
+                      fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -60,6 +60,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
 
 ```{r libaries, message = FALSE, warning = FALSE, cache = FALSE}
 library(HIEdroughtbox)
+library(ggplot2)
 
 # For data manipulation
 library(dplyr)
@@ -85,18 +86,7 @@ use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
 
 ```{r, raw_data_list}
 
-# Create list with all data frameslibrary(HIEdroughtbox)
-
-# For data manipulation
-library(dplyr)
-library(ggplot2)
-library(purrr)
-library(stringr)
-library(tidyr)
-
-# For running python in Rmarkdown
-library(reticulate)
-library(here)
+# Create list with all data frames
 [sp_name]_raw_data <- read_hie_droughtbox_data_folder("./")
 ```
 
@@ -122,10 +112,12 @@ map([sp_name]_raw_data, plot_strains_weights)
 
 ## Clean data
 
+Remember for remove the `eval=FALSE` from each chunk
+
 ### File 1
 
-```{r}
-#[sp_name]_25c_cleaned <- 
+```{r, eval=FALSE}
+[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_25c.dat"] %>% 
@@ -148,18 +140,18 @@ map([sp_name]_raw_data, plot_strains_weights)
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_25c}
+```{r, plot_cleaned_data_25c, eval=FALSE}
 plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 ```
 
 ### File 2
 
-```{r}
-#[sp_name]_30c_cleaned <- 
-    
+```{r , eval=FALSE}
+[sp_name]_30c_cleaned <-
+
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_30c.dat"] %>% 
-    
+    [sp_name]_raw_data["file_name_30c.dat"] %>%
+
     # Transform list element to dataframe type
     as.data.frame(.) %>%
 
@@ -169,28 +161,27 @@ plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
     # Choose a interval of time
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
+                           to_end_time = "HH:MM:SS") %>%
     # Clean the data
     clean_droughtbox_data(.,
                           remove_n_observations = 5,
                           threshold = 0.2)
-    
 ```
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_30c}
+```{r, plot_cleaned_data_30c, eval=FALSE}
 plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
 ```
 
 ### File 3
 
-```{r}
-#[sp_name]_35c_cleaned <- 
-    
+```{r, eval=FALSE}
+[sp_name]_35c_cleaned <-
+
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_35c.dat"] %>% 
-    
+    [sp_name]_raw_data["file_name_35c.dat"] %>%
+
     # Transform list element to dataframe type
     as.data.frame(.) %>%
 
@@ -200,28 +191,27 @@ plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
     # Choose a interval of time
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
+                           to_end_time = "HH:MM:SS") %>%
     # Clean the data
     clean_droughtbox_data(.,
                           remove_n_observations = 5,
                           threshold = 0.2)
-    
 ```
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_35c}
+```{r, plot_cleaned_data_35c, eval=FALSE}
 plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 ```
 
 ### File 4
 
-```{r}
-#[sp_name]_40c_cleaned <- 
-    
+```{r, eval=FALSE}
+[sp_name]_40c_cleaned <-
+
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_40c.dat"] %>% 
-    
+    [sp_name]_raw_data["file_name_40c.dat"] %>%
+
     # Transform list element to dataframe type
     as.data.frame(.) %>%
 
@@ -231,28 +221,27 @@ plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
     # Choose a interval of time
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
+                           to_end_time = "HH:MM:SS") %>%
     # Clean the data
     clean_droughtbox_data(.,
                           remove_n_observations = 5,
                           threshold = 0.2)
-    
 ```
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_40c}
+```{r, plot_cleaned_data_40c, eval=FALSE}
 plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 ```
 
 ### File 5
 
-```{r}
-#[sp_name]_45c_cleaned <- 
-    
+```{r, eval=FALSE}
+[sp_name]_45c_cleaned <-
+
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_45c.dat"] %>% 
-    
+    [sp_name]_raw_data["file_name_45c.dat"] %>%
+
     # Transform list element to dataframe type
     as.data.frame(.) %>%
 
@@ -262,7 +251,7 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
    # Choose a interval of time
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
+                           to_end_time = "HH:MM:SS") %>%
     # Clean the data
     clean_droughtbox_data(.,
                           remove_n_observations = 5,
@@ -271,37 +260,14 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_45c}
-plot_strains_weights([sp_name]_45c_cleaned, show    read.csv("./euc_crebra_images/cropped_images_for_imagej/areas_cm2.csv",
-                header = TRUE)  %>%
-
-    # Separate file name from file extension
-    separate_wider_delim(file_name,
-                        delim = ".",
-                        names = c("file_name", "file_extension")) %>%
-
-    # Separate column into 5 based on _
-    separate(., col = file_name,
-            into = c('image', 'genera', 'specie', 'tree_id',  'set_temperature'),
-            sep = '_') %>%
-
-    # Unite Genera and specie columns
-    unite("spcode", genera:specie, sep = "_", remove = TRUE) %>%
-
-    # Remove unused columns
-    select(-c(file_extension, image)) %>%
-
-    # Remove leading zeros inside column
-    mutate(tree_id = factor(str_remove(tree_id, "^0+")),
-
-           # Remove the last character in set_temperature column
-           set_temperature = factor(str_sub(set_temperature, end = -2)))_tare_group = FALSE)
+```{r, plot_cleaned_data_45c, eval=FALSE}
+plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 ```
 
 ### File 6
 
-```{r}
-#[sp_name]_50c_cleaned <- 
+```{r, eval=FALSE}
+[sp_name]_50c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_50c.dat"] %>% 
@@ -324,14 +290,14 @@ plot_strains_weights([sp_name]_45c_cleaned, show    read.csv("./euc_crebra_image
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_50c}
+```{r, plot_cleaned_data_50c, eval=FALSE}
 plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 ```
 
 ### File 7
 
-```{r}
-#[sp_name]_55c_cleaned <- 
+```{r, eval=FALSE}
+[sp_name]_55c_cleaned <- 
     
     # Select the data to be clean
     [sp_name]_raw_data["file_name_55c.dat"] %>% 
@@ -354,14 +320,14 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_55c}
+```{r, plot_cleaned_data_55c, eval=FALSE}
 plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 ```
 
 ## Merge cleaned dataframes
 
-```{r}
-#[sp_name]_cleaned_data <- 
+```{r, eval=FALSE}
+[sp_name]_cleaned_data <- 
                     merge_droughtbox_data([sp_name]_25c_cleaned,
                                           [sp_name]_30c_cleaned,
                                           [sp_name]_35c_cleaned,
@@ -373,7 +339,7 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 
 # 3. Calculate Branch areas
 
-```{python, python_code, echo=FALSE}
+```{python, python_code, echo=FALSE, eval=FALSE}
 import cv2
 import os
 import shutil
@@ -608,14 +574,14 @@ process_folder(input_path);
 
 ## Use python function to crop images
 
-```{python}
+```{python, eval=FALSE}
 path = "path/to/scanned_images"
 crop_images_for_imagej(path = path)
 ```
 
 ## Calculate leaf area using ImageJ macro in bash
 
-```{bash, bash_code, results = "hide"}
+```{bash, bash_code, results = "hide", eval=FALSE}
 pwd
 # Enter the path where Fiji was installed
 # Locate leaf_area_300dpi.ijm macro
@@ -629,7 +595,7 @@ pwd
 
 ## Load Areas data
 
-```{r}
+```{r, eval=FALSE}
 [sp_name]_areas_data <-
     read.csv("./path/to/cropped_images_for_imagej/areas_cm2.csv",
                 header = TRUE)  %>%
@@ -659,13 +625,13 @@ pwd
 
 ## Load dry weights data
 
-```{r}
+```{r, eval=FALSE}
 [sp_name]_dry_weights_data <- read_excel("./[sp_name]_dry_weights.xlsx")
 ```
 
 ### Merge area and dry weights dataframes
 
-```{r}
+```{r, eval=FALSE}
 [sp_name]_dry_weights_areas_data <- 
     inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data,
                by = join_by(spcode, tree_id, set_temperature))
@@ -673,10 +639,14 @@ pwd
 
 ## Calculate Residual conductance
 
-```{r}
-calculate_residual_conductance(droughtbox_data =  [sp_name]_cleaned_data,
-                               leaf_and_branch_area_data = [sp_name]_dry_weights_areas_data)
-
+```{r, eval=FALSE}
+[sp_name]_residual_conductance <- 
+    calculate_residual_conductance(droughtbox_data =  [sp_name]_cleaned_data,
+                                   leaf_and_branch_area_data = [sp_name]_dry_weights_areas_data)
 ```
 
-
+```{r residual_conductance_plot, eval=FALSE}
+ggplot(data = [sp_name]_residual_conductance, aes(x =  set_temperature,
+                                                    y = residual_conductance)) +
+        geom_point()
+```
