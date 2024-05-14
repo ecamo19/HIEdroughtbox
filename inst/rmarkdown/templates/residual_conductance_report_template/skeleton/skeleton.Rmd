@@ -112,7 +112,7 @@ map([sp_name]_raw_data, plot_strains_weights)
 
 ## Clean data
 
-Remember for remove the `eval=FALSE` from each chunk
+Remember to remove the `eval=FALSE` from each chunk
 
 ### File 1
 
