@@ -1,6 +1,48 @@
-
+#' calculate_rate_of_change
+#'
+#' @description
+#' This function calculates the rate of change (aka slope) of the weight of a
+#' small branch measured in grams and time measured in seconds.
+#'
+#' @param droughtbox_data
+#'
+#' @return A dataframe containing the strain_number, set temperature and the
+#' rate of change between weight and time.
+#'
+#' @examples
+#' path_to_droughtbox_data <- system.file("extdata",
+#'                             "acacia_aneura_25c.dat",
+#'                             package = "HIEdroughtbox")
+#'
+#' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
+#'
+#' calculate_rate_of_change(droughtbox_data = droughtbox_data)
+#'
+#' @export
 calculate_rate_of_change <- function(droughtbox_data){
 
+    # Validate input parameters ------------------------------------------------
+
+    # Stop if droughtbox_data is not a data frame
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Assert date column in droughtbox_data
+    checkmate::assert_date(droughtbox_data$date)
+
+    # Assert time column in droughtbox_data
+    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+
+    # Make sure the necessary data is in the dataframe
+    base::stopifnot("Missing weight columns in droughtbox_data. All weights should be included (4 in total)" = c("strain_avg_1_microstrain_avg",
+                                                                     "strain_avg_2_microstrain_avg",
+                                                                     "strain_avg_3_microstrain_avg",
+                                                                     "strain_avg_4_microstrain_avg") %in% base::colnames(droughtbox_data))
+
+    base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c("set_point_t_avg_avg",
+                                                                            "vpd_avg_kpa_avg",
+                                                                            "date_time") %in% base::colnames(droughtbox_data))
+
+    # Calculate the rate of change ---------------------------------------------
     rate_of_change <-
 
         # Transform the data into the right format
@@ -58,7 +100,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
                                                           # Calculate the slope
-                                                          ~coef(lm(strain_weight ~ time_seconds,
+                                                          ~stats::coef(lm(strain_weight ~ time_seconds,
                                                                    data = .x))[["time_seconds"]])) %>%
         # Remove nested dataframes
         dplyr::select(-data) %>%
@@ -72,12 +114,7 @@ calculate_rate_of_change <- function(droughtbox_data){
                         "Negative slope. This is OK"); .}
 
     return(rate_of_change)
-
     }
-
-
-
-
 
 #' calculate_transpiration_rates
 #'
@@ -90,14 +127,16 @@ calculate_rate_of_change <- function(droughtbox_data){
 #' @param droughtbox_data Dataframe loaded with the function
 #' `read_hie_droughtbox_data()`.
 #'
+#' @param leaf_and_branch_area_data Dataframe containing the leaf and branch
+#' areas.
+#'
 #' @importFrom magrittr %>%
 #'
 #' @return
 #'
 #' @examples
 #' @export
-
-calculate_transpiration_rates <- function(droughtbox_data){
+calculate_transpiration_rates <- function(droughtbox_data, ){
 
     # Validate input parameters ------------------------------------------------
 
@@ -114,29 +153,29 @@ calculate_transpiration_rates <- function(droughtbox_data){
     base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in droughtbox_data" =  c("strain_avg_1_microstrain_avg",
-                                                              "strain_avg_2_microstrain_avg",
-                                                              "strain_avg_3_microstrain_avg",
-                                                              "strain_avg_4_microstrain_avg",
+    base::stopifnot("Missing weight columns in droughtbox_data. All weights should be included (4 in total)" = c("strain_avg_1_microstrain_avg",
+                                                                                                                 "strain_avg_2_microstrain_avg",
+                                                                                                                 "strain_avg_3_microstrain_avg",
+                                                                                                                 "strain_avg_4_microstrain_avg") %in% base::colnames(droughtbox_data))
 
-                                                              "set_point_t_avg_avg",
-                                                              "vpd_avg_kpa_avg",
-                                                              "date_time"
-    ) %in% base::colnames(droughtbox_data))
+    base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c("set_point_t_avg_avg",
+                                                                            "vpd_avg_kpa_avg",
+                                                                            "date_time") %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
                                                                             "strain_number",
                                                                             "set_temperature",
-                                                                            "tree_id"
-    ) %in% base::colnames(leaf_and_branch_area_data))
+                                                                            "tree_id") %in% base::colnames(leaf_and_branch_area_data))
 
 
-    # Transpiration rate -------------------------------------------------------
+    # Calculate the rate of change between weight and time ---------------------
+    slope_grams_per_second <- calculate_rate_of_change(droughtbox_data)
+
+    # Estimate the transpiration rate ------------------------------------------
     transpiration_rate <-
 
-
-        # Estimate transpiration -----------------------------------------------
+        slope_grams_per_second %>%
 
         ## Merge leaf and branch areas data with slope data --------------------
             dplyr::full_join(., leaf_and_branch_area_data,
