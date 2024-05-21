@@ -68,14 +68,11 @@ library(ggplot2)
 library(purrr)
 library(stringr)
 library(tidyr)
-
-
 library(here)
 
 # For reading xlsx file
 library(readxl)
 ```
-
 
 ```{r, echo=FALSE}
 
@@ -85,14 +82,16 @@ if (Sys.info()[1] != "Linux") {
     
     # For running python in Rmarkdown
     library(reticulate)
+    
+    # Install library for running python code
+    py_install("openssl")
     }
 
 ```
 
-
 ```{r}
 # Set conda env for working with python
-use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
+#use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
 ```
 
 # 1. Load Droughtbox data
@@ -350,8 +349,21 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
                                           [sp_name]_55c_cleaned)
 ```
 
-# 3. Calculate Branch areas
+### Calculate the slopes
 
+```{r}
+slopes <- calculate_rate_of_change([sp_name]_merged_cleaned_data)
+```
+
+```{r}
+ggplot(data = slopes, aes(x = set_temperature,
+                          y = slope_grams_per_second,
+                          colour =  factor(strain_number))) +
+    geom_point() +
+    theme_bw()
+```
+
+# 3. Calculate Branch areas
 
 ```{python, python_code, echo=FALSE, eval=FALSE}
 import cv2

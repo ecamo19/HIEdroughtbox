@@ -230,8 +230,8 @@ calculate_transpiration_rates <- function(droughtbox_data,
                              -(.$slope_grams_per_second/(.$areas_cm2))) %>%
 
             # Remove unused columns
-            dplyr::select(-c(set_vpd, started_at, number_of_leaves,
-                             stem_dry_weight_mg, leaf_dry_weight_mg)) %>%
+            dplyr::select(dplyr::any_of(-c(set_vpd, started_at, number_of_leaves,
+                                    stem_dry_weight_mg, leaf_dry_weight_mg))) %>%
 
             # Arrange dataset
             dplyr::select(spcode, tree_id, dplyr::everything())
