@@ -76,10 +76,9 @@ library(readxl)
 ```
 
 ```{r, echo=FALSE}
-
 if (Sys.info()[1] != "Linux") {
     print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
-} else{
+} else {
     
     # For running python in Rmarkdown
     library(reticulate)
@@ -87,7 +86,6 @@ if (Sys.info()[1] != "Linux") {
     # Install library for running python code
     py_install("openssl")
     }
-
 ```
 
 ```{r}
@@ -98,13 +96,11 @@ if (Sys.info()[1] != "Linux") {
 # 1. Load Droughtbox data
 
 ```{r, raw_data_list}
-
 # Create list with all data frames
 [sp_name]_raw_data <- read_hie_droughtbox_data_folder("./")
 ```
 
 ```{r}
-
 # Show the names of each element in the list
 names([sp_name]_raw_data)
 ```
@@ -129,7 +125,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### File 1
 
-```{r, eval=FALSE}
+```{r, eval = FALSE, echo = FALSE}
 #[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
@@ -153,7 +149,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_25c, eval=FALSE}
+```{r, plot_cleaned_data_25c, eval = FALSE}
 plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 ```
 
@@ -690,8 +686,26 @@ glimpse()
 ```
 
 ```{r residual_conductance_plot, eval=FALSE}
-ggplot(data = [sp_name]_residual_conductance, aes(x =  set_temperature,
-                                                  colour = factor(tree_id),
-                                                  y = residual_conductance)) +
-        geom_point()
+[sp_name]_residual_conductance %>%
+    
+    group_by(set_temperature) %>%
+    
+    # Summarize data
+    summarise(
+        mean_residual_conductance = mean(residual_conductance),
+        sd_residual_conductance = sd(residual_conductance),
+        n_residual_conductance = n(),
+        se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%
+    
+        # Plot
+        ggplot(data = ., aes(x =  set_temperature,
+                            y = mean_residual_conductance)) +
+
+        geom_point(size = 4) +
+
+        geom_errorbar(aes(ymin =  mean_residual_conductance - se_residual_conductance,
+                         ymax  =  mean_residual_conductance + se_residual_conductance),
+                         width = 1.5,
+                         position = position_dodge(0.05)) +
+        theme_bw()
 ```
