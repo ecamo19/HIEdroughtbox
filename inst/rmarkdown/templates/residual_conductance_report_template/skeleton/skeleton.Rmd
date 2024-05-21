@@ -658,14 +658,15 @@ pwd
     # Remove unused columns
     select(-c(file_extension, image))
 
-glimpse()
+glimpse([sp_name]_areas_data)
 ```
 
 ## Load dry weights data
 
 ```{r, eval=FALSE}
 [sp_name]_dry_weights_data <- read_excel("./[sp_name]_dry_weights.xlsx")
-glimpse()
+
+glimpse([sp_name]_dry_weights_data)
 ```
 
 ### Merge area and dry weights dataframes
@@ -674,7 +675,8 @@ glimpse()
 [sp_name]_dry_weights_areas_data <- 
     inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data,
                by = join_by(spcode, tree_id, set_temperature))
-glimpse()
+
+glimpse([sp_name]_dry_weights_areas_data )
 ```
 
 ## Calculate Residual conductance
