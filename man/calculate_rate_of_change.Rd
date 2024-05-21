@@ -7,7 +7,18 @@
 calculate_rate_of_change(droughtbox_data)
 }
 \arguments{
-\item{droughtbox_data}{}
+\item{droughtbox_data}{Dataframe loaded with the function
+`read_hie_droughtbox_data()`.
+
+This dataframe must contain the following columns:
+ strain_avg_1_microstrain_avg
+ strain_avg_2_microstrain_avg
+ strain_avg_3_microstrain_avg
+ strain_avg_4_microstrain_avg
+
+ set_point_t_avg_avg
+ vpd_avg_kpa_avg
+ date_time}
 }
 \value{
 A dataframe containing the strain_number, set temperature and the
