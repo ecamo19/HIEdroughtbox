@@ -82,13 +82,16 @@ if (Sys.info()[1] != "Linux") {
     
     # For running python in Rmarkdown
     library(reticulate)
+    
+    # Install library for running python code
+    py_install("openssl")
     }
 
 ```
 
 ```{r}
 # Set conda env for working with python
-use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
+#use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
 ```
 
 # 1. Load Droughtbox data
