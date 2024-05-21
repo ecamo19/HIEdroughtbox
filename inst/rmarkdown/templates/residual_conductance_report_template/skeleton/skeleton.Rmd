@@ -23,6 +23,7 @@ knitr::opts_knit$set(root.dir = 'path/to/root/dir')
 ```
 
 ```{r knitr, include = FALSE}
+options(scipen = 999)
 
 # Save figures in specific place
 knitr::opts_chunk$set(autodep        = TRUE,

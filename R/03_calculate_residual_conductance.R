@@ -120,9 +120,12 @@ calculate_rate_of_change <- function(droughtbox_data){
         tidyr::unnest(cols = slope_grams_per_second) %>%
 
         # Print message if positive slope found
-        {dplyr::if_else(.$slope_grams_per_second > 0,
+        {dplyr::if_else(.data$slope_grams_per_second < 0, "Negative slope. This is OK",
                         print("Positive slope between weight loss and time found. Check your data"),
-                        "Negative slope. This is OK"); .}
+                        ); .} %>%
+
+        # Without this the code won't run
+        dplyr::ungroup()
 
     return(rate_of_change)
     }
@@ -221,9 +224,6 @@ calculate_transpiration_rates <- function(droughtbox_data,
             ## Merge leaf and branch areas data with slope data ----------------
             dplyr::full_join(., leaf_and_branch_area_data,
                              by = c("strain_number", "set_temperature")) %>%
-
-            # Without this the code won't run
-            dplyr::ungroup() %>%
 
             # Calculate transpiration
             dplyr::mutate(transpiration_grams_per_sec_cm2 =
