@@ -69,13 +69,26 @@ library(purrr)
 library(stringr)
 library(tidyr)
 
-# For running python in Rmarkdown
-library(reticulate)
+
 library(here)
 
 # For reading xlsx file
 library(readxl)
 ```
+
+
+```{r, echo=FALSE}
+
+if (Sys.info()[1] != "Linux") {
+    print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
+} else{
+    
+    # For running python in Rmarkdown
+    library(reticulate)
+    }
+
+```
+
 
 ```{r}
 # Set conda env for working with python
@@ -338,6 +351,7 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 ```
 
 # 3. Calculate Branch areas
+
 
 ```{python, python_code, echo=FALSE, eval=FALSE}
 import cv2
