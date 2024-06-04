@@ -369,6 +369,7 @@ import shutil
 from os.path import join
 from os import listdir
 import pathlib
+import numpy
 
 # Function for cropping images
 def crop_images_for_imagej(path, blur = 15):
@@ -385,6 +386,12 @@ def crop_images_for_imagej(path, blur = 15):
 
     # Set working directory
     os.chdir(path)
+    
+    # Get adjacend pixel
+    adjacen_width = 321
+    adjacen_height = 275
+    adjacen_x = 1575
+    adjacen_y = 30
 
     # Set coordiantes of the 2x2 squared tag in all images.
     # The coordinates were obtained using gThumb
@@ -433,7 +440,11 @@ def crop_images_for_imagej(path, blur = 15):
             img = img[lid_y:lid_y + lid_height, lid_x:lid_x + lid_width]
 
             # Change values of mask_pixel to background values
-            img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = 225
+            # img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = 225
+            
+            # Calculate the mean value of 
+            median_pixel_value = numpy.median(img[adjacen_y :adjacen_y + adjacen_height, adjacen_x:adjacen_x + adjacen_width])
+            img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = median_pixel_value
 
             # Apply filter to image for improving quality
             blurred_image = cv2.medianBlur(img, blur)
@@ -607,7 +618,7 @@ process_folder(input_path);
 
 ```{python, eval=FALSE}
 path = "path/to/scanned_images"
-crop_images_for_imagej(path = path)
+crop_images_for_imagej(path = path, blur = 15)
 ```
 
 ## Calculate leaf area using ImageJ macro in bash
