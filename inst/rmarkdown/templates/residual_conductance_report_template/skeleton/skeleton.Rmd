@@ -76,10 +76,9 @@ library(readxl)
 ```
 
 ```{r, echo=FALSE}
-
 if (Sys.info()[1] != "Linux") {
     print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
-} else{
+} else {
     
     # For running python in Rmarkdown
     library(reticulate)
@@ -87,7 +86,6 @@ if (Sys.info()[1] != "Linux") {
     # Install library for running python code
     py_install("openssl")
     }
-
 ```
 
 ```{r}
@@ -98,13 +96,11 @@ if (Sys.info()[1] != "Linux") {
 # 1. Load Droughtbox data
 
 ```{r, raw_data_list}
-
 # Create list with all data frames
 [sp_name]_raw_data <- read_hie_droughtbox_data_folder("./")
 ```
 
 ```{r}
-
 # Show the names of each element in the list
 names([sp_name]_raw_data)
 ```
@@ -129,7 +125,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### File 1
 
-```{r, eval=FALSE}
+```{r, eval = FALSE, echo = FALSE}
 #[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
@@ -153,7 +149,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_25c, eval=FALSE}
+```{r, plot_cleaned_data_25c, eval = FALSE}
 plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 ```
 
@@ -373,6 +369,7 @@ import shutil
 from os.path import join
 from os import listdir
 import pathlib
+import numpy
 
 # Function for cropping images
 def crop_images_for_imagej(path, blur = 15):
@@ -389,6 +386,12 @@ def crop_images_for_imagej(path, blur = 15):
 
     # Set working directory
     os.chdir(path)
+    
+    # Get adjacend pixel
+    adjacen_width = 321
+    adjacen_height = 275
+    adjacen_x = 1575
+    adjacen_y = 30
 
     # Set coordiantes of the 2x2 squared tag in all images.
     # The coordinates were obtained using gThumb
@@ -437,7 +440,11 @@ def crop_images_for_imagej(path, blur = 15):
             img = img[lid_y:lid_y + lid_height, lid_x:lid_x + lid_width]
 
             # Change values of mask_pixel to background values
-            img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = 225
+            # img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = 225
+            
+            # Calculate the mean value of 
+            median_pixel_value = numpy.median(img[adjacen_y :adjacen_y + adjacen_height, adjacen_x:adjacen_x + adjacen_width])
+            img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = median_pixel_value
 
             # Apply filter to image for improving quality
             blurred_image = cv2.medianBlur(img, blur)
@@ -506,6 +513,8 @@ def crop_images_for_imagej(path, blur = 15):
 
 // Get input path --------------------------------------------------------------
 print("Remember to provide the full path");
+//input_path = '/home/ecamo19/Desktop/cropped_images_for_imagej';
+
 input_path = getArgument();
 print("Reading files inside "+input_path);
 
@@ -530,7 +539,9 @@ function leaf_area(){
 
             // This will get the last line of the results, the max
             var area_cm2 = getResult("Area");
-
+            getStatistics(area_cm2);
+			print(getTitle(), area_cm2);
+			
 			// Get image name
 			var image_name = getTitle();
 
@@ -538,6 +549,7 @@ function leaf_area(){
 			var result = image_name + "," +area_cm2;
 			return result;
 			}
+
 
 //2- Function for reading and processing each image ----------------------------
 function process_file(input, file){
@@ -611,7 +623,7 @@ process_folder(input_path);
 
 ```{python, eval=FALSE}
 path = "path/to/scanned_images"
-crop_images_for_imagej(path = path)
+crop_images_for_imagej(path = path, blur = 15)
 ```
 
 ## Calculate leaf area using ImageJ macro in bash
@@ -662,14 +674,15 @@ pwd
     # Remove unused columns
     select(-c(file_extension, image))
 
-glimpse()
+glimpse([sp_name]_areas_data)
 ```
 
 ## Load dry weights data
 
 ```{r, eval=FALSE}
 [sp_name]_dry_weights_data <- read_excel("./[sp_name]_dry_weights.xlsx")
-glimpse()
+
+glimpse([sp_name]_dry_weights_data)
 ```
 
 ### Merge area and dry weights dataframes
@@ -678,7 +691,8 @@ glimpse()
 [sp_name]_dry_weights_areas_data <- 
     inner_join([sp_name]_dry_weights_data, [sp_name]_areas_data,
                by = join_by(spcode, tree_id, set_temperature))
-glimpse()
+
+glimpse([sp_name]_dry_weights_areas_data )
 ```
 
 ## Calculate Residual conductance
@@ -690,8 +704,26 @@ glimpse()
 ```
 
 ```{r residual_conductance_plot, eval=FALSE}
-ggplot(data = [sp_name]_residual_conductance, aes(x =  set_temperature,
-                                                  colour = factor(tree_id),
-                                                  y = residual_conductance)) +
-        geom_point()
+[sp_name]_residual_conductance %>%
+    
+    group_by(set_temperature) %>%
+    
+    # Summarize data
+    summarise(
+        mean_residual_conductance = mean(residual_conductance),
+        sd_residual_conductance = sd(residual_conductance),
+        n_residual_conductance = n(),
+        se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%
+    
+        # Plot
+        ggplot(data = ., aes(x =  set_temperature,
+                            y = mean_residual_conductance)) +
+
+        geom_point(size = 4) +
+
+        geom_errorbar(aes(ymin =  mean_residual_conductance - se_residual_conductance,
+                         ymax  =  mean_residual_conductance + se_residual_conductance),
+                         width = 1.5,
+                         position = position_dodge(0.05)) +
+        theme_bw()
 ```
