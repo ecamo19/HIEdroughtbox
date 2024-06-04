@@ -513,6 +513,8 @@ def crop_images_for_imagej(path, blur = 15):
 
 // Get input path --------------------------------------------------------------
 print("Remember to provide the full path");
+//input_path = '/home/ecamo19/Desktop/cropped_images_for_imagej';
+
 input_path = getArgument();
 print("Reading files inside "+input_path);
 
@@ -537,7 +539,9 @@ function leaf_area(){
 
             // This will get the last line of the results, the max
             var area_cm2 = getResult("Area");
-
+            getStatistics(area_cm2);
+			print(getTitle(), area_cm2);
+			
 			// Get image name
 			var image_name = getTitle();
 
@@ -545,6 +549,7 @@ function leaf_area(){
 			var result = image_name + "," +area_cm2;
 			return result;
 			}
+
 
 //2- Function for reading and processing each image ----------------------------
 function process_file(input, file){
