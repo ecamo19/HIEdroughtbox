@@ -125,7 +125,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### File 1
 
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE, echo = FALSE, include = FALSE}
 #[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
@@ -149,7 +149,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_25c, eval = FALSE}
+```{r, plot_cleaned_data_25c, eval = FALSE, include = FALSE}
 plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 ```
 
