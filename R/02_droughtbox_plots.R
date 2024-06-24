@@ -362,3 +362,37 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                             size = 1.3))
         }
 }
+
+
+
+#' plot_arrhenius
+#'
+#' @param residual_conductance_data Dataframe obtained with the
+#' `calculate_residual_conductance` function
+#'
+#' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
+#' total) inside the Droughtbox.
+#' @examples
+#'
+#' @export
+
+
+plot_arrhenius <- function(residual_conductance_data){
+
+    # Validate input parameters ------------------------------------------------
+
+    # Check that droughtbox_data is a dataframe
+    base::stopifnot("residual_conductance_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(residual_conductance_data))
+
+    # Make sure that the data is in the dataframe
+    base::stopifnot("residual_conductance column missing in the dataframe" =  "residual_conductance" %in% base::colnames(residual_conductance_data))
+
+    # Make sure that the data is in the dataframe
+    base::stopifnot("set_temperature column missing in the dataframe" =  "set_temperature" %in% base::colnames(residual_conductance_data))
+
+    # Make sure that the data is in the dataframe
+    base::stopifnot("spcode column missing in the dataframe" =  "spcode" %in% base::colnames(residual_conductance_data))
+
+    # Arrhenius plot -----------------------------------------------------------
+
+}
