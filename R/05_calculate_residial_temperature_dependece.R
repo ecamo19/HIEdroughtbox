@@ -1,4 +1,4 @@
-#' calculate_residual_temperature_dependece
+#' calculate_residual_temperature_dependence
 #'
 #' @description
 #' This function calculates a slope and a intercept with a varying number of
@@ -25,11 +25,11 @@
 #'
 #'tp_data <- read.csv(path_to_tp_data, header = TRUE)
 #'
-#'calculate_residual_temperature_dependece(gmin = tp_data$gmin,
+#'calculate_residual_temperature_dependence(gmin = tp_data$gmin,
 #'                                         temperature = tp_data$temperature)
 #'
 #' @export
-calculate_residual_temperature_dependece <- function(gmin, temperature){
+calculate_residual_temperature_dependence <- function(gmin, temperature){
     print("Make sure gmin units are micro-mol*cm-2*s-1")
 
     # Validate input parameters ------------------------------------------------
