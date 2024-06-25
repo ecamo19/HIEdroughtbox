@@ -171,6 +171,8 @@ read_hie_droughtbox_data_file <- function(path_droughtbox_data_file ){
 #' @param path_droughtbox_data_folder String indicating the location of a folder
 #' containing 2 or more .dat files in your computer.
 #'
+#' @importFrom magrittr %>%
+#'
 #' @return A single list with 2 or more data frames.
 #'
 #' @examples
@@ -247,6 +249,8 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
 #'
 #' @param save_empty_df_at String indicating the path where the empty datasheet
 #' for recording the leaf and branch areas should be saved.
+#'
+#' @importFrom magrittr %>%
 #'
 #' @return Empty dataframe filled with NAs.
 #'
@@ -474,9 +478,12 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 #' @param to_end_time String indicating the final hour, minutes and seconds
 #' to filter in the dataset. It must have a HH:MM:SS format.
 #'
+#' @importFrom magrittr %>%
+#'
 #' @return Dataframe with the selected dates and times.
 #'
-#' @importFrom magrittr %>%
+#' @examples
+#' \dontrun{create_empty_droughtbox_leaf_branch_areas_sheet("path/to/folder")}#' @importFrom magrittr %>%
 #'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
@@ -815,4 +822,105 @@ merge_droughtbox_data <- function(...){
         purrr::reduce(dplyr::full_join)
 
     return(merged_droughtbox_data)
+}
+
+#' split_data
+#'
+#'@description
+#' Function for splitting a dataframe in two subgroups and running a linear
+#' regression to each subgroup. This function is meant to be used
+#' inside `calculate_residual_temperature_dependence_purrr`.
+#'
+#' @param data
+#' Dataframe with two column temperature and residual conductance
+#'
+#' @param n
+#' Number of rows for the firts regression. For example if the total number of
+#' rows in data is 8 and n = 2 then the first dataframe will be of size 2 is and
+#' the second dataframe for regression_2 will be of size 6.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A dataframe with nested dataframes.
+#'
+#' @examples
+#' \dontrun{split_data(data, n = 2)}
+#'
+#' @noRd
+#'
+#' @keywords internal
+#'
+#' @export
+split_data <- function(data, n){
+
+    # Create empty list
+    subgroups  <- list()
+
+    # Save split data into list
+    subgroups[[1]] <- tidyr::nest(data[1:n,]) %>% dplyr::mutate(label = base::factor("regression_1"))
+    subgroups[[2]] <- tidyr::nest(data[-(1:(n-1)),]) %>% dplyr::mutate(label = base::factor("regression_2"))
+
+    # Return data
+    return(dplyr::bind_rows(subgroups) %>%
+               dplyr::select(label, data))
+
+}
+
+#' get_coefs
+#'
+#'@description
+#' Function for  getting the slope and the intercept of a linear
+#' regression to each subgroup. This function is meant to be used
+#' inside `calculate_residual_temperature_dependence_purrr`.
+#'
+#' @param data
+#' Dataframe with two columns, temperature and residual conductance
+#'
+#' @param transform_gmin_units Boolean indicating if residual conductance should
+#' be converted (TRUE) from grams*cm-2*s-1 to mciro-moles*cm-2*s-1 or not *(FALSE)
+#'
+#' @importFrom magrittr %>%
+#'
+#' @return A dataframe of size 2x2
+#'
+#' @examples
+#' \dontrun{get_coefs(data, transform_gmin_units = FALSE)}
+#'
+#' @noRd
+#'
+#' @keywords internal
+#'
+#' @export
+get_coefs <- function(data, transform_gmin_units = FALSE){
+
+    # Transform gmin units -----------------------------------------------------
+    if(transform_gmin_units == TRUE){
+
+        data$gmin_transformed <- (data$gmin / 18.02)*1000000
+        print("gmin transformed from grams*cm-2*s-1 to mciro-moles*cm-2*s-1")
+
+    } else{
+        print("Make sure gmin units are micro-mol*cm-2*s-1")
+        data$gmin_transformed <- data$gmin
+    }
+
+    # Validate input parameters ------------------------------------------------
+    base::stopifnot("Missing gmin column. Check presence or spelling" = "gmin" %in% base::colnames(data))
+    base::stopifnot("Missing temperature column. Check presence or spelling" = "temperature" %in% base::colnames(data))
+
+    # Transform gmin to log10(gmin)*10 -----------------------------------------
+    print("gmin transformed to log10(gmin)*10")
+    data$gmin_transformed_log <- log10(data$gmin_transformed)*10
+
+    # Main function ------------------------------------------------------------
+    base::data.frame(value = stats::coef(stats::lm(gmin_transformed_log ~ temperature,
+                                                   data = data))) %>%
+        tibble::rownames_to_column("coef")  %>%
+        dplyr::mutate(coef = case_when(
+
+            coef == "(Intercept)" ~ "intercept",
+
+            coef == "temperature" ~ "slope",
+
+            TRUE ~ coef))
 }
