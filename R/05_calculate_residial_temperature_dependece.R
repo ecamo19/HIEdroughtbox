@@ -47,6 +47,7 @@ calculate_residual_temperature_dependence <- function(gmin,
 
     # Done in this way for avoiding validation errors
     gmin <- as.numeric(gmin)
+    temperature <- as.integer(temperature)
 
     # Validate input parameters ------------------------------------------------
 
@@ -56,7 +57,7 @@ calculate_residual_temperature_dependence <- function(gmin,
 
     # Validate Temperature values are within range
     checkmate::assert_numeric(x = temperature, any.missing = T, lower = 20,
-                              upper = 60)
+                              upper = 65)
 
     # Range defined using fig.2 from the paper: On the minimum leaf
     # conductance: its role in models of plant water use, and ecological and
