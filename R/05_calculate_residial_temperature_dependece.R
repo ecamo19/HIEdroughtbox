@@ -14,6 +14,9 @@
 #' measured values. The units should be degrees Celsius. The necessary data can
 #' be obtained with the `calculate_residual_conductance` function.
 #'
+#' @param transform_gmin_units Boolean indicating if residual conductance should
+#' be converted (TRUE) from grams*cm-2*s-1 to mciro-moles*cm-2*s-1 or not *(FALSE)
+#'
 #' @return A dataframe with different parameters. Use the function
 #' `plot_arrhenius` to select the best set of parameters according to Billon
 #' et al 2020.
@@ -29,9 +32,20 @@
 #'                                         temperature = tp_data$temperature)
 #'
 #' @export
-calculate_residual_temperature_dependence <- function(gmin, temperature){
-    print("Make sure gmin units are micro-mol*cm-2*s-1")
+calculate_residual_temperature_dependence <- function(gmin,
+                                                      temperature,
+                                                      transform_gmin_units = FALSE){
 
+    # Transform gmin units
+    if(transform_gmin_units == TRUE){
+        gmin  <-  (gmin / 18.02)*1000000
+        print("gmin transformed from grams*cm-2*s-1 to mciro-moles*cm-2*s-1")
+
+    } else{
+        print("Make sure gmin units are micro-mol*cm-2*s-1")
+    }
+
+    # Done in this way for avoiding validation errors
     gmin <- as.numeric(gmin)
 
     # Validate input parameters ------------------------------------------------
@@ -47,8 +61,8 @@ calculate_residual_temperature_dependence <- function(gmin, temperature){
     # Range defined using fig.2 from the paper: On the minimum leaf
     # conductance: its role in models of plant water use, and ecological and
     # environmental controls
-    checkmate::assert_numeric(x = gmin, any.missing = T, lower = 0.1,
-                              upper = 100)
+    checkmate::assert_numeric(x = gmin, any.missing = T, lower = 0.01,
+                              upper = 150)
 
     # Main function ------------------------------------------------------------
 
