@@ -378,7 +378,7 @@ calculate_residual_conductance <- function(droughtbox_data,
 
             # Residual conductance in grams * s-1 * cm-2 and
             dplyr::mutate(residual_conductance_grams_s_cm = (transpiration_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant,
-                          residual_conductance_micro_mol_s_cm = (residual_conductance_grams_s_cm/18.02)**1000000
+                          residual_conductance_micro_mol_s_cm = (residual_conductance_grams_s_cm/18.02)*1000000
                           )
 
     return(base::data.frame(residual_conductance_df))

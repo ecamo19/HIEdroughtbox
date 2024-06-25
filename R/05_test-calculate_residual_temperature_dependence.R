@@ -177,6 +177,7 @@ calculate_residual_temperature_dependence <- function(gmin,
 #' et al 2020.
 #'
 #' @examples
+#' \dontrun{
 #' path_to_tp_data <- system.file("extdata",
 #'                             "tp_data.csv",
 #'                              package = "HIEdroughtbox")
@@ -185,7 +186,7 @@ calculate_residual_temperature_dependence <- function(gmin,
 #'
 #'calculate_residual_temperature_dependence_purrr(tp_data,
 #'                                                number_of_temperature_steps = 8)
-#'
+#'}
 #' @export
 calculate_residual_temperature_dependence_purrr <- function(data,
                                                             number_of_temperature_steps
@@ -250,25 +251,3 @@ calculate_residual_temperature_dependence_purrr <- function(data,
                       tp_celsius = (intercept_regression_1 - intercept_regression_2)/(slope_regression_2 - slope_regression_1))
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

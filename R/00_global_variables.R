@@ -28,6 +28,14 @@ utils::globalVariables(c('time', 'vpd_avg_kpa_avg', "set_point_t_avg_avg", '.',
                          'branch_basal_diameter_mm', 'branch_length_cm',
                          'leaf_area_cm2', 'surface_branch_area_cm2',
                          'branch_basal_radius_cm', 'data', 'n', 'notes',
-                         "number_of_values", "estimate", "coef"
+                         "number_of_values", "estimate", "coef",
+                         'residual_conductance_grams_s_cm','slope_1', 'slope_2',
+                         'intercept_1', 'intercept_2', 'label',
+                         'regression_coefs', 'coefs', 'value',
+                         'slope_regression_1', 'slope_regression_2',
+                         'intercept_regression_1', 'intercept_regression_2'
+
+
+
 
                          ))

@@ -89,6 +89,8 @@ export
 filter_droughtbox_data
 }
 \examples{
+\dontrun{create_empty_droughtbox_leaf_branch_areas_sheet("path/to/folder")}#' @importFrom magrittr \%>\%
+
 path_to_droughtbox_data <- system.file("extdata",
                             "acacia_aneura_25c.dat",
                             package = "HIEdroughtbox")
