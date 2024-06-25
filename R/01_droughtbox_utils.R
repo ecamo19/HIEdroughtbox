@@ -199,16 +199,16 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
 
     # Check there are several .dat files in the folder
     if (length(base::list.files(path = path_droughtbox_data_folder,
-                                pattern = '.dat')) <= 1) {
+                                pattern = "\\.dat$")) <= 1) {
 
         stop("Folder MUST contain at least 2 or more .dat files")}
 
     else if (length(base::list.files(path = path_droughtbox_data_folder,
-                                     pattern = '.dat')) > 1) {
+                                     pattern = "\\.dat$")) > 1) {
 
         # Get the names of each .dat file found in the folder
         file_names <- base::list.files(path = path_droughtbox_data_folder,
-                                       pattern = '.dat')}
+                                       pattern = "\\.dat$")}
 
     else {
         stop("Failed in read_all_hie_droughtbox_files function")}

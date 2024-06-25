@@ -25,12 +25,14 @@
 #'
 #'tp_data <- read.csv(path_to_tp_data, header = TRUE)
 #'
-#'calculate_residual_temperature_dependence(gmin = tp_data$gmin,
+#'calculate_residual_temperature_dependence(gmin = tp_data$g_min,
 #'                                         temperature = tp_data$temperature)
 #'
 #' @export
 calculate_residual_temperature_dependence <- function(gmin, temperature){
     print("Make sure gmin units are micro-mol*cm-2*s-1")
+
+    gmin <- as.numeric(gmin)
 
     # Validate input parameters ------------------------------------------------
 
@@ -115,7 +117,7 @@ calculate_residual_temperature_dependence <- function(gmin, temperature){
     }
 
     # Flat lists
-    clean_data <- base::rbind(dplyr::bind_rows(first_slope_list),
+    cleaned_data <- base::rbind(dplyr::bind_rows(first_slope_list),
                              dplyr::bind_rows(second_slope_list)) %>%
 
                   dplyr::arrange(number_of_values) %>%
@@ -128,5 +130,5 @@ calculate_residual_temperature_dependence <- function(gmin, temperature){
                               gmin_20 = 10^((slope_1*20 + intercept_1)/10),
                               tp_celsius = (intercept_1 - intercept_2 )/(slope_2- slope_1))
 
-    return(clean_data)
+    return(cleaned_data)
 }
