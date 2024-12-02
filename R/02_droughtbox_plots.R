@@ -234,15 +234,16 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
     # Make sure that the data is in the dataframe
-    base::stopifnot("Missing columns in the dataframe" =  c("strain_avg_1_microstrain_avg",
-                                                            "strain_avg_2_microstrain_avg",
-                                                            "strain_avg_3_microstrain_avg",
-                                                            "strain_avg_4_microstrain_avg",
-
-                                                            "strain_avg_5_microstrain_avg",
-                                                            "strain_avg_6_microstrain_avg",
-                                                            "strain_avg_7_microstrain_avg",
-                                                            "strain_avg_8_microstrain_avg",
+    base::stopifnot("Missing columns in the dataframe" =  c(
+                                                            # "strain_avg_1_microstrain_avg",
+                                                            # "strain_avg_2_microstrain_avg",
+                                                            # "strain_avg_3_microstrain_avg",
+                                                            # "strain_avg_4_microstrain_avg",
+                                                            #
+                                                            # "strain_avg_5_microstrain_avg",
+                                                            # "strain_avg_6_microstrain_avg",
+                                                            # "strain_avg_7_microstrain_avg",
+                                                            # "strain_avg_8_microstrain_avg",
 
                                                             "date_time"
     ) %in% base::colnames(droughtbox_data))
@@ -287,22 +288,17 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
     # Transform the data into the right format for the ggplot
     droughtbox_data %>%
 
-        # Select only the necessary variables for the plots
-        dplyr::select(date_time, tare_count_smp,
-
-                      # Set and measure temperature inside the box
-                      set_point_t_avg_avg, tc_avg_deg_c_avg,
-
-                      # Variable 1
-                      strain_avg_1_microstrain_avg,
-                      strain_avg_2_microstrain_avg,
-                      strain_avg_3_microstrain_avg,
-                      strain_avg_4_microstrain_avg,
-
-                      strain_avg_5_microstrain_avg,
-                      strain_avg_6_microstrain_avg,
-                      strain_avg_7_microstrain_avg,
-                      strain_avg_8_microstrain_avg)  %>%
+        # Select only the necessary variables for the plots if these are present
+        dplyr::select(dplyr::any_of(c("date_time", "tare_count_smp",
+                                      "set_point_t_avg_avg", "tc_avg_deg_c_avg",
+                                      "strain_avg_1_microstrain_avg",
+                                      "strain_avg_2_microstrain_avg",
+                                      "strain_avg_3_microstrain_avg",
+                                      "strain_avg_4_microstrain_avg",
+                                      "strain_avg_5_microstrain_avg",
+                                      "strain_avg_6_microstrain_avg",
+                                      "strain_avg_7_microstrain_avg",
+                                      "strain_avg_8_microstrain_avg"))) %>%
 
         # Reshape data into a long format
         tidyr::pivot_longer(!c(date_time, tare_count_smp, set_point_t_avg_avg,
