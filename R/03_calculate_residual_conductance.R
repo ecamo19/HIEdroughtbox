@@ -48,7 +48,7 @@ calculate_rate_of_change <- function(droughtbox_data){
                                                                      "tare_count_smp"
                                                                      ) %in% base::colnames(droughtbox_data))
 
-    base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c("set_point_t_avg_avg",
+    base::stopifnot("Missing tc_avg_deg_c_avg, vpd or/and, date_time colums" = c("tc_avg_deg_c_avg",
                                                                             "vpd_avg_kpa_avg",
                                                                             "date_time") %in% base::colnames(droughtbox_data))
 
@@ -59,7 +59,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         droughtbox_data %>%
 
         # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("time","set_point_t_avg_avg",
+        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg",
                                       "strain_avg_1_microstrain_avg",
                                       "strain_avg_2_microstrain_avg",
                                       "strain_avg_3_microstrain_avg",
@@ -69,7 +69,7 @@ calculate_rate_of_change <- function(droughtbox_data){
                                       "strain_avg_7_microstrain_avg",
                                       "strain_avg_8_microstrain_avg"))) %>%
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, set_point_t_avg_avg),
+        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg),
 
                             # Create new columns
                             names_to = "strains",
@@ -88,18 +88,30 @@ calculate_rate_of_change <- function(droughtbox_data){
                       # Remove unused col
                       .keep = "unused") %>%
 
+        # Change temperatures measured into discrete groups i.e if
+        # tc_avg_deg_c_avg is between 53 and 56 code it as 55
+        dplyr::mutate(temperature_measured = dplyr::case_when(
+            dplyr::between(tc_avg_deg_c_avg, 20, 26) ~ "25",
+            dplyr::between(tc_avg_deg_c_avg, 26, 31) ~ "30",
+            dplyr::between(tc_avg_deg_c_avg, 31, 36) ~ "35",
+            dplyr::between(tc_avg_deg_c_avg, 36, 41) ~ "40",
+            dplyr::between(tc_avg_deg_c_avg, 41, 46) ~ "45",
+            dplyr::between(tc_avg_deg_c_avg, 46, 51) ~ "50",
+            dplyr::between(tc_avg_deg_c_avg, 51, 60) ~ "55",
+            TRUE ~ tc_avg_deg_c_avg)) %>%
+
         # Step done for transforming time to seconds
         dplyr::group_by(strain_number, set_point_t_avg_avg) %>%
 
         # Transform columns
         dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
+                      temperature_measured = as.integer(temperature_measured),
+                      strain_number = as.integer(strain_number),
 
                       # Get time in seconds
                       time_seconds = (time - dplyr::first(time)),
 
                       .keep = "unused") %>%
-
-        dplyr::mutate(strain_number = as.integer(strain_number)) %>%
 
         # Calculate the rate of change -----------------------------------------
 
