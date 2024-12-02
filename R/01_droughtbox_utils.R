@@ -579,14 +579,14 @@ filter_droughtbox_data <- function(droughtbox_data,
                                   from_start_date, " to: ", to_end_date)))
 
         # Convert parameters to the right format
-        from_start_date <- lubridate::ymd(from_start_date )
+        from_start_date <- lubridate::ymd(from_start_date)
         to_end_date <- lubridate::ymd(to_end_date)
 
         # Filter data
         filtered_data <-
 
             droughtbox_data %>%
-                dplyr::filter(date %in% (from_start_date:to_end_date))
+                dplyr::filter(date >= from_start_date & date <= to_end_date)
 
         return(base::data.frame(filtered_data))
 
@@ -604,10 +604,10 @@ filter_droughtbox_data <- function(droughtbox_data,
         filtered_data <-
 
             droughtbox_data %>%
-                dplyr::filter(time %in% (from_start_time:to_end_time))
+
+                dplyr::filter(time >= from_start_time & time <= to_end_time)
 
         return(base::data.frame(filtered_data))
-
 
     # Filter based on date and time parameters
     } else if(!is.null(c(from_start_date,to_end_date)) & !is.null(c(from_start_time,to_end_time))){
@@ -615,7 +615,7 @@ filter_droughtbox_data <- function(droughtbox_data,
         print(crayon::cyan(paste0("Filtering data by hour and date from: ", from_start_date,
                                   " to: ", to_end_date)))
 
-        # Join parameters
+        # Join parameters to create date_time
         from_start <- lubridate::ymd_hms(paste(from_start_date,from_start_time))
 
         to_end <- lubridate::ymd_hms(paste(to_end_date,to_end_time))
@@ -624,7 +624,8 @@ filter_droughtbox_data <- function(droughtbox_data,
         filtered_data <-
 
             droughtbox_data %>%
-                dplyr::filter(date_time %in% (from_start:to_end))
+
+                dplyr::filter(date_time >= from_start & date_time <= to_end)
 
         return(base::data.frame(filtered_data))
 
