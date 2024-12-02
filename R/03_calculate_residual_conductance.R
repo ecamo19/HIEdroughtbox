@@ -135,9 +135,9 @@ calculate_rate_of_change <- function(droughtbox_data){
         tidyr::unnest(cols = slope_grams_per_second) %>%
 
         # Print message if positive slope found
-        # {dplyr::if_else(.$slope_grams_per_second < 0, "Negative slope. This is OK",
-        #                 print("Positive slope between weight loss and time found. Check your data"),
-        #                 ); .} %>%
+         {dplyr::if_else(.$set_temperature == .$temperature_measured, "This is OK",
+                         print("set_temperature and temperature_measured are different. Check the data"),
+                         ); .} %>%
 
         # Without this the code won't run
         dplyr::ungroup()
