@@ -59,8 +59,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         droughtbox_data %>%
 
         # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("date_time", "tare_count_smp",
-                                      "set_point_t_avg_avg", "tc_avg_deg_c_avg",
+        dplyr::select(dplyr::any_of(c("time","set_point_t_avg_avg",
                                       "strain_avg_1_microstrain_avg",
                                       "strain_avg_2_microstrain_avg",
                                       "strain_avg_3_microstrain_avg",
@@ -81,6 +80,10 @@ calculate_rate_of_change <- function(droughtbox_data){
                                                        strains == "strain_avg_2_microstrain_avg"  ~ "2",
                                                        strains == "strain_avg_3_microstrain_avg"  ~ "3",
                                                        strains == "strain_avg_4_microstrain_avg"  ~ "4",
+                                                       strains == "strain_avg_5_microstrain_avg"  ~ "5",
+                                                       strains == "strain_avg_6_microstrain_avg"  ~ "6",
+                                                       strains == "strain_avg_7_microstrain_avg"  ~ "7",
+                                                       strains == "strain_avg_8_microstrain_avg"  ~ "8",
                                                        TRUE ~ strains),
                       # Remove unused col
                       .keep = "unused") %>%
@@ -120,9 +123,9 @@ calculate_rate_of_change <- function(droughtbox_data){
         tidyr::unnest(cols = slope_grams_per_second) %>%
 
         # Print message if positive slope found
-        {dplyr::if_else(.$slope_grams_per_second < 0, "Negative slope. This is OK",
-                        print("Positive slope between weight loss and time found. Check your data"),
-                        ); .} %>%
+        # {dplyr::if_else(.$slope_grams_per_second < 0, "Negative slope. This is OK",
+        #                 print("Positive slope between weight loss and time found. Check your data"),
+        #                 ); .} %>%
 
         # Without this the code won't run
         dplyr::ungroup()
