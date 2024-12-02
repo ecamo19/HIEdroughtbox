@@ -119,7 +119,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         tidyr::nest(data = -c(strain_number, set_temperature,temperature_measured)) %>%
 
         # Print the units of the slope
-        {print("Make sure the time units are in seconds and the weights are in grams"); .} %>%
+        {print("Remember time units must be seconds and weights must be in grams"); .} %>%
         {print("Rate of change units: grams * s-1"); .} %>%
 
         # Create column with the slopes by strain_number, set_temperature
@@ -134,13 +134,13 @@ calculate_rate_of_change <- function(droughtbox_data){
         # Unnest slope data
         tidyr::unnest(cols = slope_grams_per_second) %>%
 
-        # Print message if positive slope found
-         {dplyr::if_else(.$set_temperature == .$temperature_measured, "This is OK",
-                         print("set_temperature and temperature_measured are different. Check the data"),
-                         ); .} %>%
-
         # Without this the code won't run
         dplyr::ungroup()
+
+    # Print message if temperature measured and set temperature are different
+    base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
+                 "all TRUE This is ok",
+                 print("temperature_measured and set_temperature might be diffrent. Check data"))
 
     return(rate_of_change)
     }
