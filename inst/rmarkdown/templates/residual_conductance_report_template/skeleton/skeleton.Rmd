@@ -19,7 +19,9 @@ knitr::opts_chunk$set(echo = FALSE, comment = "",
 
 ```{r, setup_wd, include=FALSE}
 # Set knit directory
-knitr::opts_knit$set(root.dir = 'path/to/root/dir')
+setwd(here::here())
+knitr::opts_knit$set(root.dir = setwd(here::here()))
+getwd()
 ```
 
 ```{r knitr, include = FALSE}
