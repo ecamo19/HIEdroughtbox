@@ -354,6 +354,11 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 slopes <- calculate_rate_of_change([sp_name]_merged_cleaned_data)
 ```
 
+```{r}
+# Make sure the maximum row length of the data frame slopes is 8 (individuals)  * 7 (temperature treatments) = 56. Can be less but not more!!
+nrow(slopes)
+```
+
 ```{r, eval = FALSE}
 ggplot(data = slopes, aes(x = set_temperature,
                           y = slope_grams_per_second,
