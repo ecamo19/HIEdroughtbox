@@ -1,3 +1,8 @@
+#relative_water_deficit = 1 − actual fresh weight − dry weight
+#                             saturated weight − dry weight
+# Formula from Bueno etal 2019
+
+
 #relative_water_content <- function(dry_weight_g,
 #                                  turgid_weight,
 #                                  strain_weight_g ){
