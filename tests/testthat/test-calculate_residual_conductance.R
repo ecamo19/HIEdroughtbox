@@ -14,3 +14,4 @@
 #                    "set_temperature", "transpiration_grams_per_sec_cm2",
 #                    "median_vpd", "residual_conductance"))
 # })
+# Tests the maximun length of a data-frame is 8 per temperature treatment -------

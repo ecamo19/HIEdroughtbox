@@ -59,7 +59,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         droughtbox_data %>%
 
         # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg","set_point_t_avg_avg",
+        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg",
                                       "strain_avg_1_microstrain_avg",
                                       "strain_avg_2_microstrain_avg",
                                       "strain_avg_3_microstrain_avg",
@@ -69,7 +69,7 @@ calculate_rate_of_change <- function(droughtbox_data){
                                       "strain_avg_7_microstrain_avg",
                                       "strain_avg_8_microstrain_avg"))) %>%
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg, set_point_t_avg_avg),
+        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg),
 
                             # Create new columns
                             names_to = "strains",
@@ -91,20 +91,20 @@ calculate_rate_of_change <- function(droughtbox_data){
         # Change temperatures measured into discrete groups i.e if
         # tc_avg_deg_c_avg is between 53 and 56 code it as 55
         dplyr::mutate(temperature_measured = dplyr::case_when(
-            dplyr::between(tc_avg_deg_c_avg, 20, 26) ~ 25,
-            dplyr::between(tc_avg_deg_c_avg, 26.00001, 31) ~ 30,
-            dplyr::between(tc_avg_deg_c_avg, 31.00001, 36) ~ 35,
-            dplyr::between(tc_avg_deg_c_avg, 36.00001, 41) ~ 40,
-            dplyr::between(tc_avg_deg_c_avg, 41.00001, 46) ~ 45,
-            dplyr::between(tc_avg_deg_c_avg, 46.00001, 51) ~ 50,
-            dplyr::between(tc_avg_deg_c_avg, 51.00001, 60) ~ 55,
+            dplyr::between(tc_avg_deg_c_avg, 20, 25) ~ 25,
+            dplyr::between(tc_avg_deg_c_avg, 25.00001, 30) ~ 30,
+            dplyr::between(tc_avg_deg_c_avg, 30.00001, 35) ~ 35,
+            dplyr::between(tc_avg_deg_c_avg, 35.00001, 40) ~ 40,
+            dplyr::between(tc_avg_deg_c_avg, 40.00001, 45) ~ 45,
+            dplyr::between(tc_avg_deg_c_avg, 45.00001, 50) ~ 50,
+            dplyr::between(tc_avg_deg_c_avg, 50.00001, 60) ~ 55,
             TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Step done for transforming time to seconds
-        dplyr::group_by(strain_number, set_point_t_avg_avg,temperature_measured) %>%
+        dplyr::group_by(strain_number,temperature_measured) %>%
 
         # Transform columns
-        dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
+        dplyr::mutate(
                       temperature_measured = as.integer(temperature_measured),
                       strain_number = as.integer(strain_number),
 
@@ -115,8 +115,9 @@ calculate_rate_of_change <- function(droughtbox_data){
 
         # Calculate the rate of change -----------------------------------------
 
-        # Create a nested dataframes by strain_number, set_temperature
-        tidyr::nest(data = -c(strain_number, set_temperature,temperature_measured)) %>%
+        # Create a nested dataframes excluding temperature_measured, strain_number
+        # This must return a data frame with maximum 8 row!!
+        tidyr::nest(data = -c(strain_number, temperature_measured)) %>%
 
         # Print the units of the slope
         {print("Remember time units must be seconds and weights must be in grams"); .} %>%
@@ -138,9 +139,9 @@ calculate_rate_of_change <- function(droughtbox_data){
         dplyr::ungroup()
 
     # Print message if temperature measured and set temperature are different
-    base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
-                 "all TRUE This is ok",
-                 print("temperature_measured and set_temperature might be diffrent. Check data"))
+    #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
+    #             "all TRUE This is ok",
+    #             print("temperature_measured and set_temperature might be diffrent. Check data"))
 
     return(rate_of_change)
     }
