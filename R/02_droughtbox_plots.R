@@ -46,7 +46,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
                                                             "vpd_avg_kpa_avg",
                                                             "abs_h_avg_g_m3_avg",
                                                             "date_time"
-                                                            ) %in% base::colnames(droughtbox_data))
+    ) %in% base::colnames(droughtbox_data))
 
     # Create plots -------------------------------------------------------------
 
@@ -214,6 +214,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' total) inside the Droughtbox.
 #'
 #' @examples
+#' \dontrun{
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
@@ -221,7 +222,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #'
 #' plot_strains_weights(droughtbox_data)
-#'
+#'}
 #' @export
 plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                  show_tare_group = TRUE,
@@ -238,8 +239,13 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                             "strain_avg_3_microstrain_avg",
                                                             "strain_avg_4_microstrain_avg",
 
+                                                            "strain_avg_5_microstrain_avg",
+                                                            "strain_avg_6_microstrain_avg",
+                                                            "strain_avg_7_microstrain_avg",
+                                                            "strain_avg_8_microstrain_avg",
+
                                                             "date_time"
-                                                            ) %in% base::colnames(droughtbox_data))
+    ) %in% base::colnames(droughtbox_data))
 
     # Validate show_strain parameters
     checkmate::assert_character(time_breaks)
@@ -247,18 +253,21 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
     # Validate show_strain parameters
     checkmate::assert_character(show_strain)
 
-    options <- c("all", "strain_1", "strain_2","strain_3", "strain_4")
+    options <- c("all", "strain_1", "strain_2","strain_3", "strain_4",
+                 "strain_5", "strain_6", "strain_7", "strain_8")
 
     # Stop if show_strain not in options
     if (!all(show_strain %in% options)) {
         stop("Invalid option for show_strain parameter. ",
-             "Choose bewteen: all, strain_1, strain_2, strain_3 or strain_4. ",
-             'For example c("strain_1","strain_2")')
+             "Choose bewteen: all, strain_1, strain_2, strain_3,strain_4,
+             strain_5, strain_6, strain_7 or strain_8, ",
+             'For example c("strain_1","strain_8")')
     }
 
     # Dummy code for using all option
     if (show_strain == "all"){
-        show_strain <- c("strain_1", "strain_2","strain_3", "strain_4")
+        show_strain <- c("strain_1", "strain_2","strain_3", "strain_4",
+                         "strain_5", "strain_6", "strain_7", "strain_8")
     }
 
     # Create plot --------------------------------------------------------------
@@ -267,7 +276,13 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
     strain_colors <- c(strain_1 = "#eec000",
                        strain_2 = "#cf544c",
                        strain_3 = "#0175c3",
-                       strain_4 = "#878687")
+                       strain_4 = "#878687",
+
+                       strain_5 =  "#000000",
+                       strain_6 =  "#008b28",
+                       strain_7 =  "#8600b6",
+                       strain_8 =  "#00a0ab"
+                       )
 
     # Transform the data into the right format for the ggplot
     droughtbox_data %>%
@@ -282,7 +297,12 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                       strain_avg_1_microstrain_avg,
                       strain_avg_2_microstrain_avg,
                       strain_avg_3_microstrain_avg,
-                      strain_avg_4_microstrain_avg)  %>%
+                      strain_avg_4_microstrain_avg,
+
+                      strain_avg_5_microstrain_avg,
+                      strain_avg_6_microstrain_avg,
+                      strain_avg_7_microstrain_avg,
+                      strain_avg_8_microstrain_avg)  %>%
 
         # Reshape data into a long format
         tidyr::pivot_longer(!c(date_time, tare_count_smp, set_point_t_avg_avg,
@@ -300,6 +320,13 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                        strains == "strain_avg_2_microstrain_avg"  ~ "strain_2",
                                                        strains == "strain_avg_3_microstrain_avg"  ~ "strain_3",
                                                        strains == "strain_avg_4_microstrain_avg"  ~ "strain_4",
+
+                                                       strains == "strain_avg_5_microstrain_avg"  ~ "strain_5",
+                                                       strains == "strain_avg_6_microstrain_avg"  ~ "strain_6",
+                                                       strains == "strain_avg_7_microstrain_avg"  ~ "strain_7",
+                                                       strains == "strain_avg_8_microstrain_avg"  ~ "strain_8",
+
+
                                                        TRUE ~ strains)) %>%
 
         # Filter data based on the show_strain parameter
@@ -362,8 +389,6 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                                             size = 1.3))
         }
 }
-
-
 
 #' plot_arrhenius
 #'
