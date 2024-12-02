@@ -201,10 +201,10 @@ calculate_transpiration_rates <- function(droughtbox_data,
     base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing weight columns in droughtbox_data. All weights should be included (4 in total)" = c("strain_avg_1_microstrain_avg",
-                                                                                                                 "strain_avg_2_microstrain_avg",
-                                                                                                                 "strain_avg_3_microstrain_avg",
-                                                                                                                 "strain_avg_4_microstrain_avg") %in% base::colnames(droughtbox_data))
+    # base::stopifnot("Missing weight columns in droughtbox_data. All weights should be included (4 in total)" = c("strain_avg_1_microstrain_avg",
+    #                                                                                                              "strain_avg_2_microstrain_avg",
+    #                                                                                                              "strain_avg_3_microstrain_avg",
+    #                                                                                                              "strain_avg_4_microstrain_avg") %in% base::colnames(droughtbox_data))
 
     base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c("set_point_t_avg_avg",
                                                                             "vpd_avg_kpa_avg",
