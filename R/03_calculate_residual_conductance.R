@@ -59,7 +59,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         droughtbox_data %>%
 
         # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg",
+        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg","set_point_t_avg_avg",
                                       "strain_avg_1_microstrain_avg",
                                       "strain_avg_2_microstrain_avg",
                                       "strain_avg_3_microstrain_avg",
@@ -69,7 +69,7 @@ calculate_rate_of_change <- function(droughtbox_data){
                                       "strain_avg_7_microstrain_avg",
                                       "strain_avg_8_microstrain_avg"))) %>%
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg),
+        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg, set_point_t_avg_avg),
 
                             # Create new columns
                             names_to = "strains",
@@ -91,17 +91,17 @@ calculate_rate_of_change <- function(droughtbox_data){
         # Change temperatures measured into discrete groups i.e if
         # tc_avg_deg_c_avg is between 53 and 56 code it as 55
         dplyr::mutate(temperature_measured = dplyr::case_when(
-            dplyr::between(tc_avg_deg_c_avg, 20, 26) ~ "25",
-            dplyr::between(tc_avg_deg_c_avg, 26, 31) ~ "30",
-            dplyr::between(tc_avg_deg_c_avg, 31, 36) ~ "35",
-            dplyr::between(tc_avg_deg_c_avg, 36, 41) ~ "40",
-            dplyr::between(tc_avg_deg_c_avg, 41, 46) ~ "45",
-            dplyr::between(tc_avg_deg_c_avg, 46, 51) ~ "50",
-            dplyr::between(tc_avg_deg_c_avg, 51, 60) ~ "55",
+            dplyr::between(tc_avg_deg_c_avg, 20, 26) ~ 25,
+            dplyr::between(tc_avg_deg_c_avg, 26.00001, 31) ~ 30,
+            dplyr::between(tc_avg_deg_c_avg, 31.00001, 36) ~ 35,
+            dplyr::between(tc_avg_deg_c_avg, 36.00001, 41) ~ 40,
+            dplyr::between(tc_avg_deg_c_avg, 41.00001, 46) ~ 45,
+            dplyr::between(tc_avg_deg_c_avg, 46.00001, 51) ~ 50,
+            dplyr::between(tc_avg_deg_c_avg, 51.00001, 60) ~ 55,
             TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Step done for transforming time to seconds
-        dplyr::group_by(strain_number, set_point_t_avg_avg) %>%
+        dplyr::group_by(strain_number, set_point_t_avg_avg,temperature_measured) %>%
 
         # Transform columns
         dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
@@ -116,7 +116,7 @@ calculate_rate_of_change <- function(droughtbox_data){
         # Calculate the rate of change -----------------------------------------
 
         # Create a nested dataframes by strain_number, set_temperature
-        tidyr::nest(data = -c(strain_number, set_temperature)) %>%
+        tidyr::nest(data = -c(strain_number, set_temperature,temperature_measured)) %>%
 
         # Print the units of the slope
         {print("Make sure the time units are in seconds and the weights are in grams"); .} %>%
