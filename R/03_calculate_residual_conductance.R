@@ -359,17 +359,28 @@ calculate_residual_conductance <- function(droughtbox_data,
         # Select only the necessary variables
         dplyr::select(time,
                       vpd_avg_kpa_avg,
-                      set_point_t_avg_avg) %>%
+                      tc_avg_deg_c_avg) %>%
+
+        # Change temperatures measured into discrete groups i.e if
+        # tc_avg_deg_c_avg is between 53 and 56 code it as 55
+        dplyr::mutate(temperature_measured = dplyr::case_when(
+            dplyr::between(tc_avg_deg_c_avg, 20, 25) ~ 25,
+            dplyr::between(tc_avg_deg_c_avg, 25.00001, 30) ~ 30,
+            dplyr::between(tc_avg_deg_c_avg, 30.00001, 35) ~ 35,
+            dplyr::between(tc_avg_deg_c_avg, 35.00001, 40) ~ 40,
+            dplyr::between(tc_avg_deg_c_avg, 40.00001, 45) ~ 45,
+            dplyr::between(tc_avg_deg_c_avg, 45.00001, 50) ~ 50,
+            dplyr::between(tc_avg_deg_c_avg, 50.00001, 60) ~ 55,
+            TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Rename variables
-        dplyr::mutate(set_temperature = as.integer(set_point_t_avg_avg),
-
+        dplyr::mutate(
                       # Transform time to seconds
                       time_seconds = (time - dplyr::first(time)),
                       .keep = "unused") %>%
 
         # Group by temperature
-        dplyr::group_by(set_temperature) %>%
+        dplyr::group_by(temperature_measured) %>%
 
         # Print message
         {print("Make sure VPD conditions were constant"); .} %>%
@@ -388,7 +399,7 @@ calculate_residual_conductance <- function(droughtbox_data,
 
             # Add VPD parameter into the dataset
             dplyr::full_join(., vpd_parameter,
-                             by = join_by(temperature_measured == set_temperature)) %>%
+                             by = join_by(temperature_measured == temperature_measured)) %>%
 
             # Print message residual conductance units
             {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
