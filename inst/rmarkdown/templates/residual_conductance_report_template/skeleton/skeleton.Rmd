@@ -372,7 +372,7 @@ ggplot(data = slopes, aes(x = set_temperature,
 
 # 3. Calculate Branch areas
 
-```{python, python_code, echo=FALSE, eval=FALSE}
+```{python, create_python_function, echo=FALSE, eval=FALSE}
 import cv2
 import os
 import shutil
@@ -631,14 +631,14 @@ process_folder(input_path);
 
 ## Use python function to crop images
 
-```{python, eval=FALSE}
+```{python,run_python_function, eval=FALSE}
 path = "path/to/scanned_images"
 crop_images_for_imagej(path = path, blur = 15)
 ```
 
 ## Calculate leaf area using ImageJ macro in bash
 
-```{bash, bash_code, results = "hide", eval=FALSE}
+```{bash, bash_code_imagej, results = "hide", eval=FALSE}
 pwd
 # Enter the path where Fiji was installed
 
