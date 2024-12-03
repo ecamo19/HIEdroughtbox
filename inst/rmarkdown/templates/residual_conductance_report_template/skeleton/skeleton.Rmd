@@ -87,7 +87,7 @@ if (Sys.info()[1] != "Linux") {
     }
 ```
 
-```{echo=FALSE}
+```{r, echo=FALSE}
 # To run python in this Rmarkdown follow the following steps:
 # 1) Create a file in your home directory called .Renviron i.e touch .Renviron
 # 2) Run which python3 in the terminal and copy the path i.e /usr/bin/python3
