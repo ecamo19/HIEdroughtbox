@@ -84,13 +84,16 @@ if (Sys.info()[1] != "Linux") {
     
     # For running python in Rmarkdown
     library(reticulate)
-    
-    # Install library for running python code
-    py_install("openssl")
     }
 ```
 
-```{r}
+```{r, echo=FALSE}
+# To run python in this Rmarkdown follow the following steps:
+# 1) Create a file in your home directory called .Renviron i.e touch .Renviron
+# 2) Run which python3 in the terminal and copy the path i.e /usr/bin/python3
+# 3) Paste RETICULATE_PYTHON="/usr/bin/python3" inside the .Renviron file 
+
+# Old instructions
 # Set conda env for working with python
 #use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
 ```
@@ -369,7 +372,14 @@ ggplot(data = slopes, aes(x = set_temperature,
 
 # 3. Calculate Branch areas
 
-```{python, python_code, echo=FALSE, eval=FALSE}
+```{bash, echo=FALSE}
+# Check the dpi of the images
+# Create a loop for checking all dpi of all images
+identify -units PixelsPerInch -format "%[fx:int(resolution.x)]" euc__40c.jpg 
+```
+
+
+```{python, create_python_function, echo=FALSE, eval=FALSE}
 import cv2
 import os
 import shutil
@@ -394,24 +404,25 @@ def crop_images_for_imagej(path, blur = 15):
     # Set working directory
     os.chdir(path)
     
-    # Get adjacend pixel
-    adjacen_width = 321
-    adjacen_height = 275
-    adjacen_x = 1575
-    adjacen_y = 30
-
-    # Set coordiantes of the 2x2 squared tag in all images.
+    # Remove the image borders because the lid don't close fully. This step
+    # reduce the size of the image
+    lid_width = 2424
+    lid_height = 3432
+    lid_x = 90
+    lid_y = 42
+    
+    # Get coordiantes of the 2x2 squared tag in all images.
     # The coordinates were obtained using gThumb
     mask_width = 544
     mask_height = 498
     mask_x = 1982
     mask_y = 26
 
-    # Remove the image borders because the lid don't close fully
-    lid_width = 2424
-    lid_height = 3432
-    lid_x = 90
-    lid_y = 42
+    # Get adjacent pixels values for coloring the mask. 
+    adjacen_width = 321
+    adjacen_height = 275
+    adjacen_x = 1575
+    adjacen_y = 30
 
     file_count = 0
 
@@ -449,8 +460,11 @@ def crop_images_for_imagej(path, blur = 15):
             # Change values of mask_pixel to background values
             # img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = 225
             
-            # Calculate the mean value of 
+            # Calculate the median value of the adjacent pixels for coloring the 
+            # mask
             median_pixel_value = numpy.median(img[adjacen_y :adjacen_y + adjacen_height, adjacen_x:adjacen_x + adjacen_width])
+            
+            # Color the mask
             img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = median_pixel_value
 
             # Apply filter to image for improving quality
@@ -477,21 +491,23 @@ def crop_images_for_imagej(path, blur = 15):
     # Save ImageJ code as .ijm ------------------------------------------------
 
     # Check if file exist
-    if os.path.exists("../leaf_area_300dpi.ijm"):
+    if os.path.exists("../leaf_area_600dpi.ijm"):
 
         print(f'\nMacro Code for ImageJ already exist')
 
     # Create file
     else:
-        imagej_macro_file = open(f"../leaf_area_300dpi.ijm", "x")
+        imagej_macro_file = open(f"../leaf_area_600dpi.ijm", "x")
 
         # Write code to file
         imagej_macro_file.write('''
 
 // Description -----------------------------------------------------------------
 //
+// dpi = dots per inch
+//
 // ImageJ macro for calculating the area (cm2) of scanned leaves at a resolution
-// of 300 dpi.
+// of 600 dpi.
 //
 // This macro is meant to be run in headless mode using Fiji
 //
@@ -530,9 +546,9 @@ File.setDefaultDir(input_path)
 
 //1- Function for calculating the leaf area ------------------------------------
 function leaf_area(){
-            var dpi = 300;
+            var dpi = 600;
 
-            // 300 dpi
+            // 600 dpi
             var pixels_per_centimeter = dpi / 2.54;
 
             // ImageJ functions
@@ -628,22 +644,22 @@ process_folder(input_path);
 
 ## Use python function to crop images
 
-```{python, eval=FALSE}
+```{python,run_python_function, eval=FALSE}
 path = "path/to/scanned_images"
 crop_images_for_imagej(path = path, blur = 15)
 ```
 
 ## Calculate leaf area using ImageJ macro in bash
 
-```{bash, bash_code, results = "hide", eval=FALSE}
+```{bash, bash_code_imagej, results = "hide", eval=FALSE}
 pwd
 # Enter the path where Fiji was installed
 
-# Locate leaf_area_300dpi.ijm macro
+# Locate leaf_area_600dpi.ijm macro
 
 # Copy path to cropped_images_for_imagej
 
-# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
+# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_600dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
 
 # 4. Calculate Residual conductance
