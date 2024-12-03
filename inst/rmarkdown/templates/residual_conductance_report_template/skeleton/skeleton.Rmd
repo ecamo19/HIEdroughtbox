@@ -372,9 +372,10 @@ ggplot(data = slopes, aes(x = set_temperature,
 
 # 3. Calculate Branch areas
 
-```{bash, echo=FALSE, eval = FALSE}
+```{bash, check_image_dpi_bash echo=FALSE, eval = FALSE}
 # Check the dpi of the images
 # Create a loop for checking all dpi of all images
+echo "Image dpi:"
 identify -units PixelsPerInch -format "%[fx:int(resolution.x)]" euc__40c.jpg 
 ```
 
