@@ -480,21 +480,23 @@ def crop_images_for_imagej(path, blur = 15):
     # Save ImageJ code as .ijm ------------------------------------------------
 
     # Check if file exist
-    if os.path.exists("../leaf_area_300dpi.ijm"):
+    if os.path.exists("../leaf_area_600dpi.ijm"):
 
         print(f'\nMacro Code for ImageJ already exist')
 
     # Create file
     else:
-        imagej_macro_file = open(f"../leaf_area_300dpi.ijm", "x")
+        imagej_macro_file = open(f"../leaf_area_600dpi.ijm", "x")
 
         # Write code to file
         imagej_macro_file.write('''
 
 // Description -----------------------------------------------------------------
 //
+// dpi = dots per inch
+//
 // ImageJ macro for calculating the area (cm2) of scanned leaves at a resolution
-// of 300 dpi.
+// of 600 dpi.
 //
 // This macro is meant to be run in headless mode using Fiji
 //
@@ -533,9 +535,9 @@ File.setDefaultDir(input_path)
 
 //1- Function for calculating the leaf area ------------------------------------
 function leaf_area(){
-            var dpi = 300;
+            var dpi = 600;
 
-            // 300 dpi
+            // 600 dpi
             var pixels_per_centimeter = dpi / 2.54;
 
             // ImageJ functions
@@ -642,11 +644,11 @@ crop_images_for_imagej(path = path, blur = 15)
 pwd
 # Enter the path where Fiji was installed
 
-# Locate leaf_area_300dpi.ijm macro
+# Locate leaf_area_600dpi.ijm macro
 
 # Copy path to cropped_images_for_imagej
 
-# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
+# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_600dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
 
 # 4. Calculate Residual conductance
