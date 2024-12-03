@@ -17,7 +17,7 @@
 #'  vpd_avg_kpa_avg
 #'  date_time
 #'
-#' @return A dataframe containing the strain_number, set temperature and the
+#' @return A dataframe containing the strain_number, temperature_measured and the
 #' rate of change between weight and time.
 #'
 #' @examples
@@ -219,14 +219,14 @@ calculate_transpiration_rates <- function(droughtbox_data,
     #                                                                                                              "strain_avg_3_microstrain_avg",
     #                                                                                                              "strain_avg_4_microstrain_avg") %in% base::colnames(droughtbox_data))
 
-    base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c("set_point_t_avg_avg",
+    base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c(#"set_point_t_avg_avg",
                                                                             "vpd_avg_kpa_avg",
                                                                             "date_time") %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
                                                                             "strain_number",
-                                                                            "set_temperature",
+                                                                            #"set_temperature",
                                                                             "tree_id") %in% base::colnames(leaf_and_branch_area_data))
 
     # Calculate the rate of change between weight and time ---------------------
@@ -239,7 +239,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
             ## Merge leaf and branch areas data with slope data ----------------
             dplyr::full_join(., leaf_and_branch_area_data,
-                             by = c("strain_number", "set_temperature")) %>%
+                             by = c("strain_number", "temperature_measured")) %>%
 
             # Calculate transpiration
             dplyr::mutate(transpiration_grams_per_sec_cm2 =
@@ -337,7 +337,7 @@ calculate_residual_conductance <- function(droughtbox_data,
                                                               #"strain_avg_3_microstrain_avg",
                                                               #"strain_avg_4_microstrain_avg",
 
-                                                              "set_point_t_avg_avg",
+                                                              #"set_point_t_avg_avg",
                                                               "vpd_avg_kpa_avg",
                                                               "date_time"
                                                               ) %in% base::colnames(droughtbox_data))
@@ -346,7 +346,7 @@ calculate_residual_conductance <- function(droughtbox_data,
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
                                                                             #"surface_branch_area_cm2",
                                                                             "strain_number",
-                                                                           "set_temperature",
+                                                                           #"set_temperature",
                                                                             "tree_id"
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
@@ -379,7 +379,7 @@ calculate_residual_conductance <- function(droughtbox_data,
 
     # Calculate transpiration rates --------------------------------------------
     transpiration <- calculate_transpiration_rates(droughtbox_data = droughtbox_data,
-                                                                     leaf_and_branch_area_data = leaf_and_branch_area_data)
+                                                  leaf_and_branch_area_data = leaf_and_branch_area_data)
 
     # Estimate residual conductance --------------------------------------------
     residual_conductance_df <-
@@ -387,7 +387,8 @@ calculate_residual_conductance <- function(droughtbox_data,
         transpiration %>%
 
             # Add VPD parameter into the dataset
-            dplyr::full_join(., vpd_parameter, by = c("set_temperature")) %>%
+            dplyr::full_join(., vpd_parameter,
+                             by = join_by(temperature_measured == set_temperature)) %>%
 
             # Print message residual conductance units
             {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
