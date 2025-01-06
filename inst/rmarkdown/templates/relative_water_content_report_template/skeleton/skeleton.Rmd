@@ -1,5 +1,5 @@
 ---
-title: 'Species Name'
+title: 'Relative Water Content: Species Name'
 author: 'Your Name'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -72,6 +72,7 @@ library(purrr)
 library(stringr)
 library(tidyr)
 library(here)
+library(tibble)
 
 # For reading xlsx file
 library(readxl)
@@ -80,7 +81,7 @@ library(readxl)
 # Load dry weights data from the Droughtbox 
 
 ```{r eval=FALSE}
-raw_dry_weights_data <- read_dry_weights_data_folder("~/Downloads/euc_saligna_december_droughtbox_data/")
+raw_dry_weights_data <- read_dry_weights_data_folder("")
 ```
 ```{r}
 names(raw_dry_weights_data)
@@ -91,15 +92,15 @@ names(raw_dry_weights_data)
 map(raw_dry_weights_data, plot_strains_weights)
 ```
 
-# Clean data
+# Clean datasets
 
-## File 1
+## File 1: 25c
 
 ```{r, eval=FALSE}
-euc_saligna_25c_cleaned_dry_weights <-
+[spcode]_25c_dry_weights_cleaned <-
 
     # Select the data to be clean
-    raw_dry_weights_data["dry_weight_euc_saligna_dec_25c.dat"] %>%
+    raw_dry_weights_data["dry_weight_[spcode]_25c.dat"] %>%
 
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -109,24 +110,277 @@ euc_saligna_25c_cleaned_dry_weights <-
 
     # Choose a interval of time
     filter_droughtbox_data(.,
-                           from_start_time = "13:19:10",
-                           to_end_time = "13:20:50")  
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
 ```
-## Plot cleaned data
+
+### Plot cleaned data
 
 ```{r, plot_dry_weights_cleaned_data_25c, eval=FALSE}
-plot_strains_weights([sp_code]_25c_cleaned_dry_weights, show_tare_group = FALSE)
+plot_strains_weights([spcode]_25c_dry_weights_cleaned, show_tare_group = FALSE)
 ```
-## File 2 
 
-## File 3
+### Remove columns
 
-## File 4
+```{r, eval=FALSE}
+[spcode]_25c_dry_weights_cleaned <-
+  
+    [spcode]_25c_dry_weights_cleaned %>% 
 
-## File 5
 
-## File 6
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_25c.dat"])) 
+    
+```
 
-## File 7
+## File 2: 30c 
+
+```{r, eval=FALSE}
+[spcode]_30c_dry_weights_cleaned <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_[spcode]_30c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
+```
+
+### Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_30c, eval=FALSE}
+plot_strains_weights([spcode]_30c_dry_weights_cleaned, show_tare_group = FALSE)
+```
+
+### Remove columns
+
+```{r, eval=FALSE}
+[spcode]_30c_dry_weights_cleaned <-
+  
+    [spcode]_30c_dry_weights_cleaned %>% 
+
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_30c.dat"]))
+```
+
+## File 3: 35c
+
+```{r, eval=FALSE}
+[spcode]_35c_dry_weights_cleaned <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_[spcode]_35c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
+```
+
+### Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_35c, eval=FALSE}
+plot_strains_weights([spcode]_35c_dry_weights_cleaned, show_tare_group = FALSE)
+```
+
+### Remove columns
+
+```{r, eval=FALSE}
+[spcode]_35c_dry_weights_cleaned <-
+  
+    [spcode]_35c_dry_weights_cleaned %>% 
+
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_35c.dat"]))
+```
+
+## File 4: 40c
+
+```{r, eval=FALSE}
+[spcode]_40c_dry_weights_cleaned <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_[spcode]_40c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
+```
+
+### Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_40c, eval=FALSE}
+plot_strains_weights([spcode]_40c_dry_weights_cleaned, show_tare_group = FALSE)
+```
+
+### Remove columns
+
+```{r, eval=FALSE}
+[spcode]_40c_dry_weights_cleaned <-
+  
+    [spcode]_40c_dry_weights_cleaned %>% 
+
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_40c.dat"]))
+```
+
+## File 5: 45c
+
+```{r, eval=FALSE}
+[spcode]_45c_dry_weights_cleaned <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_[spcode]_45c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
+```
+
+### Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_45c, eval=FALSE}
+plot_strains_weights([spcode]_45c_dry_weights_cleaned, show_tare_group = FALSE)
+```
+
+### Remove columns
+
+```{r, eval=FALSE}
+[spcode]_45c_dry_weights_cleaned <-
+  
+    [spcode]_45c_dry_weights_cleaned %>% 
+
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_45c.dat"]))
+```
+
+## File 6: 50c
+
+```{r, eval=FALSE}
+[spcode]_50c_dry_weights_cleaned <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_[spcode]_50c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
+```
+
+### Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_50c, eval=FALSE}
+plot_strains_weights([spcode]_50c_dry_weights_cleaned, show_tare_group = FALSE)
+```
+
+### Remove columns
+
+```{r, eval=FALSE}
+[spcode]_50c_dry_weights_cleaned <-
+  
+    [spcode]_50c_dry_weights_cleaned %>% 
+
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_50c.dat"]))
+```
+
+## File 7: 55c
+
+```{r, eval=FALSE}
+[spcode]_55c_dry_weights_cleaned <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_[spcode]_55c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS")  
+```
+
+### Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_55c, eval=FALSE}
+plot_strains_weights([spcode]_55c_dry_weights_cleaned, show_tare_group = FALSE)
+```
+
+### Remove columns
+
+```{r, eval=FALSE}
+[spcode]_55c_dry_weights_cleaned <-
+  
+    [spcode]_55c_dry_weights_cleaned %>% 
+
+    select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
+            strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
+            strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
+            strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
+  
+    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_55c.dat"]))
+```
 
 # Construct dry weights data set
