@@ -100,7 +100,7 @@ clean_droughtbox_colnames <- function(path_droughtbox_data_file){
 #' read_hie_droughtbox_data_file(path_to_droughtbox_data_file)
 #'
 #' @export
-read_hie_droughtbox_data_file <- function(path_droughtbox_data_file ){
+read_hie_droughtbox_data_file <- function(path_droughtbox_data_file){
 
     # Validate input parameters ------------------------------------------------
 
@@ -924,4 +924,86 @@ get_coefs <- function(data, transform_gmin_units = FALSE){
             coef == "temperature" ~ "slope",
 
             TRUE ~ coef))
+}
+
+#' read_dry_weights_data
+#'
+#' @description
+#' This function reads the raw .dat file downloaded from the droughtbox located
+#' at the Hawkesbury Institute for the Environment.
+#'
+#' @param path_droughtbox_data_folder containing
+#'
+#' @param paper_bag_group
+#' Integer (either 1 or 2) indicating the paper bag group where samples were dried
+#'
+#' @importFrom magrittr %>%
+#'
+#' @examples
+#' @return A dataframe of with each sample dry
+#' @export
+read_dry_weights_data_folder <- function(path_droughtbox_data_folder){
+
+    # Edit path to avoid errors -------------------------------------------------
+
+    # If path ends with /
+    if (grepl("/$", path_droughtbox_data_folder)) {
+
+        # Remove the / at the end
+        path_droughtbox_data_folder <-  stringr::str_sub(path_droughtbox_data_folder,
+                                                         end = -2)}
+    else {
+        # Leave it as it is
+        path_droughtbox_data_folder <- path_droughtbox_data_folder
+    }
+
+    # Validate input parameters ------------------------------------------------
+
+    # Check folder exits
+    base::stopifnot("Folder not found" = base::dir.exists(path_droughtbox_data_folder))
+
+    # Check there are several .dat files in the folder
+    if (length(base::list.files(path = path_droughtbox_data_folder,
+                                pattern = "\\.dat$")) <= 1) {
+
+        stop("Folder MUST contain at least 2 or more .dat files")}
+
+    else if (length(base::list.files(path = path_droughtbox_data_folder,
+                                     pattern = "\\.dat$")) > 1) {
+
+        # Get the names of each .dat file found in the folder
+        file_names <- base::list.files(path = path_droughtbox_data_folder,
+                                       pattern = "\\.dat$")}
+
+    else {
+        stop("Failed in read_dry_weights_data")
+        }
+
+    # Create list with all the dataframes --------------------------------------
+
+    # Filter the vector to get only the values that start with dry_weight
+    dry_weight_filnames <- file_names[stringr::str_detect(file_names, "^dry_weight")]
+
+    # Create list of dataframes
+    list_with_data_frames <-
+
+        dry_weight_filnames %>%
+
+        # Merge path with each file name found in the folder
+        base::paste0(path_droughtbox_data_folder, "/", .) %>%
+
+        # Print message indicating the total number of files read
+        {print(paste0("Reading: ", .)); .} %>%
+
+        # Set the name for each dataframe in the list
+        purrr::set_names(., dry_weight_filnames) %>%
+
+        # Read each file
+        purrr::map(read_hie_droughtbox_data_file) %>%
+
+        # Print message indicating the total number of files read
+        {print(paste0("Success! Total number of .dat files read: ", base::length(.))); .}
+
+    return(list_with_data_frames)
+
 }
