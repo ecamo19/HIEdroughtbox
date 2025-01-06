@@ -77,4 +77,56 @@ library(here)
 library(readxl)
 ```
 
-# 1. Load dry weights data from the Droughtbox 
+# Load dry weights data from the Droughtbox 
+
+```{r eval=FALSE}
+raw_dry_weights_data <- read_dry_weights_data_folder("~/Downloads/euc_saligna_december_droughtbox_data/")
+```
+```{r}
+names(raw_dry_weights_data)
+```
+# Plot raw data 
+
+```{r}
+map(raw_dry_weights_data, plot_strains_weights)
+```
+
+# Clean data
+
+## File 1
+
+```{r, eval=FALSE}
+euc_saligna_25c_cleaned_dry_weights <-
+
+    # Select the data to be clean
+    raw_dry_weights_data["dry_weight_euc_saligna_dec_25c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "13:19:10",
+                           to_end_time = "13:20:50")  
+```
+## Plot cleaned data
+
+```{r, plot_dry_weights_cleaned_data_25c, eval=FALSE}
+plot_strains_weights([sp_code]_25c_cleaned_dry_weights, show_tare_group = FALSE)
+```
+## File 2 
+
+## File 3
+
+## File 4
+
+## File 5
+
+## File 6
+
+## File 7
+
+# Construct dry weights data set
