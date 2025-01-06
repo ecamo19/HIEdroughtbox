@@ -216,6 +216,7 @@ read_hie_droughtbox_data_folder <- function(path_droughtbox_data_folder){
         stop("Failed in read_all_hie_droughtbox_files function")}
 
     # Create list with all the dataframes --------------------------------------
+    file_names <- file_names[!stringr::str_detect(file_names, "^dry_weight")]
 
     # Create list of dataframes
     list_with_data_frames <-
@@ -926,7 +927,7 @@ get_coefs <- function(data, transform_gmin_units = FALSE){
             TRUE ~ coef))
 }
 
-#' read_dry_weights_data
+#' read_dry_weights_data_folder
 #'
 #' @description
 #' This function reads the raw .dat file downloaded from the droughtbox located
@@ -943,6 +944,11 @@ get_coefs <- function(data, transform_gmin_units = FALSE){
 #' @return A dataframe of with each sample dry
 #' @export
 read_dry_weights_data_folder <- function(path_droughtbox_data_folder){
+
+    # Print
+    base::cat("Make sure each filename start with dry_weight i.e. dry_weight_euc_saligna_dec_45c.dat")
+    base::cat("\n")
+    base::cat("\n")
 
     # Edit path to avoid errors -------------------------------------------------
 
@@ -977,7 +983,7 @@ read_dry_weights_data_folder <- function(path_droughtbox_data_folder){
 
     else {
         stop("Failed in read_dry_weights_data")
-        }
+    }
 
     # Create list with all the dataframes --------------------------------------
 
