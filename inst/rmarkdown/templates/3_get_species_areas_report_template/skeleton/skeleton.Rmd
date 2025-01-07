@@ -98,9 +98,7 @@ if (Sys.info()[1] != "Linux") {
 #use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
 ```
 
-
 Remember to remove the `eval=FALSE` from each chunk
-
 
 # 1. Calculate samples areas from scanner images
 
@@ -396,11 +394,15 @@ pwd
 # ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_600dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
 
+```{bash, move_areas_file, results = "hide", eval=FALSE}
+mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
+```
+
 ## Load Areas data
 
 ```{r, eval=FALSE}
 [sp_name]_areas_data <-
-    read.csv("./path/to/cropped_images_for_imagej/areas_cm2.csv",
+    read.csv("./path/to/processed_data/areas_cm2.csv",
                 header = TRUE)  %>%
 
     # Separate file name from file extension
