@@ -1,0 +1,5 @@
+name: 5-Residual conductance Rmarkdown Template
+description: >
+   This template was created for facilitating the data analysis of the data coming
+   out of the Droughtbox
+create_dir: FALSE

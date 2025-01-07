@@ -1,5 +1,5 @@
 ---
-title: 'Relative Water Content: Species Name'
+title: 'Dry weights: Species Name'
 author: 'Your Name'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -554,7 +554,8 @@ paper_bag_weights <- read.csv("", header = TRUE)
 ```
 
 ## Select paper bag group
-```{r}
+
+```{r, eval=FALSE}
 paper_bag_weights_group_ <- 
     paper_bag_weights %>% 
         filter(paper_bag_group == "group_")
@@ -562,7 +563,7 @@ paper_bag_weights_group_ <-
 
 ## Join paper bag weights and dry weights
 
-```{r}
+```{r, eval=FALSE}
 [spcode]_dry_weights <- 
   
   inner_join(euc_saligna_dry_weights, paper_bag_weights_group_1,
@@ -570,11 +571,14 @@ paper_bag_weights_group_ <-
   
   select(spcode, paper_bag_group, string_number, everything()) %>% 
   
-  # Subtract the paperbag weight
+  # Subtract the paper bag weight
   mutate(.keep = "unused", sample_dry_weight_grams = weight_grams - paperbag_weight_grams)
 ```
 
-# Calculate RWC
+# Save dry weights data
 
+```{r, eval=FALSE}
+write.csv([spcode]_dry_weights, "/processed_data/[spcode]_dry_weights.csv")
+```
 
 

@@ -1,0 +1,357 @@
+---
+title: 'Clean droughtbox data: Species Name'
+author: 'Your Name'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "", 
+                      fig.align = 'center',
+					  fig.width = 11, fig.height = 7)
+```
+
+```{r, setup_wd, include=FALSE}
+# Set knit directory
+setwd(here::here())
+knitr::opts_knit$set(root.dir = setwd(here::here()))
+getwd()
+```
+
+```{r knitr, include = FALSE}
+options(scipen = 999)
+
+# Save figures in specific place
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = FALSE,
+                      cache.comments = TRUE,
+                      
+                      # Save figures as pdf ?
+                      #dev = c( "png", "pdf"),
+                  
+                      # Include code?
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path where figures are going to be store pdf single 
+                      # figures
+                      Edit path in line 44 and comment out this line   
+                      fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
+                      fig.width      = 11,
+                      fig.height     = 7,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r cleanup-docs, cache = FALSE,echo = FALSE}
+# save a html copy file in a specific place
+# doc.files <- c(list.files(pattern = "pdf"),
+#                list.files(pattern = "html"),
+#                list.files(pattern = "docx"))
+# 
+# for (file in doc.files) {   
+#     file.rename(file, file.path("../../[insert_folder_name]/", file))
+# }
+```
+
+```{r libaries, message = FALSE, warning = FALSE, cache = FALSE}
+library(HIEdroughtbox)
+library(ggplot2)
+
+# For data manipulation
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(here)
+
+# For reading xlsx file
+library(readxl)
+```
+
+```{r, echo=FALSE}
+if (Sys.info()[1] != "Linux") {
+    print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
+} else {
+    
+    # For running python in Rmarkdown
+    library(reticulate)
+    }
+```
+
+```{r, echo=FALSE}
+# To run python in this Rmarkdown follow the following steps:
+# 1) Create a file in your home directory called .Renviron i.e touch .Renviron
+# 2) Run which python3 in the terminal and copy the path i.e /usr/bin/python3
+# 3) Paste RETICULATE_PYTHON="/usr/bin/python3" inside the .Renviron file 
+
+# Old instructions
+# Set conda env for working with python
+#use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
+```
+
+# 1. Load Droughtbox data
+
+```{r, raw_data_list}
+# Create list with all data frames
+[sp_name]_raw_data <- read_hie_droughtbox_data_folder("./")
+```
+
+```{r}
+# Show the names of each element in the list
+names([sp_name]_raw_data)
+```
+
+# 2. Data preprocessing
+
+## Plot climatic data
+
+```{r, plot_climatic_controls}
+map([sp_name]_raw_data, plot_droughtbox_climatic_controls)
+```
+
+## Plot raw droughtbox data
+
+```{r, plot_raw_data}
+map([sp_name]_raw_data, plot_strains_weights)
+```
+
+## Clean data
+
+Remember to remove the `eval=FALSE` from each chunk
+
+### File 1
+
+```{r, eval = FALSE, echo = FALSE, include = FALSE}
+#[sp_name]_25c_cleaned <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_25c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+   # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_25c, eval = FALSE, include = FALSE}
+plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
+```
+
+### File 2
+
+```{r , eval=FALSE}
+#[sp_name]_30c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_30c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_30c, eval=FALSE}
+plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
+```
+
+### File 3
+
+```{r, eval=FALSE}
+#[sp_name]_35c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_35c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_35c, eval=FALSE}
+plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
+```
+
+### File 4
+
+```{r, eval=FALSE}
+#[sp_name]_40c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_40c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_40c, eval=FALSE}
+plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
+```
+
+### File 5
+
+```{r, eval=FALSE}
+#[sp_name]_45c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_45c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+   # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_45c, eval=FALSE}
+plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
+```
+
+### File 6
+
+```{r, eval=FALSE}
+#[sp_name]_50c_cleaned <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_50c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+   # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_50c, eval=FALSE}
+plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
+```
+
+### File 7
+
+```{r, eval=FALSE}
+#[sp_name]_55c_cleaned <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_55c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_55c, eval=FALSE}
+plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
+```
+
+## Merge cleaned dataframes
+
+```{r, eval=FALSE}
+[sp_name]_merged_cleaned_data <- 
+                    merge_droughtbox_data(#[sp_name]_25c_cleaned,
+                                          [sp_name]_30c_cleaned,
+                                          [sp_name]_35c_cleaned,
+                                          [sp_name]_40c_cleaned,
+                                          [sp_name]_45c_cleaned,
+                                          [sp_name]_50c_cleaned,
+                                          [sp_name]_55c_cleaned)
+```
+
+```{r, eval=FALSE}
+write.csv([sp_name]_merged_cleaned_data, "/processed_data/[sp_name]_merged_droughtbox_cleaned_data.csv")
+```
+
