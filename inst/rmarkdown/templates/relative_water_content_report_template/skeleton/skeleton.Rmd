@@ -80,15 +80,17 @@ library(readxl)
 
 # Load dry weights data from the Droughtbox 
 
-```{r eval=FALSE}
+```{r load_raw_data}
 raw_dry_weights_data <- read_dry_weights_data_folder("")
 ```
+
 ```{r}
 names(raw_dry_weights_data)
 ```
+
 # Plot raw data 
 
-```{r}
+```{r plot_raw_data}
 map(raw_dry_weights_data, plot_strains_weights)
 ```
 
@@ -127,14 +129,37 @@ plot_strains_weights([spcode]_25c_dry_weights_cleaned, show_tare_group = FALSE)
   
     [spcode]_25c_dry_weights_cleaned %>% 
 
-
     select(date_time, strain_avg_1_microstrain_avg, strain_avg_2_microstrain_avg,
             strain_avg_3_microstrain_avg, strain_avg_4_microstrain_avg,
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_25c.dat"])) 
+    add_column(file = "25c") 
     
+```
+
+### Pivot data
+
+```{r}
+[spcode]_25c_dry_weights_cleaned <- 
+  
+    [spcode]_25c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
 ```
 
 ## File 2: 30c 
@@ -175,7 +200,31 @@ plot_strains_weights([spcode]_30c_dry_weights_cleaned, show_tare_group = FALSE)
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_30c.dat"]))
+    add_column(file = "30c")
+```
+
+### Pivot data
+
+```{r}
+[spcode]_30c_dry_weights_cleaned <- 
+  
+    [spcode]_30c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
 ```
 
 ## File 3: 35c
@@ -216,7 +265,31 @@ plot_strains_weights([spcode]_35c_dry_weights_cleaned, show_tare_group = FALSE)
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_35c.dat"]))
+    add_column(file = "35c")
+```
+
+### Pivot data
+
+```{r}
+[spcode]_35c_dry_weights_cleaned <- 
+  
+    [spcode]_35c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
 ```
 
 ## File 4: 40c
@@ -257,7 +330,31 @@ plot_strains_weights([spcode]_40c_dry_weights_cleaned, show_tare_group = FALSE)
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_40c.dat"]))
+    add_column(file = "40c")
+```
+
+### Pivot data
+
+```{r}
+[spcode]_40c_dry_weights_cleaned <- 
+  
+    [spcode]_40c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
 ```
 
 ## File 5: 45c
@@ -298,7 +395,31 @@ plot_strains_weights([spcode]_45c_dry_weights_cleaned, show_tare_group = FALSE)
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_45c.dat"]))
+    add_column(file = "45c")
+```
+
+### Pivot data
+
+```{r}
+[spcode]_45c_dry_weights_cleaned <- 
+  
+    [spcode]_45c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
 ```
 
 ## File 6: 50c
@@ -339,7 +460,31 @@ plot_strains_weights([spcode]_50c_dry_weights_cleaned, show_tare_group = FALSE)
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_50c.dat"]))
+    add_column(file = "50c")
+```
+
+### Pivot data
+
+```{r}
+[spcode]_50c_dry_weights_cleaned <- 
+  
+    [spcode]_50c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
 ```
 
 ## File 7: 55c
@@ -380,7 +525,31 @@ plot_strains_weights([spcode]_55c_dry_weights_cleaned, show_tare_group = FALSE)
             strain_avg_5_microstrain_avg, strain_avg_6_microstrain_avg,
             strain_avg_7_microstrain_avg, strain_avg_8_microstrain_avg) %>%
   
-    add_column(file = names(raw_dry_weights_data["dry_weight_[spcode]_55c.dat"]))
+    add_column(file = "55c")
 ```
 
-# Construct dry weights data set
+### Pivot data
+
+```{r}
+[spcode]_55c_dry_weights_cleaned <- 
+  
+    [spcode]_55c_dry_weights_cleaned %>%
+  
+        pivot_longer(!c(date_time, file), names_to = "string", values_to = "weight_grams")  %>% 
+
+        # Edit names
+        mutate(string_number = case_when(string == "strain_avg_1_microstrain_avg"  ~ "strain_1",
+                                         string == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                         string == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                         string == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                         string == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                         string == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                         string == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                         string == "strain_avg_8_microstrain_avg"  ~ "string_8",
+                                         TRUE ~ string), .keep = "unused") %>%   
+        
+        group_by(string_number, file) %>% 
+        summarise(dry_weight_grams = mean(weight_grams))    
+```
+
+# Construct dry weights dataset
