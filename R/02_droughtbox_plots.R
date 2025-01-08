@@ -105,7 +105,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$vpd_avg_kpa_avg)) +
-        ggplot2::ylab("VPD (kPa)")
+        ggplot2::ylab("VPD")
 
     ## Temperature plot --------------------------------------------------------
     temp_plot <-
@@ -121,7 +121,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$tc_avg_deg_c_avg)) +
-        ggplot2::ylab("Temperature")
+        ggplot2::ylab("Temp")
 
     ## Air temperature plot ----------------------------------------------------
     air_temp_plot <-
@@ -137,7 +137,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$air_tc_avg_deg_c_avg)) +
-        ggplot2::ylab("Air temperature")
+        ggplot2::ylab("Air Temp")
 
     ## Relative Humidity plot --------------------------------------------------
     relative_humidity_plot <-
@@ -170,7 +170,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$abs_h_avg_g_m3_avg)) +
-        ggplot2::ylab("Absolute humidity (g/m3)")
+        ggplot2::ylab("Abs humidity")
 
     # Return one figure with several plots
     if (cowplot == TRUE) {
