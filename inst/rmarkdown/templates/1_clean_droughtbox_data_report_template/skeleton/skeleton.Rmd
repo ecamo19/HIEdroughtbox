@@ -77,27 +77,6 @@ library(here)
 library(readxl)
 ```
 
-```{r, echo=FALSE}
-if (Sys.info()[1] != "Linux") {
-    print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
-} else {
-    
-    # For running python in Rmarkdown
-    library(reticulate)
-    }
-```
-
-```{r, echo=FALSE}
-# To run python in this Rmarkdown follow the following steps:
-# 1) Create a file in your home directory called .Renviron i.e touch .Renviron
-# 2) Run which python3 in the terminal and copy the path i.e /usr/bin/python3
-# 3) Paste RETICULATE_PYTHON="/usr/bin/python3" inside the .Renviron file 
-
-# Old instructions
-# Set conda env for working with python
-#use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
-```
-
 # 1. Load Droughtbox data
 
 ```{r, raw_data_list}

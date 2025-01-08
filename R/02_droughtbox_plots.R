@@ -105,7 +105,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$vpd_avg_kpa_avg)) +
-        ggplot2::ylab("Vapour pressure deficit (kPa)")
+        ggplot2::ylab("VPD")
 
     ## Temperature plot --------------------------------------------------------
     temp_plot <-
@@ -121,7 +121,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$tc_avg_deg_c_avg)) +
-        ggplot2::ylab("Temperature (degree Celsius)")
+        ggplot2::ylab("Temp")
 
     ## Air temperature plot ----------------------------------------------------
     air_temp_plot <-
@@ -137,7 +137,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$air_tc_avg_deg_c_avg)) +
-        ggplot2::ylab("Air temperature (degree Celsius)")
+        ggplot2::ylab("Air Temp")
 
     ## Relative Humidity plot --------------------------------------------------
     relative_humidity_plot <-
@@ -153,7 +153,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$rh_avg_percent_avg)) +
-        ggplot2::ylab("Relative humidity (%)")
+        ggplot2::ylab("RH (%)")
 
 
     ## Absolute humidity plot --------------------------------------------------
@@ -170,12 +170,15 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$abs_h_avg_g_m3_avg)) +
-        ggplot2::ylab("Absolute humidity (g/m3)")
+        ggplot2::ylab("Abs humidity")
 
     # Return one figure with several plots
     if (cowplot == TRUE) {
-        return(cowplot::plot_grid(ncol = 2, vpd_plot, temp_plot,
-                                  absolute_humidity_plot, relative_humidity_plot,
+        return(cowplot::plot_grid(ncol = 2,
+                                  vpd_plot,
+                                  temp_plot,
+                                  absolute_humidity_plot,
+                                  relative_humidity_plot,
                                   air_temp_plot))}
 
     # Return each plot individually
