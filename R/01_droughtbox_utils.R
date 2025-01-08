@@ -19,7 +19,7 @@
 #'
 #' @param path_droughtbox_data_file String indicating the location of the .dat
 #' file in your computer.
-#'
+#'values =
 #' @importFrom magrittr %>%
 #'
 #' @return Vector of strings with a length 30 elements.
@@ -1075,14 +1075,14 @@ reshape_droughtbox_data <- function(droughtbox_data){
                             values_to = "string_weight_grams") %>%
 
         # Create new column with the new names for each strain
-        dplyr::mutate(string_number = dplyr::case_when(strings == "strain_avg_1_microstrain_avg"  ~ "1",
-                                                       strings == "strain_avg_2_microstrain_avg"  ~ "2",
-                                                       strings == "strain_avg_3_microstrain_avg"  ~ "3",
-                                                       strings == "strain_avg_4_microstrain_avg"  ~ "4",
-                                                       strings == "strain_avg_5_microstrain_avg"  ~ "5",
-                                                       strings == "strain_avg_6_microstrain_avg"  ~ "6",
-                                                       strings == "strain_avg_7_microstrain_avg"  ~ "7",
-                                                       strings == "strain_avg_8_microstrain_avg"  ~ "8",
+        dplyr::mutate(string_number = dplyr::case_when(strings == "strain_avg_1_microstrain_avg"  ~ "string_1",
+                                                       strings == "strain_avg_2_microstrain_avg"  ~ "string_2",
+                                                       strings == "strain_avg_3_microstrain_avg"  ~ "string_3",
+                                                       strings == "strain_avg_4_microstrain_avg"  ~ "string_4",
+                                                       strings == "strain_avg_5_microstrain_avg"  ~ "string_5",
+                                                       strings == "strain_avg_6_microstrain_avg"  ~ "string_6",
+                                                       strings == "strain_avg_7_microstrain_avg"  ~ "string_7",
+                                                       strings == "strain_avg_8_microstrain_avg"  ~ "string_8",
                                                        TRUE ~ strings),
                       # Remove unused col
                       .keep = "unused") %>%
@@ -1105,7 +1105,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
         # Transform columns
         dplyr::mutate(
             temperature_measured = as.integer(temperature_measured),
-            string_number = as.integer(string_number),
+            #string_number = as.integer(string_number),
 
             # Get time in seconds
             time_seconds = (time - dplyr::first(time)), .keep = "unused") %>%
