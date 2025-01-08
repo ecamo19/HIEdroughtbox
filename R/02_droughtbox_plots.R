@@ -174,8 +174,11 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
     # Return one figure with several plots
     if (cowplot == TRUE) {
-        return(cowplot::plot_grid(ncol = 2, vpd_plot, temp_plot,
-                                  absolute_humidity_plot, relative_humidity_plot,
+        return(cowplot::plot_grid(ncol = 2,
+                                  vpd_plot,
+                                  temp_plot,
+                                  absolute_humidity_plot,
+                                  relative_humidity_plot,
                                   air_temp_plot))}
 
     # Return each plot individually
