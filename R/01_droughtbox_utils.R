@@ -1105,7 +1105,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
         # Transform columns
         dplyr::mutate(
             temperature_measured = as.integer(temperature_measured),
-            string_number = as.integer(string_number),
+            #string_number = as.integer(string_number),
 
             # Get time in seconds
             time_seconds = (time - dplyr::first(time)), .keep = "unused") %>%
