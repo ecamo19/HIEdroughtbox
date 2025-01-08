@@ -4,11 +4,11 @@
 \alias{calculate_rate_of_change}
 \title{calculate_rate_of_change}
 \usage{
-calculate_rate_of_change(droughtbox_data)
+calculate_rate_of_change(droughtbox_data_reshaped)
 }
 \arguments{
-\item{droughtbox_data}{Dataframe loaded with the function
-`read_hie_droughtbox_data()`.
+\item{droughtbox_data_reshaped}{Cleaned Dataframe loaded with the function
+`reshape_droughtbox_data_reshaped()`.
 
 This dataframe must contain the following columns:
  strain_avg_1_microstrain_avg
@@ -21,7 +21,7 @@ This dataframe must contain the following columns:
  date_time}
 }
 \value{
-A dataframe containing the strain_number, set temperature and the
+A dataframe containing the strain_number, temperature_measured and the
 rate of change between weight and time.
 }
 \description{
@@ -29,12 +29,12 @@ This function calculates the rate of change (aka slope) of the weight of a
 small branch measured in grams and time measured in seconds.
 }
 \examples{
-path_to_droughtbox_data <- system.file("extdata",
+\dontrun{path_to_droughtbox_data <- system.file("extdata",
                             "acacia_aneura_25c.dat",
                             package = "HIEdroughtbox")
 
 droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 
-calculate_rate_of_change(droughtbox_data = droughtbox_data)
+calculate_rate_of_change(droughtbox_data = droughtbox_data)}
 
 }
