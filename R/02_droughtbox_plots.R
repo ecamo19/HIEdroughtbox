@@ -153,7 +153,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$rh_avg_percent_avg)) +
-        ggplot2::ylab("Relative humidity (%)")
+        ggplot2::ylab("RH (%)")
 
 
     ## Absolute humidity plot --------------------------------------------------
