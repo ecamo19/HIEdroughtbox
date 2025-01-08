@@ -8,6 +8,7 @@ plot_strains_weights(
   droughtbox_data,
   show_strain = "all",
   show_tare_group = TRUE,
+  show_smooth_lines = TRUE,
   time_breaks = "10 min"
 )
 }
