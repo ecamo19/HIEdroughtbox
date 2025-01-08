@@ -297,7 +297,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                        strain_7 =  "#8600b6",
                        strain_8 =  "#00a0ab"
                        )
-S
+
     # Transform the data into the right format for the ggplot
     droughtbox_data %>%
 
