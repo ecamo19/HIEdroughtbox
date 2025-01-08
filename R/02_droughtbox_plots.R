@@ -238,6 +238,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 #' @export
 plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                                  show_tare_group = TRUE,
+                                 show_smooth_lines = TRUE,
                                  time_breaks = "10 min"){
 
     # Validate input parameters ------------------------------------------------
@@ -296,7 +297,7 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
                        strain_7 =  "#8600b6",
                        strain_8 =  "#00a0ab"
                        )
-
+S
     # Transform the data into the right format for the ggplot
     droughtbox_data %>%
 
@@ -354,8 +355,8 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         ggplot2::scale_x_datetime(breaks = scales::date_breaks({{time_breaks}})) +
 
         # Add line with the mean value of the weights
-        ggplot2::stat_smooth(ggplot2::aes(colour = strain_number),
-                             se = FALSE) +
+        #ggplot2::stat_smooth(ggplot2::aes(colour = strain_number), se = FALSE) +
+        {if(show_smooth_lines == TRUE)ggplot2::stat_smooth(ggplot2::aes(colour = strain_number), se = FALSE)} +
 
         # Choose the theme
         ggplot2::theme_bw() +
