@@ -15,3 +15,7 @@ A dataframe
 \description{
 This function transform the droughtbox data from wide to a long format
 }
+\examples{
+\dontrun{reshape_droughtbox_data(euc_saligna_dec_merged_cleaned_data)}
+
+}

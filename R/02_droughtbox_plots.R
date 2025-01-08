@@ -16,7 +16,6 @@
 #'
 #' @return A ggplot2 object with a total of 5 figures.
 #'
-#'
 #' @examples
 #' path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
@@ -406,7 +405,9 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
 #'
 #' @return A ggplot2 object with the weight (grams) measured by each strain (4 in
 #' total) inside the Droughtbox.
-#' @examples
+#'
+#'
+#'
 #'
 #' @export
 

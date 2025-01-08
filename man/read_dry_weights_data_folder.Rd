@@ -18,3 +18,7 @@ A dataframe of with each sample dry
 This function reads the raw .dat file downloaded from the droughtbox located
 at the Hawkesbury Institute for the Environment.
 }
+\examples{
+\dontrun{read_dry_weights_data_folder()}
+
+}
