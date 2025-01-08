@@ -137,7 +137,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$air_tc_avg_deg_c_avg)) +
-        ggplot2::ylab("Air temperature (degree Celsius)")
+        ggplot2::ylab("Air temperature")
 
     ## Relative Humidity plot --------------------------------------------------
     relative_humidity_plot <-
