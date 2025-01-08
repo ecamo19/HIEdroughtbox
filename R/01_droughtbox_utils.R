@@ -1013,3 +1013,104 @@ read_dry_weights_data_folder <- function(path_droughtbox_data_folder){
     return(list_with_data_frames)
 
 }
+
+#' reshape_droughtbox_data
+#'
+#' @description
+#' This function transform the droughtbox data from wide to a long format
+#'
+#' @param droughtbox_data
+#'
+#' @return A dataframe
+#'
+#' @examples
+#'
+#' @export
+reshape_droughtbox_data <- function(droughtbox_data){
+
+    # Validate input parameters -------------------------------------------------
+
+    # Stop if droughtbox_data is not a data frame
+    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
+
+    # Assert date column in droughtbox_data
+    checkmate::assert_date(droughtbox_data$date)
+
+    # Assert time column in droughtbox_data
+    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+
+    # Make sure the necessary data is in the dataframe
+    base::stopifnot("Missing date_time or tare_count_smp column" = c("date_time",
+                                                                     "tare_count_smp"
+    ) %in% base::colnames(droughtbox_data))
+
+    base::stopifnot("Missing tc_avg_deg_c_avg, vpd or/and, date_time colums" = c("tc_avg_deg_c_avg",
+                                                                                 "vpd_avg_kpa_avg",
+                                                                                 "date_time") %in% base::colnames(droughtbox_data))
+
+    # Reshape data  -------------------------------------------------------------
+
+    droughtbox_data_reshaped <-
+
+        # Transform the data into the right format
+        droughtbox_data %>%
+
+        # Select only the necessary variables calculating the rate of change
+        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg",
+                                      "strain_avg_1_microstrain_avg",
+                                      "strain_avg_2_microstrain_avg",
+                                      "strain_avg_3_microstrain_avg",
+                                      "strain_avg_4_microstrain_avg",
+                                      "strain_avg_5_microstrain_avg",
+                                      "strain_avg_6_microstrain_avg",
+                                      "strain_avg_7_microstrain_avg",
+                                      "strain_avg_8_microstrain_avg"))) %>%
+
+        # Reshape data into a long format
+        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg),
+
+                            # Create new columns
+                            names_to = "strains",
+                            values_to = "strain_weight") %>%
+
+        # Create new column with the new names for each strain
+        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "1",
+                                                       strains == "strain_avg_2_microstrain_avg"  ~ "2",
+                                                       strains == "strain_avg_3_microstrain_avg"  ~ "3",
+                                                       strains == "strain_avg_4_microstrain_avg"  ~ "4",
+                                                       strains == "strain_avg_5_microstrain_avg"  ~ "5",
+                                                       strains == "strain_avg_6_microstrain_avg"  ~ "6",
+                                                       strains == "strain_avg_7_microstrain_avg"  ~ "7",
+                                                       strains == "strain_avg_8_microstrain_avg"  ~ "8",
+                                                       TRUE ~ strains),
+                      # Remove unused col
+                      .keep = "unused") %>%
+
+        # Change temperatures measured into discrete groups i.e if
+        # tc_avg_deg_c_avg is between 53 and 56 code it as 55
+        dplyr::mutate(temperature_measured = dplyr::case_when(
+            dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
+            dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
+            dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
+            dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
+            dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
+            dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
+            dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
+            TRUE ~ tc_avg_deg_c_avg)) %>%
+
+        # Step done for transforming time to seconds
+        dplyr::group_by(strain_number, temperature_measured) %>%
+
+        # Transform columns
+        dplyr::mutate(
+            temperature_measured = as.integer(temperature_measured),
+            strain_number = as.integer(strain_number),
+
+            # Get time in seconds
+            time_seconds = (time - dplyr::first(time)), .keep = "unused")
+
+    return(droughtbox_data_reshaped)
+
+}
+
+

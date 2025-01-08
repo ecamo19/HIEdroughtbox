@@ -4,8 +4,8 @@
 #' This function calculates the rate of change (aka slope) of the weight of a
 #' small branch measured in grams and time measured in seconds.
 #'
-#' @param droughtbox_data Dataframe loaded with the function
-#' `read_hie_droughtbox_data()`.
+#' @param droughtbox_data_reshaped Cleaned Dataframe loaded with the function
+#' `reshape_droughtbox_data_reshaped()`.
 #'
 #' This dataframe must contain the following columns:
 #'  strain_avg_1_microstrain_avg
@@ -30,118 +30,43 @@
 #' calculate_rate_of_change(droughtbox_data = droughtbox_data)
 #'
 #' @export
-calculate_rate_of_change <- function(droughtbox_data){
+calculate_rate_of_change <- function(droughtbox_data_reshaped){
 
-    # Validate input parameters ------------------------------------------------
-
-    # Stop if droughtbox_data is not a data frame
-    base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
-
-    # Assert date column in droughtbox_data
-    checkmate::assert_date(droughtbox_data$date)
-
-    # Assert time column in droughtbox_data
-    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
-
-    # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing date_time or tare_count_smp column" = c("date_time",
-                                                                     "tare_count_smp"
-                                                                     ) %in% base::colnames(droughtbox_data))
-
-    base::stopifnot("Missing tc_avg_deg_c_avg, vpd or/and, date_time colums" = c("tc_avg_deg_c_avg",
-                                                                            "vpd_avg_kpa_avg",
-                                                                            "date_time") %in% base::colnames(droughtbox_data))
-
-    # Calculate the rate of change ---------------------------------------------
     rate_of_change <-
 
-        # Transform the data into the right format
-        droughtbox_data %>%
+        # Data reshaped with the function reshape_droughtbox_data
+        droughtbox_data_reshaped %>%
 
-        # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg",
-                                      "strain_avg_1_microstrain_avg",
-                                      "strain_avg_2_microstrain_avg",
-                                      "strain_avg_3_microstrain_avg",
-                                      "strain_avg_4_microstrain_avg",
-                                      "strain_avg_5_microstrain_avg",
-                                      "strain_avg_6_microstrain_avg",
-                                      "strain_avg_7_microstrain_avg",
-                                      "strain_avg_8_microstrain_avg"))) %>%
-        # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg),
+            # Print the units of the slope
+            {print("Remember time units must be seconds and weights must be in grams"); .} %>%
+            {print("Rate of change units: grams * s-1"); .} %>%
 
-                            # Create new columns
-                            names_to = "strains",
-                            values_to = "strain_weight") %>%
+            # Calculate the rate of change --------------------------------------
 
-        # Create new column with the new names for each strain
-        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "1",
-                                                       strains == "strain_avg_2_microstrain_avg"  ~ "2",
-                                                       strains == "strain_avg_3_microstrain_avg"  ~ "3",
-                                                       strains == "strain_avg_4_microstrain_avg"  ~ "4",
-                                                       strains == "strain_avg_5_microstrain_avg"  ~ "5",
-                                                       strains == "strain_avg_6_microstrain_avg"  ~ "6",
-                                                       strains == "strain_avg_7_microstrain_avg"  ~ "7",
-                                                       strains == "strain_avg_8_microstrain_avg"  ~ "8",
-                                                       TRUE ~ strains),
-                      # Remove unused col
-                      .keep = "unused") %>%
+            # Create a nested dataframes excluding temperature_measured,
+            # strain_number.
+            # This must return a data frame with maximum 8 row!!
+            tidyr::nest(data = -c(strain_number, temperature_measured)) %>%
 
-        # Change temperatures measured into discrete groups i.e if
-        # tc_avg_deg_c_avg is between 53 and 56 code it as 55
-        dplyr::mutate(temperature_measured = dplyr::case_when(
-            dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
-            dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
-            dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
-            dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
-            dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
-            dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
-            dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
-            TRUE ~ tc_avg_deg_c_avg)) %>%
+            # Create column with the slopes by strain_number, set_temperature
+            dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
-        # Step done for transforming time to seconds
-        dplyr::group_by(strain_number,temperature_measured) %>%
+                                                              # Calculate the slope
+                                                              ~stats::coef(lm(strain_weight ~ time_seconds,
+                                                                              data = .x))[["time_seconds"]])) %>%
+            # Remove nested dataframes
+            dplyr::select(-data) %>%
 
-        # Transform columns
-        dplyr::mutate(
-                      temperature_measured = as.integer(temperature_measured),
-                      strain_number = as.integer(strain_number),
+            # Unnest slope data
+            tidyr::unnest(cols = slope_grams_per_second) %>%
 
-                      # Get time in seconds
-                      time_seconds = (time - dplyr::first(time)),
+            # Without this the code won't run
+            dplyr::ungroup()
 
-                      .keep = "unused") %>%
-
-        # Calculate the rate of change -----------------------------------------
-
-        # Create a nested dataframes excluding temperature_measured, strain_number
-        # This must return a data frame with maximum 8 row!!
-        tidyr::nest(data = -c(strain_number, temperature_measured)) %>%
-
-        # Print the units of the slope
-        {print("Remember time units must be seconds and weights must be in grams"); .} %>%
-        {print("Rate of change units: grams * s-1"); .} %>%
-
-        # Create column with the slopes by strain_number, set_temperature
-        dplyr::mutate(slope_grams_per_second = purrr::map(data,
-
-                                                          # Calculate the slope
-                                                          ~stats::coef(lm(strain_weight ~ time_seconds,
-                                                                   data = .x))[["time_seconds"]])) %>%
-        # Remove nested dataframes
-        dplyr::select(-data) %>%
-
-        # Unnest slope data
-        tidyr::unnest(cols = slope_grams_per_second) %>%
-
-        # Without this the code won't run
-        dplyr::ungroup()
-
-    # Print message if temperature measured and set temperature are different
-    #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
-    #             "all TRUE This is ok",
-    #             print("temperature_measured and set_temperature might be diffrent. Check data"))
+        # Print message if temperature measured and set temperature are different
+        #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
+        #             "all TRUE This is ok",
+        #             print("temperature_measured and set_temperature might be diffrent. Check data"))
 
     return(rate_of_change)
     }
