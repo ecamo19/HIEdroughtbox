@@ -21,13 +21,13 @@
 #' rate of change between weight and time.
 #'
 #' @examples
-#' path_to_droughtbox_data <- system.file("extdata",
+#' \dontrun{path_to_droughtbox_data <- system.file("extdata",
 #'                             "acacia_aneura_25c.dat",
 #'                             package = "HIEdroughtbox")
 #'
 #' droughtbox_data <- read_hie_droughtbox_data_file(path_to_droughtbox_data)
 #'
-#' calculate_rate_of_change(droughtbox_data = droughtbox_data)
+#' calculate_rate_of_change(droughtbox_data = droughtbox_data)}
 #'
 #' @export
 calculate_rate_of_change <- function(droughtbox_data_reshaped){
