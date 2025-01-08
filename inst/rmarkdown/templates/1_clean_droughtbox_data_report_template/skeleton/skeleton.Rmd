@@ -77,15 +77,6 @@ library(here)
 library(readxl)
 ```
 
-```{r, echo=FALSE}
-if (Sys.info()[1] != "Linux") {
-    print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
-} else {
-    
-    # For running python in Rmarkdown
-    library(reticulate)
-    }
-```
 
 ```{r, echo=FALSE}
 # To run python in this Rmarkdown follow the following steps:
