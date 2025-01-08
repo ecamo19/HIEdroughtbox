@@ -24,14 +24,14 @@ knitr::opts_knit$set(root.dir = setwd(here::here()))
 getwd()
 ```
 
-```{r knitr, include = FALSE}
+```{r setup, include = FALSE}
 options(scipen = 999)
 
 # Save figures in specific place
 knitr::opts_chunk$set(autodep        = TRUE,
                       cache          = FALSE,
                       cache.comments = TRUE,
-                      
+                      comment = "",
                       # Save figures as pdf ?
                       #dev = c( "png", "pdf"),
                   
@@ -49,6 +49,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       message        = FALSE,
                       warning        = FALSE)
 ```
+
 
 ```{r cleanup-docs, cache = FALSE,echo = FALSE}
 # save a html copy file in a specific place
