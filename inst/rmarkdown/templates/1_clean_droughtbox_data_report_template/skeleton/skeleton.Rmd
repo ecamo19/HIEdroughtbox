@@ -332,8 +332,6 @@ plot_strains_weights([sp_name]_merged_cleaned_data,
                      show_tare_group = FALSE)
 ```
 
-
-
 ```{r, eval=FALSE}
 write.csv([sp_name]_merged_cleaned_data, "/processed_data/[sp_name]_merged_droughtbox_cleaned_data.csv")
 ```
