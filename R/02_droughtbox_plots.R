@@ -105,7 +105,7 @@ plot_droughtbox_climatic_controls <- function(droughtbox_data, cowplot = TRUE){
 
         # Add annotation
         ggplot_annotation_wrapper(y = base::max(droughtbox_data$vpd_avg_kpa_avg)) +
-        ggplot2::ylab("Vapour pressure deficit (kPa)")
+        ggplot2::ylab("VPD (kPa)")
 
     ## Temperature plot --------------------------------------------------------
     temp_plot <-
