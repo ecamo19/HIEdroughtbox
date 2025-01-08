@@ -15,8 +15,7 @@
 #' "air_tc_avg_deg_c_avg" the varname is air_tc_avg, the unit is deg_c and the
 #' data_type is avg.
 #'
-#' Some colnames don`t have a units or data type. For example tare_count_sm,
-#' where the varname is tare_count and the data_type is sm.
+#' Some colnames don`t have a units or data type.
 #'
 #' @param path_droughtbox_data_file String indicating the location of the .dat
 #' file in your computer.
@@ -941,6 +940,8 @@ get_coefs <- function(data, transform_gmin_units = FALSE){
 #' @importFrom magrittr %>%
 #'
 #' @examples
+#' \dontrun{read_dry_weights_data_folder()}
+#'
 #' @return A dataframe of with each sample dry
 #' @export
 read_dry_weights_data_folder <- function(path_droughtbox_data_folder){
@@ -1024,6 +1025,7 @@ read_dry_weights_data_folder <- function(path_droughtbox_data_folder){
 #' @return A dataframe
 #'
 #' @examples
+#' \dontrun{reshape_droughtbox_data(euc_saligna_dec_merged_cleaned_data)}
 #'
 #' @export
 reshape_droughtbox_data <- function(droughtbox_data){
@@ -1049,14 +1051,13 @@ reshape_droughtbox_data <- function(droughtbox_data){
                                                                                  "date_time") %in% base::colnames(droughtbox_data))
 
     # Reshape data  -------------------------------------------------------------
-
     droughtbox_data_reshaped <-
 
         # Transform the data into the right format
         droughtbox_data %>%
 
         # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg",
+        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg","date_time",
                                       "strain_avg_1_microstrain_avg",
                                       "strain_avg_2_microstrain_avg",
                                       "strain_avg_3_microstrain_avg",
@@ -1067,22 +1068,22 @@ reshape_droughtbox_data <- function(droughtbox_data){
                                       "strain_avg_8_microstrain_avg"))) %>%
 
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg),
+        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg, date_time),
 
                             # Create new columns
-                            names_to = "strains",
-                            values_to = "strain_weight") %>%
+                            names_to = "strings",
+                            values_to = "string_weight_grams") %>%
 
         # Create new column with the new names for each strain
-        dplyr::mutate(strain_number = dplyr::case_when(strains == "strain_avg_1_microstrain_avg"  ~ "1",
-                                                       strains == "strain_avg_2_microstrain_avg"  ~ "2",
-                                                       strains == "strain_avg_3_microstrain_avg"  ~ "3",
-                                                       strains == "strain_avg_4_microstrain_avg"  ~ "4",
-                                                       strains == "strain_avg_5_microstrain_avg"  ~ "5",
-                                                       strains == "strain_avg_6_microstrain_avg"  ~ "6",
-                                                       strains == "strain_avg_7_microstrain_avg"  ~ "7",
-                                                       strains == "strain_avg_8_microstrain_avg"  ~ "8",
-                                                       TRUE ~ strains),
+        dplyr::mutate(string_number = dplyr::case_when(strings == "strain_avg_1_microstrain_avg"  ~ "1",
+                                                       strings == "strain_avg_2_microstrain_avg"  ~ "2",
+                                                       strings == "strain_avg_3_microstrain_avg"  ~ "3",
+                                                       strings == "strain_avg_4_microstrain_avg"  ~ "4",
+                                                       strings == "strain_avg_5_microstrain_avg"  ~ "5",
+                                                       strings == "strain_avg_6_microstrain_avg"  ~ "6",
+                                                       strings == "strain_avg_7_microstrain_avg"  ~ "7",
+                                                       strings == "strain_avg_8_microstrain_avg"  ~ "8",
+                                                       TRUE ~ strings),
                       # Remove unused col
                       .keep = "unused") %>%
 
@@ -1099,15 +1100,18 @@ reshape_droughtbox_data <- function(droughtbox_data){
             TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Step done for transforming time to seconds
-        dplyr::group_by(strain_number, temperature_measured) %>%
+        dplyr::group_by(string_number, temperature_measured) %>%
 
         # Transform columns
         dplyr::mutate(
             temperature_measured = as.integer(temperature_measured),
-            strain_number = as.integer(strain_number),
+            string_number = as.integer(string_number),
 
             # Get time in seconds
-            time_seconds = (time - dplyr::first(time)), .keep = "unused")
+            time_seconds = (time - dplyr::first(time)), .keep = "unused") %>%
+
+        # Organize columns
+        select(date_time, string_number, tc_avg_deg_c_avg, temperature_measured, everything())
 
     return(droughtbox_data_reshaped)
 
