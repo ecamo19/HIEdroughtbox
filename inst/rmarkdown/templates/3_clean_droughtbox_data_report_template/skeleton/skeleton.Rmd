@@ -453,6 +453,6 @@ ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
 ## Export reshaped data
 
 ```{r, eval=FALSE}
-save([sp_name]_reshaped_data, "/processed_data/[sp_name]_reshaped_droughtbox_data.RData")
+save([sp_name]_reshaped_data, "/processed_data/3_[sp_name]_reshaped_droughtbox_data.RData")
 ```
 
