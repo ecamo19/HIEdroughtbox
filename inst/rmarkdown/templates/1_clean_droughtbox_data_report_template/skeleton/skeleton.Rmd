@@ -440,7 +440,7 @@ ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
     # add linear trend
     geom_smooth(method = "lm") +
 
-    # Break plot into panels
+    # Break plot into panels by temperature
     facet_grid(~temperature_measured) +
 
     # At lines showing range between 0-3600 sec (1 hour)
