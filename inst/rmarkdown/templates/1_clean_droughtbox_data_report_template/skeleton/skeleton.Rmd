@@ -66,12 +66,15 @@ library(purrr)
 library(stringr)
 library(tidyr)
 library(here)
+library(scales)
 
 # For reading xlsx file
 library(readxl)
 ```
 
 # 1. Load Droughtbox data
+# Increase the number of y-axis tick marks
+    scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
 
 ```{r, raw_data_list}
 # Create list with all data frames
@@ -389,8 +392,11 @@ ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
     
     theme_bw() +
 
-    # Put legend at the bottom
+    # Move legend at the bottom
     theme(legend.position = "bottom") +
+  
+    # add linear trend
+    geom_smooth(method = "lm") +
 
     # Break plot into panels
     facet_grid(~temperature_measured) +
@@ -414,6 +420,34 @@ ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
         # filter(!c(temperature_measured == 35 & string_number == "string_4")) %>%
         # filter(!c(temperature_measured == 40 & string_number == "string_4")) %>% 
         # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
+```
+
+```{r, plot_reshaped_data_final, fig.width=16, fig.height=8, eval=FALSE}
+ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
+                                           y = string_weight_grams,
+                                           colour = factor(string_number))) +
+  
+    geom_point()+
+  
+    # Increase the number of y-axis tick marks
+    scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+
+    theme_bw() +
+
+    # Move legend at the bottom
+    theme(legend.position = "bottom") +
+  
+    # add linear trend
+    geom_smooth(method = "lm") +
+
+    # Break plot into panels
+    facet_grid(~temperature_measured) +
+
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = c(0, 3600),  linetype="dotted") +
+
+    # Set colors  
+    scale_color_manual(values = string_colors)
 ```
 
 ## Export reshaped data
