@@ -38,8 +38,8 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # figures
                       Edit path in line 40 and comment out this line   
                       fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
-                      fig.width      = 11,
-                      fig.height     = 7,
+                      fig.width      = 16,
+                      fig.height     = 10,
                       message        = FALSE,
                       warning        = FALSE)
 ```
@@ -77,7 +77,9 @@ library(readxl)
 ## Load dry weights data  
 
 ```{r, load_dry_weights}
-load("/processed_data/[spcode]_dry_weights.RData")
+getwd()
+load("/[spcode]_processed_data/[spcode]_dry_weights.RData")
+ls()
 ```
 
 ```{r}
@@ -87,20 +89,26 @@ glimpse([spcode]_dry_weights)
 ## Load Droughtbox data
 
 ```{r, load_droughtbox_data}
-[spcode]_droughtbox_data <- read_hie_droughtbox_data_folder("./[spcode]/[spcode]_droughtbox_data")
+[spcode]_raw_data <- read_hie_droughtbox_data_folder("./[spcode]/[spcode]_droughtbox_data")
 ```
 
 ```{r}
-names([spcode]_droughtbox_data)
+names([spcode]_raw_data)
 ```
 
 # 2. Clean Droughtbox data
 
 Remember to remove the `eval=FALSE` from each chunk
 
+## Plot raw droughtbox data
+
+```{r, plot_raw_data}
+map([sp_name]_raw_data, plot_strains_weights)
+```
+
 ## File 1: 25c
 
-```{r, eval = FALSE, echo = FALSE, include = FALSE}
+```{r, eval = FALSE}
 #[sp_name]_25c_cleaned <- 
     
     # Select the data to be clean
@@ -114,6 +122,8 @@ Remember to remove the `eval=FALSE` from each chunk
 
    # Choose a interval of time
     filter_droughtbox_data(.,
+                           from_start_date = "20YY-MM-DD",
+                           to_end_date =  "20YY-MM-DD",
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
     # Clean the data
@@ -127,13 +137,24 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ### Plot cleaned data
 
-```{r, plot_cleaned_data_25c, eval = FALSE, include = FALSE}
+```{r, plot_cleaned_data_25c, eval = FALSE}
 plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
+```
+
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_25c_reshaped  <- reshape_droughtbox_data([sp_name]_25c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_25c_reshaped$temperature_measured < 25 | [sp_name]_25c_reshaped$temperature_measured > 25)
 ```
 
 ### File 2: 30c
 
-```{r , eval=FALSE}
+```{r, eval=FALSE}
 #[sp_name]_30c_cleaned <-
 
     # Select the data to be clean
@@ -162,6 +183,17 @@ plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 
 ```{r, plot_cleaned_data_30c, eval=FALSE}
 plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
+```
+
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_30c_reshaped  <- reshape_droughtbox_data([sp_name]_30c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_30c_reshaped$temperature_measured < 30 | [sp_name]_30c_reshaped$temperature_measured > 30)
 ```
 
 ### File 3: 35c
@@ -197,6 +229,17 @@ plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
 plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 ```
 
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_35c_reshaped  <- reshape_droughtbox_data([sp_name]_35c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_35c_reshaped$temperature_measured < 35 | [sp_name]_35c_reshaped$temperature_measured > 35)
+```
+
 ### File 4: 40c
 
 ```{r, eval=FALSE}
@@ -228,6 +271,17 @@ plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 
 ```{r, plot_cleaned_data_40c, eval=FALSE}
 plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
+```
+
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_40c_reshaped  <- reshape_droughtbox_data([sp_name]_40c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_c_reshaped$temperature_measured < 40 | [sp_name]_c_reshaped$temperature_measured >  40)
 ```
 
 ### File 5: 45c
@@ -263,6 +317,17 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 ```
 
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_45c_reshaped  <- reshape_droughtbox_data([sp_name]_45c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_c_reshaped$temperature_measured < 45 | [sp_name]_c_reshaped$temperature_measured >  45)
+```
+
 ### File 6: 50c
 
 ```{r, eval=FALSE}
@@ -294,6 +359,17 @@ plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 
 ```{r, plot_cleaned_data_50c, eval=FALSE}
 plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
+```
+
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_50c_reshaped  <- reshape_droughtbox_data([sp_name]_50c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_c_reshaped$temperature_measured < 50| [sp_name]_c_reshaped$temperature_measured > 50)
 ```
 
 ### File 7: 55c
@@ -329,43 +405,93 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 ```
 
+### Reshape data
+
+```{r, eval=FALSE}
+[sp_name]_55c_reshaped  <- reshape_droughtbox_data([sp_name]_55c_cleaned)
+```
+
+```{r, eval=FALSE}
+# Check data
+any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$temperature_measured > 55)
+```
+
 ## Merge cleaned dataframes
 
 ```{r, eval=FALSE}
+
 [sp_name]_merged_cleaned_data <- 
-                    merge_droughtbox_data(#[sp_name]_25c_cleaned,
-                                          [sp_name]_30c_cleaned,
-                                          [sp_name]_35c_cleaned,
-                                          [sp_name]_40c_cleaned,
-                                          [sp_name]_45c_cleaned,
-                                          [sp_name]_50c_cleaned,
-                                          [sp_name]_55c_cleaned)
+                    merge_droughtbox_data([sp_name]_25c_reshaped,
+                                          [sp_name]_30c_reshaped,
+                                          [sp_name]_35c_reshaped,
+                                          [sp_name]_40c_reshaped,
+                                          [sp_name]_45c_reshaped,
+                                          [sp_name]_50c_reshaped,
+                                          [sp_name]_55c_reshaped)
 ```
 
 ### Plot Merged data
 
-```{r,plot_merged_data, fig.width=20, fig.height=12, eval=FALSE}
-plot_strains_weights([sp_name]_merged_cleaned_data,
-                     show_smooth_lines = FALSE,
-                     show_tare_group = FALSE)
+__Make sure that values start at 0__
+
+```{r, eval=FALSE, echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
 ```
 
-## Reshape merged data
+```{r, plot_reshaped_data, fig.width=16, fig.height=8, eval=FALSE}
+ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
+                                           y = string_weight_grams,
+                                           colour = factor(string_number))) +
+  
+    geom_point()+
+    
+    theme_bw() +
 
-```{r reshape_data, eval=FALSE}
-[sp_name]_reshaped_data <- 
+    # Move legend at the bottom
+    theme(legend.position = "bottom") +
+  
+    # Break plot into panels
+    facet_grid(~temperature_measured, scales = "free") +
 
-    reshape_droughtbox_data([sp_name]_merged_cleaned_data) %>% 
-    arrange(string_number, date_time)
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
 
-```     
+    # Set colors  
+    scale_color_manual(values = string_colors) +
+    
+    # Rotate labels by 90 degrees
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+### Remove strings if need it
+
+```{r, eval=FALSE}
+[sp_name]_merged_cleaned_data <-
+  
+  [sp_name]_merged_cleaned_data
+        
+        # Remove strings
+        # filter(!c(temperature_measured == 30 & string_number == "string_4")) %>% 
+        # filter(!c(temperature_measured == 35 & string_number == "string_4")) %>%
+        # filter(!c(temperature_measured == 40 & string_number == "string_4")) %>% 
+        # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
+```
 
 ## Join reshaped data with dry weights
 
 ```{r, eval=FALSE}
+
 [sp_name]_reshaped_data <- 
          
-    inner_join([sp_name]_reshaped_data, 
+    inner_join([sp_name]_merged_cleaned_data, 
                [sp_name]_dry_weights_25c, 
                by = join_by(string_number)) 
 ```
@@ -401,7 +527,8 @@ ggplot(data = [sp_name]_reshaped_data, aes(x = date_time,
 
     facet_wrap(~string_number, ncol = 4) +
 
-    geom_hline(data = [sp_name]_reshaped_data, aes(yintercept=sample_dry_weight_grams)) +
+    geom_hline(data = [sp_name]_reshaped_data, 
+              aes(yintercept = sample_dry_weight_grams)) +
 
     # Set colors  
     scale_color_manual(values = string_colors) 
