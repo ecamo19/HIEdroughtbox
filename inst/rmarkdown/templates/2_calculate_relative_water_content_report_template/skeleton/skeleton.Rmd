@@ -36,14 +36,13 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       
                       # Path where figures are going to be store pdf single 
                       # figures
-                      Edit path in line 44 and comment out this line   
+                      Edit path in line 40 and comment out this line   
                       fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
                       warning        = FALSE)
 ```
-
 
 ```{r cleanup-docs, cache = FALSE,echo = FALSE}
 # save a html copy file in a specific place
@@ -78,19 +77,379 @@ library(readxl)
 ## Load dry weights data  
 
 ```{r, load_dry_weights}
-[spcode]_dry_weights <- read.csv("/processed_data/[spcode]_dry_weights.csv",
-                             header = TRUE )
+load("/processed_data/[spcode]_dry_weights.RData")
+```
+
+```{r}
+glimpse([spcode]_dry_weights)
 ```
 
 ## Load Droughtbox data
 
 ```{r, load_droughtbox_data}
-[spcode]_droughtbox_data <- read.csv("/processed_data/[sp_name]_merged_droughtbox_cleaned_data.csv",
-                             header = TRUE)
+[spcode]_droughtbox_data <- read_hie_droughtbox_data_folder("./[spcode]/[spcode]_droughtbox_data")
 ```
 
-# 2. Calculate the relative water content
+```{r}
+names([spcode]_droughtbox_data)
+```
+
+# 2. Clean Droughtbox data
+
+Remember to remove the `eval=FALSE` from each chunk
+
+## File 1: 25c
+
+```{r, eval = FALSE, echo = FALSE, include = FALSE}
+#[sp_name]_25c_cleaned <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_25c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+   # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_25c, eval = FALSE, include = FALSE}
+plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
+```
+
+### File 2: 30c
+
+```{r , eval=FALSE}
+#[sp_name]_30c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_30c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_30c, eval=FALSE}
+plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
+```
+
+### File 3: 35c
+
+```{r, eval=FALSE}
+#[sp_name]_35c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_35c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_35c, eval=FALSE}
+plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
+```
+
+### File 4: 40c
+
+```{r, eval=FALSE}
+#[sp_name]_40c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_40c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_40c, eval=FALSE}
+plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
+```
+
+### File 5: 45c
+
+```{r, eval=FALSE}
+#[sp_name]_45c_cleaned <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_45c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+   # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_45c, eval=FALSE}
+plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
+```
+
+### File 6: 50c
+
+```{r, eval=FALSE}
+#[sp_name]_50c_cleaned <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_50c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+   # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_50c, eval=FALSE}
+plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
+```
+
+### File 7: 55c
+
+```{r, eval=FALSE}
+#[sp_name]_55c_cleaned <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_55c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    # Clean the data
+    clean_droughtbox_data(.,
+                          remove_n_observations = 5,
+                          threshold = 0.2) %>% 
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+### Plot cleaned data
+
+```{r, plot_cleaned_data_55c, eval=FALSE}
+plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
+```
+
+## Merge cleaned dataframes
+
+```{r, eval=FALSE}
+[sp_name]_merged_cleaned_data <- 
+                    merge_droughtbox_data(#[sp_name]_25c_cleaned,
+                                          [sp_name]_30c_cleaned,
+                                          [sp_name]_35c_cleaned,
+                                          [sp_name]_40c_cleaned,
+                                          [sp_name]_45c_cleaned,
+                                          [sp_name]_50c_cleaned,
+                                          [sp_name]_55c_cleaned)
+```
+
+### Plot Merged data
+
+```{r,plot_merged_data, fig.width=20, fig.height=12, eval=FALSE}
+plot_strains_weights([sp_name]_merged_cleaned_data,
+                     show_smooth_lines = FALSE,
+                     show_tare_group = FALSE)
+```
+
+## Reshape merged data
+
+```{r reshape_data, eval=FALSE}
+[sp_name]_reshaped_data <- 
+
+    reshape_droughtbox_data([sp_name]_merged_cleaned_data) %>% 
+    arrange(string_number, date_time)
+
+```     
+
+## Join reshaped data with dry weights
+
+```{r, eval=FALSE}
+[sp_name]_reshaped_data <- 
+         
+    inner_join([sp_name]_reshaped_data, 
+               [sp_name]_dry_weights_25c, 
+               by = join_by(string_number)) 
+```
+
+### Plot data with dry weights
+
+```{r, echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
+```
 
 
+```{r, plot_raw_data_dry_weights, fig.width=16, fig.height=8, eval=FALSE}
+ggplot(data = [sp_name]_reshaped_data, aes(x = date_time,
+                                           y = string_weight_grams, 
+                                           colour = string_number)) +
+    geom_point() + 
+
+    # Increase the number of y-axis tick marks
+    scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+
+    theme_bw() +
+
+    # Put legend at the bottom
+    theme(legend.position = "bottom") +
+
+    facet_wrap(~string_number, ncol = 4) +
+
+    geom_hline(data = [sp_name]_reshaped_data, aes(yintercept=sample_dry_weight_grams)) +
+
+    # Set colors  
+    scale_color_manual(values = string_colors) 
+```
+
+# 3. Calculate the relative water content
+
+```{r,eval=FALSE}
+[sp_name]_rwc_data <- 
+  
+    [sp_name]_reshaped_data %>%
+  
+      select(-c(tc_avg_deg_c_avg, spcode, paper_bag_group, file)) %>%
+      rowwise() %>%
+      group_by(string_number,temperature_measured) %>%
+      
+      mutate(relative_water_content_perc = 
+               (string_weight_grams - sample_dry_weight_grams) / (max(string_weight_grams)-sample_dry_weight_grams))      
+
+```
+
+## Plot RWC
+
+```{r, plot_rwc, eval=FALSE}
+ggplot(data = [sp_name]_rwc_data,
+      aes(x = date_time, y = relative_water_content_perc, colour = string_number)) +
+    
+    geom_point() + 
+
+    # Increase the number of y-axis tick marks
+    scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+
+    theme_bw() +
+
+    # Put legend at the bottom
+    theme(legend.position = "bottom") +
+
+    facet_wrap(~string_number, ncol = 4) +
+
+    # Set colors  
+    scale_color_manual(values = string_colors)
+```
+
+# 4. Export data
+
+```{r, export_data, eval=FALSE}
+getwd()
+save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_rwc_data.RData")
+```
 
 
