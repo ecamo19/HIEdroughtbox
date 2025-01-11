@@ -94,69 +94,8 @@ names([sp_name]_raw_data)
 map([sp_name]_raw_data, plot_droughtbox_climatic_controls)
 ```
 
-## Plot raw droughtbox data
+## Filter data based on RWC values
 
-```{r, plot_raw_data}
-map([sp_name]_raw_data, plot_strains_weights)
-```
-
-## Clean data
-
-## Plot Reshaped data
-
-__Make sure that values start at 0__
-
-```{r, eval=FALSE, echo=FALSE}
-string_colors <- c(string_1 = "#eec000",
-                   string_2 = "#cf544c",
-                   string_3 = "#0175c3",
-                   string_4 = "#878687",
-                   
-                   string_5 =  "#000000",
-                   string_6 =  "#008b28",
-                   string_7 =  "#8600b6",
-                   string_8 =  "#00a0ab")
-```
-
-
-```{r, plot_reshaped_data, fig.width=16, fig.height=8, eval=FALSE}
-ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
-                                           y = string_weight_grams,
-                                           colour = factor(string_number))) +
-  
-    geom_point()+
-    
-    theme_bw() +
-
-    # Move legend at the bottom
-    theme(legend.position = "bottom") +
-  
-    # add linear trend
-    geom_smooth(method = "lm") +
-
-    # Break plot into panels
-    facet_grid(~temperature_measured) +
-
-    # At lines showing range between 0-3600 sec (1 hour)
-    geom_vline(xintercept = c(0, 3600),  linetype="dotted") +
-
-    # Set colors  
-    scale_color_manual(values = string_colors)
-```
-
-### Remove strings if need it
-
-```{r}
-[sp_name]_reshaped_data <-
-  
-  [sp_name]_reshaped_data
-        
-        # Remove strings
-        # filter(!c(temperature_measured == 30 & string_number == "string_4")) %>% 
-        # filter(!c(temperature_measured == 35 & string_number == "string_4")) %>%
-        # filter(!c(temperature_measured == 40 & string_number == "string_4")) %>% 
-        # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
-```
 
 ```{r, plot_reshaped_data_final, fig.width=16, fig.height=8, eval=FALSE}
 ggplot(data = [sp_name]_reshaped_data, aes(x = time_seconds,
