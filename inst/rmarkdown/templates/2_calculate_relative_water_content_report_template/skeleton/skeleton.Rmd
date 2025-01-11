@@ -67,9 +67,6 @@ library(stringr)
 library(tidyr)
 library(here)
 library(tibble)
-
-# For reading xlsx file
-library(readxl)
 ```
 
 # 1. Load cleaned datasets
@@ -281,7 +278,7 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_c_reshaped$temperature_measured < 40 | [sp_name]_c_reshaped$temperature_measured >  40)
+any([sp_name]_40c_reshaped$temperature_measured < 40 | [sp_name]_40c_reshaped$temperature_measured >  40)
 ```
 
 ### File 5: 45c
@@ -325,7 +322,7 @@ plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_c_reshaped$temperature_measured < 45 | [sp_name]_c_reshaped$temperature_measured >  45)
+any([sp_name]_45c_reshaped$temperature_measured < 45 | [sp_name]_45c_reshaped$temperature_measured >  45)
 ```
 
 ### File 6: 50c
@@ -369,7 +366,7 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_c_reshaped$temperature_measured < 50| [sp_name]_c_reshaped$temperature_measured > 50)
+any([sp_name]_50c_reshaped$temperature_measured < 50| [sp_name]_50c_reshaped$temperature_measured > 50)
 ```
 
 ### File 7: 55c
@@ -420,14 +417,17 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
 
 ```{r, eval=FALSE}
 
-[sp_name]_merged_cleaned_data <- 
-                    merge_droughtbox_data([sp_name]_25c_reshaped,
-                                          [sp_name]_30c_reshaped,
-                                          [sp_name]_35c_reshaped,
-                                          [sp_name]_40c_reshaped,
-                                          [sp_name]_45c_reshaped,
-                                          [sp_name]_50c_reshaped,
-                                          [sp_name]_55c_reshaped)
+[sp_name]_merged_cleaned_data <-
+ 
+        list([sp_name]_25c_reshaped,
+            [sp_name]_30c_reshaped,
+            [sp_name]_35c_reshaped,
+            [sp_name]_40c_reshaped,
+            [sp_name]_45c_reshaped,
+            [sp_name]_50c_reshaped,
+            [sp_name]_55c_reshaped) %>%    
+
+    reduce(rbind) 
 ```
 
 ### Plot Merged data
@@ -484,6 +484,33 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
         # filter(!c(temperature_measured == 40 & string_number == "string_4")) %>% 
         # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
 ```
+
+```{r, plot_reshaped_data_after_removing_strings, fig.width=16, fig.height=8, eval=FALSE}
+
+ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
+                                           y = string_weight_grams,
+                                           colour = factor(string_number))) +
+  
+    geom_point()+
+    
+    theme_bw() +
+
+    # Move legend at the bottom
+    theme(legend.position = "bottom") +
+  
+    # Break plot into panels
+    facet_grid(~temperature_measured, scales = "free") +
+
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
+
+    # Set colors  
+    scale_color_manual(values = string_colors) +
+    
+    # Rotate labels by 90 degrees
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
 
 ## Join reshaped data with dry weights
 
