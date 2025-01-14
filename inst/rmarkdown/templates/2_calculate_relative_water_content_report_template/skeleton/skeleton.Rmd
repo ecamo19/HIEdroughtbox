@@ -23,7 +23,7 @@ options(scipen = 999)
 
 # Save figures in specific place
 knitr::opts_chunk$set(autodep        = TRUE,
-                      cache          = FALSE,
+                      cache          = TRUE,
                       cache.comments = TRUE,
                       comment = "",
                       # Save figures as pdf ?
@@ -69,21 +69,7 @@ library(here)
 library(tibble)
 ```
 
-# 1. Load cleaned datasets
-
-## Load dry weights data  
-
-```{r, load_dry_weights}
-getwd()
-load("/[spcode]_processed_data/[spcode]_dry_weights.RData")
-ls()
-```
-
-```{r}
-glimpse([spcode]_dry_weights)
-```
-
-## Load Droughtbox data
+# 1. Load Droughtbox data
 
 ```{r, load_droughtbox_data}
 [spcode]_raw_data <- read_hie_droughtbox_data_folder("./[spcode]/[spcode]_droughtbox_data")
@@ -455,9 +441,6 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
     
     theme_bw() +
 
-    # Move legend at the bottom
-    theme(legend.position = "bottom") +
-  
     # Break plot into panels
     facet_grid(~temperature_measured, scales = "free") +
 
@@ -467,8 +450,9 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
     # Set colors  
     scale_color_manual(values = string_colors) +
     
-    # Rotate labels by 90 degrees
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    # Rotate labels by 90 degrees and move legend at the bottom
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+          legend.position = "bottom")
 ```
 
 ### Remove strings if need it
@@ -497,9 +481,6 @@ ggplot(data = [sp_name]_droughtbox_data_cleaned, aes(x = time_seconds,
     
     theme_bw() +
 
-    # Move legend at the bottom
-    theme(legend.position = "bottom") +
-  
     # Break plot into panels
     facet_grid(~temperature_measured, scales = "free") +
 
@@ -509,47 +490,67 @@ ggplot(data = [sp_name]_droughtbox_data_cleaned, aes(x = time_seconds,
     # Set colors  
     scale_color_manual(values = string_colors) +
     
-    # Rotate labels by 90 degrees
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    # Rotate labels by 90 degrees and move legend at the bottom
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+          legend.position = "bottom")
 ```
 
-## Join reshaped data with dry weights
+# 3. Add dry weights to cleaned dataframe
+
+## Load dry weights data  
+
+```{r, eval=FALSE, load_dry_weights}
+getwd()
+load("/[spcode]_processed_data/[spcode]_dry_weights.RData")
+ls()
+```
+
+```{r, eval=FALSE}
+glimpse([spcode]_dry_weights)
+```
 
 ```{r, eval=FALSE}
 
-[sp_name]_reshaped_data <- 
+[sp_name]_data <- 
          
-    inner_join([sp_name]_merged_cleaned_data, 
-               [sp_name]_dry_weights_25c, 
+    inner_join([sp_name]_droughtbox_data_cleaned, 
+               [sp_name]_dry_weights, 
                by = join_by(string_number)) 
 ```
 
 ### Plot data with dry weights
 
-```{r, plot_raw_data_dry_weights, fig.width=16, fig.height=8, eval=FALSE}
-ggplot(data = [sp_name]_reshaped_data, aes(x = date_time,
-                                           y = string_weight_grams, 
-                                           colour = string_number)) +
-    geom_point() + 
-
-    # Increase the number of y-axis tick marks
-    scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
-
+```{r plot_raw_data_dry_weights, fig.width=16, fig.height=8, eval=FALSE}
+ggplot(data = [sp_name]_data, aes(x = time_seconds,
+                                           y = string_weight_grams,
+                                           colour = factor(string_number))) +
+  
+    geom_point()+
+    
     theme_bw() +
 
-    # Put legend at the bottom
-    theme(legend.position = "bottom") +
+    # Move legend at the bottom
+    theme() +
+  
+    # Break plot into panels
+    facet_grid(vars(temperature_measured), vars(string_number)) +
 
-    facet_wrap(~string_number, ncol = 4) +
-
-    geom_hline(data = [sp_name]_reshaped_data, 
-              aes(yintercept = sample_dry_weight_grams)) +
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
 
     # Set colors  
-    scale_color_manual(values = string_colors) 
+    scale_color_manual(values = string_colors) +
+    
+    # Show dry-weights
+    #geom_hline(data = euc_saligna_data, 
+    #          aes(yintercept = sample_dry_weight_grams)) +
+    
+    # Rotate labels by 90 degrees
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "none")
 ```
 
-# 3. Calculate the relative water content
+# 4. Calculate the relative water content
 
 ```{r,eval=FALSE}
 [sp_name]_rwc_data <- 
@@ -587,7 +588,7 @@ ggplot(data = [sp_name]_rwc_data,
     scale_color_manual(values = string_colors)
 ```
 
-# 4. Export data
+# 5. Export data
 
 ```{r, export_data, eval=FALSE}
 getwd()
