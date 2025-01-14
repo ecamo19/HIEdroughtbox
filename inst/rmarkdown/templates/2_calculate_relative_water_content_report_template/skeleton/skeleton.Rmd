@@ -474,7 +474,7 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
 ### Remove strings if need it
 
 ```{r, eval=FALSE}
-[sp_name]_merged_cleaned_data <-
+[sp_name]_droughtbox_data_cleaned <-
   
   [sp_name]_merged_cleaned_data
         
@@ -485,11 +485,11 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
         # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
 ```
 
-### Plot data before export
+### Plot droughtbox data cleaned
 
-```{r, plot_reshaped_data_after_removing_strings, fig.width=16, fig.height=8, eval=FALSE}
+```{r, plot_reshaped_data_after_removing_strings, fig.width=20 , fig.height=8, eval=FALSE}
 
-ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
+ggplot(data = [sp_name]_droughtbox_data_cleaned, aes(x = time_seconds,
                                            y = string_weight_grams,
                                            colour = factor(string_number))) +
   
@@ -525,19 +525,6 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
 ```
 
 ### Plot data with dry weights
-
-```{r, echo=FALSE}
-string_colors <- c(string_1 = "#eec000",
-                   string_2 = "#cf544c",
-                   string_3 = "#0175c3",
-                   string_4 = "#878687",
-                   
-                   string_5 =  "#000000",
-                   string_6 =  "#008b28",
-                   string_7 =  "#8600b6",
-                   string_8 =  "#00a0ab")
-```
-
 
 ```{r, plot_raw_data_dry_weights, fig.width=16, fig.height=8, eval=FALSE}
 ggplot(data = [sp_name]_reshaped_data, aes(x = date_time,
