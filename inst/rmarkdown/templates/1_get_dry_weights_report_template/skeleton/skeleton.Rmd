@@ -446,7 +446,28 @@ glimpse(paper_bag_weights_group_)
 
 ## Plot dry weights before exporting data
 
+```{r, dry_weights_plot}
+ggplot(data = [spcode]_dry_weights, aes(x = factor(file),
+                                           y = sample_dry_weight_grams,
+                                           group = factor(string_number))) +
+  
+    geom_point()+
+    
+    theme_bw() +
 
+    # Move legend at the bottom
+    theme() +
+  
+    # Break plot into panels
+    facet_grid(vars(file), vars(string_number)) +
+
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
+
+    # Rotate labels by 90 degrees
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "none")
+```
 
 # Export dry weights data
 
