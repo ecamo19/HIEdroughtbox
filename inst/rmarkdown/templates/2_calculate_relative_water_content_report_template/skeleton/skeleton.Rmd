@@ -23,8 +23,7 @@ options(scipen = 999)
 
 # Save figures in specific place
 knitr::opts_chunk$set(autodep        = TRUE,
-                      cache          = TRUE,
-                      cache.comments = TRUE,
+                      #cache.comments = TRUE,
                       comment = "",
                       # Save figures as pdf ?
                       #dev = c( "png", "pdf"),
@@ -509,18 +508,29 @@ ls()
 glimpse([spcode]_dry_weights)
 ```
 
+```{r, eval = FALSE}
+[spcode]_dry_weights <-
+  
+    [spcode]_dry_weights %>% 
+
+        # Remove the letter c from file column, rename it and transform it for 
+        # join
+        mutate(temperature_measured = as.integer(gsub("c","", file)), 
+               .keep = "unused") 
+```
+
 ```{r, eval=FALSE}
 
 [sp_name]_data <- 
          
     inner_join([sp_name]_droughtbox_data_cleaned, 
                [sp_name]_dry_weights, 
-               by = join_by(string_number)) 
+               by = join_by(string_number, temperature_measured)) 
 ```
 
 ### Plot data with dry weights
 
-```{r plot_raw_data_dry_weights, fig.width=16, fig.height=8, eval=FALSE}
+```{r plot_raw_data_dry_weights, fig.width = 16, fig.height = 14, cache=TRUE, eval=FALSE}
 ggplot(data = [sp_name]_data, aes(x = time_seconds,
                                            y = string_weight_grams,
                                            colour = factor(string_number))) +
