@@ -485,6 +485,8 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
         # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
 ```
 
+### Plot data before export
+
 ```{r, plot_reshaped_data_after_removing_strings, fig.width=16, fig.height=8, eval=FALSE}
 
 ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
@@ -510,7 +512,6 @@ ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
     # Rotate labels by 90 degrees
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
-
 
 ## Join reshaped data with dry weights
 
