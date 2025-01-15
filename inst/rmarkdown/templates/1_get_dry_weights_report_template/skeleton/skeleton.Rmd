@@ -61,7 +61,6 @@ library(ggplot2)
 
 # For data manipulation
 library(dplyr)
-library(ggplot2)
 library(purrr)
 library(stringr)
 library(tidyr)
@@ -72,7 +71,7 @@ library(tibble)
 library(readxl)
 ```
 
-# Load dry weights data from the Droughtbox 
+# 1. Load dry weights data from the Droughtbox 
 
 ```{r, load_raw_data}
 raw_dry_weights_data <- read_dry_weights_data_folder("")
@@ -82,13 +81,13 @@ raw_dry_weights_data <- read_dry_weights_data_folder("")
 names(raw_dry_weights_data)
 ```
 
-# Plot raw data 
+## Plot raw data 
 
 ```{r, plot_raw_data}
 map(raw_dry_weights_data, plot_strains_weights)
 ```
 
-# Clean datasets
+# 2. Clean datasets
 
 ## File 1: 25c
 
@@ -391,7 +390,7 @@ plot_strains_weights([spcode]_55c_dry_weights_cleaned, show_tare_group = FALSE)
 glimpse([spcode]_55c_dry_weights_reshaped)
 ```
 
-# Construct dry weights dataset
+# 3. Construct dry weights dataset
 
 ```{r, eval=FALSE}
 [spcode]_dry_weights <- 
@@ -412,7 +411,7 @@ glimpse([spcode]_55c_dry_weights_reshaped)
 glimpse([spcode]_dry_weights)
 ```
 
-# Load paper bag weights
+## Load paper bag weights
 
 ```{r, eval=FALSE}
 paper_bag_weights <- read.csv("~/Documents/projects/droughtbox_data/empty_paper_bags_weights/paper_bags_weights.csv", header = TRUE)
@@ -444,7 +443,32 @@ glimpse(paper_bag_weights_group_)
   mutate(.keep = "unused", sample_dry_weight_grams = string_weight_grams - paperbag_weight_grams)
 ```
 
-# Save dry weights data
+## Plot dry weights before exporting data
+
+```{r, dry_weights_plot}
+ggplot(data = [spcode]_dry_weights, aes(x = factor(file),
+                                           y = sample_dry_weight_grams,
+                                           group = factor(string_number))) +
+  
+    geom_point()+
+    
+    theme_bw() +
+
+    # Move legend at the bottom
+    theme() +
+  
+    # Break plot into panels
+    facet_grid(vars(file), vars(string_number)) +
+
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
+
+    # Rotate labels by 90 degrees
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "none")
+```
+
+# Export dry weights data
 
 ```{r, export_dry_weight_data, eval=FALSE}
 save([spcode]_dry_weights, file = "/processed_data/[spcode]_dry_weights.RData")

@@ -1108,7 +1108,8 @@ reshape_droughtbox_data <- function(droughtbox_data){
             string_number = as.factor(string_number),
 
             # Get time in seconds
-            time_seconds = (time - dplyr::first(time)), .keep = "unused") %>%
+            #time_seconds = (time - dplyr::first(time)), .keep = "unused") %>%
+            time_seconds = (time - dplyr::first(date_time)), .keep = "unused") %>%
 
         # Organize columns
         dplyr::select(date_time, string_number, tc_avg_deg_c_avg, temperature_measured, everything())
