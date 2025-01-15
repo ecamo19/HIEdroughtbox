@@ -564,7 +564,7 @@ ggplot(data = [sp_name]_data, aes(x = time_seconds,
 ```{r,eval=FALSE}
 [sp_name]_rwc_data <- 
   
-    [sp_name]_reshaped_data %>%
+    [sp_name]_data %>%
   
       select(-c(tc_avg_deg_c_avg, spcode, paper_bag_group, file)) %>%
       rowwise() %>%
