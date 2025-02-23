@@ -57,12 +57,15 @@ knitr::opts_chunk$set(autodep        = TRUE,
 ```{r, libaries, message = FALSE, warning = FALSE, cache = FALSE}
 library(HIEdroughtbox)
 library(ggplot2)
+library(scales)
 
 # For data manipulation
 library(dplyr)
 library(purrr)
 library(stringr)
-library(tidyr)
+library(tidyr)# Draw interval
+    geom_hline(yintercept = c(.70, .80))+
+
 library(here)
 library(tibble)
 ```
@@ -578,8 +581,9 @@ ggplot(data = [sp_name]_data, aes(x = time_seconds,
 ## Plot RWC
 
 ```{r, plot_rwc, eval=FALSE}
-ggplot(data = [sp_name]_rwc_data,
-      aes(x = date_time, y = relative_water_content_perc, colour = string_number)) +
+ggplot(data = [sp_name]_rwc_data,aes(x = time_seconds,
+                                     y = relative_water_content_perc, 
+                                     colour = string_number)) +
     
     geom_point() + 
 
@@ -588,10 +592,14 @@ ggplot(data = [sp_name]_rwc_data,
 
     theme_bw() +
 
-    # Put legend at the bottom
-    theme(legend.position = "bottom") +
+    # Remove legend
+    theme(legend.position = "none") +
 
-    facet_wrap(~string_number, ncol = 4) +
+    # Break plot into panels
+    facet_grid(vars(temperature_measured), vars(string_number)) +
+  
+    # Draw interval
+    geom_hline(yintercept = c(.70, .80))+
 
     # Set colors  
     scale_color_manual(values = string_colors)
