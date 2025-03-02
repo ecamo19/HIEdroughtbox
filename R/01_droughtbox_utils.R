@@ -1090,17 +1090,15 @@ reshape_droughtbox_data <- function(droughtbox_data){
 
         # Change temperatures measured into discrete groups i.e if
         # tc_avg_deg_c_avg is between 53 and 56 code it as 55
-        dplyr::rename(., temperature_measured = tc_avg_deg_c_avg) %>%
-
-            # dplyr::case_when(
-            # dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
-            # dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
-            # dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
-            # dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
-            # dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
-            # dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
-            # dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
-            # TRUE ~ tc_avg_deg_c_avg)) %>%
+        dplyr::mutate( temperature_measured = dplyr::case_when(
+             dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
+             dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
+             dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
+             dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
+             dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
+             dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
+             dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
+             TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Step done for transforming time to seconds
         dplyr::group_by(string_number, temperature_measured) %>%
