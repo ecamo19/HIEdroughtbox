@@ -202,7 +202,7 @@ glimpse([sp_name]_areas_data)
         summarise(areas_cm2 = sum(areas_cm2), 
                   double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
         
-        mutate(temperature_measured = factor(set_temperature), 
+        mutate(temperature_measured = as.integer(set_temperature), 
                .keep =  "unused") %>% 
     
         select(spcode, tree_id, temperature_measured, everything())
