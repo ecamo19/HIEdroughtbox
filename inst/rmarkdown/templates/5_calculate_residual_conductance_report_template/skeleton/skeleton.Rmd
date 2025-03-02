@@ -189,25 +189,25 @@ ggplot(data = slopes, aes(x = factor(temperature_measured),
 load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
 ```
 
-
 ```{r, eval=FALSE}
 glimpse([sp_name]_areas_data)
-
 ```
 
 ```{r, clean_areas_data, eval=FALSE}
 [sp_name]_areas_data_cleaned <- 
     [sp_name]_areas_data %>% 
-        group_by(spcode, tree_id, set_temperature) %>% 
+        group_by(spcode, tree_id, set_temperature, string_number) %>% 
         summarise(areas_cm2 = sum(areas_cm2), 
                   double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
         
         mutate(temperature_measured = as.integer(set_temperature), 
                .keep =  "unused") %>% 
     
-        select(spcode, tree_id, temperature_measured, everything())
+        select(spcode, string_number, tree_id, temperature_measured, everything())
 
 ```
+
+## Calculate Transpiration rates
 
 ## Calculate Residual conductance
 
