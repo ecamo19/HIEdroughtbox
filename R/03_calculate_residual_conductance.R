@@ -163,12 +163,16 @@ calculate_transpiration_rates <- function(droughtbox_data,
         slope_grams_per_second %>%
 
         ## Merge leaf and branch areas data with slope data ----------------
-    dplyr::full_join(., leaf_and_branch_area_data,
-                     by = c("strain_number", "temperature_measured")) %>%
+        dplyr::full_join(., leaf_and_branch_area_data,
+                     by = c("string_number", "temperature_measured")) %>%
 
-        # Calculate transpiration
-        dplyr::mutate(transpiration_grams_per_sec_cm2 =
-                          -(.$slope_grams_per_second/(.$areas_cm2))) %>%
+        # Calculate transpiration for single and double sided areas
+        dplyr::mutate(transpiration_single_grams_per_sec_cm2 =
+                          -(.$slope_grams_per_second/(.$areas_cm2)),
+
+                      transpiration_double_grams_per_sec_cm2 =
+                          -(.$slope_grams_per_second/(.$double_sided_areas_cm2))
+                      ) %>%
 
         # Remove unused columns if present
         dplyr::select(-dplyr::any_of(c("set_vpd", "started_at",
@@ -177,7 +181,9 @@ calculate_transpiration_rates <- function(droughtbox_data,
                                        "leaf_dry_weight_mg"))) %>%
 
         # Arrange dataset
-        dplyr::select(spcode, tree_id, dplyr::everything())
+        dplyr::select(spcode, string_number, tree_id, dplyr::everything()) %>%
+        dplyr::group_by(temperature_measured, tree_id, string_number) %>%
+        dplyr::arrange(tree_id)
 
     return(transpiration_rate)
 }
