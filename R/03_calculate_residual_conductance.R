@@ -46,13 +46,13 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             # Create a nested dataframes excluding temperature_measured,
             # strain_number.
             # This must return a data frame with maximum 8 row!!
-            tidyr::nest(data = -c(strain_number, temperature_measured)) %>%
+            tidyr::nest(data = -c(string_number, temperature_measured)) %>%
 
             # Create column with the slopes by strain_number, set_temperature
             dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
                                                               # Calculate the slope
-                                                              ~stats::coef(lm(strain_weight ~ time_seconds,
+                                                              ~stats::coef(lm(string_weight_grams ~ time_seconds,
                                                                               data = .x))[["time_seconds"]])) %>%
             # Remove nested dataframes
             dplyr::select(-data) %>%
@@ -145,8 +145,8 @@ calculate_transpiration_rates <- function(droughtbox_data,
     #                                                                                                              "strain_avg_4_microstrain_avg") %in% base::colnames(droughtbox_data))
 
     base::stopifnot("Missing set_point_t, vpd or/and, date_time colums" = c(#"set_point_t_avg_avg",
-                                                                            "vpd_avg_kpa_avg",
-                                                                            "date_time") %in% base::colnames(droughtbox_data))
+        "vpd_avg_kpa_avg",
+        "date_time") %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
@@ -162,9 +162,9 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
         slope_grams_per_second %>%
 
-            ## Merge leaf and branch areas data with slope data ----------------
-            dplyr::full_join(., leaf_and_branch_area_data,
-                             by = c("strain_number", "temperature_measured")) %>%
+        ## Merge leaf and branch areas data with slope data ----------------
+    dplyr::full_join(., leaf_and_branch_area_data,
+                     by = c("strain_number", "temperature_measured")) %>%
 
             # Calculate transpiration
             dplyr::mutate(transpiration_grams_per_sec_cm2 =

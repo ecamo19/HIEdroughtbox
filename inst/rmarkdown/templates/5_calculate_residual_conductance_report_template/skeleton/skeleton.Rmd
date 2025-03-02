@@ -11,12 +11,6 @@ output:
     toc_depth: 1
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, comment = "", 
-                      fig.align = 'center',
-					  fig.width = 11, fig.height = 7)
-```
-
 ```{r, setup_wd, include=FALSE}
 # Set knit directory
 setwd(here::here())
@@ -73,17 +67,32 @@ library(stringr)
 library(tidyr)
 library(here)
 
-# For reading xlsx file
-library(readxl)
+# For adding regression line to ggplot
+library(ggpubr)
+
+# For facts_2
+library(ggh4x)
+```
+
+```{r echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
 ```
 
 # 1. Load RWC data
 
-```{r, raw_data_list}
+```{r, raw_data_list, eval = FALSE}
 load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 ```
 
-```{r}
+```{r, eval = FALSE}
 # Show the names of each element in the list
 glimpse([sp_name]_rwc_data)
 ```
@@ -92,7 +101,7 @@ glimpse([sp_name]_rwc_data)
 
 ## VPD
 
-```{r, plot_vpd}
+```{r, plot_vpd, eval = FALSE}
 
 ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
                                            y = vpd_avg_kpa_avg)) +
@@ -103,247 +112,60 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 
 ## Temperature
 
-```{r, plot_temperature}
-ggplot(data = euc_crebra_feb_rwc_data, aes(x = factor(set_temperature), 
+```{r, plot_temperature, eval = FALSE}
+ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
                                            y = temperature_measured)) +
     geom_boxplot()+
     theme_bw()
 ```
 
-## Plot raw droughtbox data
+# 3. Calculate species residual conductance 
 
-```{r, plot_raw_data}
-map([sp_name]_raw_data, plot_strains_weights)
-```
+## Filter data in the range 70-80% RWC
 
-## Clean data
-
-Remember to remove the `eval=FALSE` from each chunk
-
-### File 1
-
-```{r, eval = FALSE, echo = FALSE, include = FALSE}
-#[sp_name]_25c_cleaned <- 
+```{r, filter_data_based_on_rwc, eval = FALSE}
+[sp_name]_rwc_data_filtered_data <- 
+    [sp_name]_rwc_data %>% 
+    filter(relative_water_content_perc >= 0.80 & relative_water_content_perc <= 0.90) 
     
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_25c.dat"] %>% 
+    # Remove weird values
+    #filter(!(string_number == "string_7" & temperature_measured == 25 & time_seconds < 9000))  %>%
+
+    #filter(!(string_number == "string_7" & temperature_measured == 30 & time_seconds < 8000))  %>% 
+
+    #filter(!(string_number == "string_4" & temperature_measured == 25 & time_seconds > 19000))  
+```
+
+### Plot filtered data
+
+```{r, plot_filtered_data, eval = FALSE}
+ggplot(data = [sp_name]_rwc_data_filtered_data,
+                aes(x = time_seconds, 
+                    y = relative_water_content_perc, 
+                    colour = string_number)) +
     
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
+    geom_point() + 
 
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+    # Increase the number of y-axis tick marks
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
 
-   # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
-```
+    theme_bw() +
 
-### Plot cleaned data
+    # Put legend at the bottom
+    theme(legend.position = "bottom") +
 
-```{r, plot_cleaned_data_25c, eval = FALSE, include = FALSE}
-plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
-```
+    # Break plot into panels
+    facet_grid(vars(temperature_measured), vars(string_number)) +
 
-### File 2
-
-```{r , eval=FALSE}
-#[sp_name]_30c_cleaned <-
-
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_30c.dat"] %>%
-
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
-
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
-
-    # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>%
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
-```
-
-### Plot cleaned data
-
-```{r, plot_cleaned_data_30c, eval=FALSE}
-plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
-```
-
-### File 3
-
-```{r, eval=FALSE}
-#[sp_name]_35c_cleaned <-
-
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_35c.dat"] %>%
-
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
-
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
-
-    # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>%
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
-```
-
-### Plot cleaned data
-
-```{r, plot_cleaned_data_35c, eval=FALSE}
-plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
-```
-
-### File 4
-
-```{r, eval=FALSE}
-#[sp_name]_40c_cleaned <-
-
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_40c.dat"] %>%
-
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
-
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
-
-    # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>%
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
-```
-
-### Plot cleaned data
-
-```{r, plot_cleaned_data_40c, eval=FALSE}
-plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
-```
-
-### File 5
-
-```{r, eval=FALSE}
-#[sp_name]_45c_cleaned <-
-
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_45c.dat"] %>%
-
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
-
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
-
-   # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>%
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
-```
-
-### Plot cleaned data
-
-```{r, plot_cleaned_data_45c, eval=FALSE}
-plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
-```
-
-### File 6
-
-```{r, eval=FALSE}
-#[sp_name]_50c_cleaned <- 
+    # Set colors  
+    scale_color_manual(values = string_colors) +
     
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_50c.dat"] %>% 
-    
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
-
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
-
-   # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
+    # Show slope and R2
+    stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
+    stat_regline_equation(label.y = 40,  size = 3)
 ```
 
-### Plot cleaned data
-
-```{r, plot_cleaned_data_50c, eval=FALSE}
-plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
-```
-
-### File 7
-
-```{r, eval=FALSE}
-#[sp_name]_55c_cleaned <- 
-    
-    # Select the data to be clean
-    [sp_name]_raw_data["file_name_55c.dat"] %>% 
-    
-    # Transform list element to dataframe type
-    as.data.frame(.) %>%
-
-    # clean colnames
-    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
-
-    # Choose a interval of time
-    filter_droughtbox_data(.,
-                           from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
-    # Clean the data
-    clean_droughtbox_data(.,
-                          remove_n_observations = 5,
-                          threshold = 0.2)
-```
-
-### Plot cleaned data
-
-```{r, plot_cleaned_data_55c, eval=FALSE}
-plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
-```
-
-## Merge cleaned dataframes
-
-```{r, eval=FALSE}
-[sp_name]_merged_cleaned_data <- 
-                    merge_droughtbox_data(#[sp_name]_25c_cleaned,
-                                          [sp_name]_30c_cleaned,
-                                          [sp_name]_35c_cleaned,
-                                          [sp_name]_40c_cleaned,
-                                          [sp_name]_45c_cleaned,
-                                          [sp_name]_50c_cleaned,
-                                          [sp_name]_55c_cleaned)
-```
-
-### Calculate the slopes
+## Calculate the rate of change between water loss
 
 ```{r, eval = FALSE}
 slopes <- calculate_rate_of_change([sp_name]_merged_cleaned_data)
