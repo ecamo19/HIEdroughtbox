@@ -45,31 +45,31 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 
             # Create a nested dataframes excluding temperature_measured,
             # strain_number.
-            # This must return a data frame with maximum 8 row!!
-            tidyr::nest(data = -c(string_number, temperature_measured)) %>%
+    # This must return a data frame with maximum 8 row!!
+    tidyr::nest(data = -c(string_number, temperature_measured)) %>%
 
-            # Create column with the slopes by strain_number, set_temperature
-            dplyr::mutate(slope_grams_per_second = purrr::map(data,
+        # Create column with the slopes by strain_number, set_temperature
+        dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
-                                                              # Calculate the slope
-                                                              ~stats::coef(lm(string_weight_grams ~ time_seconds,
-                                                                              data = .x))[["time_seconds"]])) %>%
-            # Remove nested dataframes
-            dplyr::select(-data) %>%
+                                                          # Calculate the slope
+                                                          ~stats::coef(lm(string_weight_grams ~ time_seconds,
+                                                                          data = .x))[["time_seconds"]])) %>%
+        # Remove nested dataframes
+        dplyr::select(-data) %>%
 
-            # Unnest slope data
-            tidyr::unnest(cols = slope_grams_per_second) %>%
+        # Unnest slope data
+        tidyr::unnest(cols = slope_grams_per_second) %>%
 
-            # Without this the code won't run
-            dplyr::ungroup()
+        # Without this the code won't run
+        dplyr::ungroup()
 
-        # Print message if temperature measured and set temperature are different
-        #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
-        #             "all TRUE This is ok",
-        #             print("temperature_measured and set_temperature might be diffrent. Check data"))
+    # Print message if temperature measured and set temperature are different
+    #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
+    #             "all TRUE This is ok",
+    #             print("temperature_measured and set_temperature might be diffrent. Check data"))
 
     return(rate_of_change)
-    }
+}
 
 #' calculate_transpiration_rates
 #'
@@ -163,21 +163,27 @@ calculate_transpiration_rates <- function(droughtbox_data,
         slope_grams_per_second %>%
 
         ## Merge leaf and branch areas data with slope data ----------------
-    dplyr::full_join(., leaf_and_branch_area_data,
-                     by = c("strain_number", "temperature_measured")) %>%
+        dplyr::full_join(., leaf_and_branch_area_data,
+                     by = c("string_number", "temperature_measured")) %>%
 
-            # Calculate transpiration
-            dplyr::mutate(transpiration_grams_per_sec_cm2 =
-                             -(.$slope_grams_per_second/(.$areas_cm2))) %>%
+        # Calculate transpiration for single and double sided areas
+        dplyr::mutate(transpiration_single_grams_per_sec_cm2 =
+                          -(.$slope_grams_per_second/(.$areas_cm2)),
 
-            # Remove unused columns if present
-            dplyr::select(-dplyr::any_of(c("set_vpd", "started_at",
-                                           "number_of_leaves",
-                                           "stem_dry_weight_mg",
-                                           "leaf_dry_weight_mg"))) %>%
+                      transpiration_double_grams_per_sec_cm2 =
+                          -(.$slope_grams_per_second/(.$double_sided_areas_cm2))
+                      ) %>%
 
-            # Arrange dataset
-            dplyr::select(spcode, tree_id, dplyr::everything())
+        # Remove unused columns if present
+        dplyr::select(-dplyr::any_of(c("set_vpd", "started_at",
+                                       "number_of_leaves",
+                                       "stem_dry_weight_mg",
+                                       "leaf_dry_weight_mg"))) %>%
+
+        # Arrange dataset
+        dplyr::select(spcode, string_number, tree_id, dplyr::everything()) %>%
+        dplyr::group_by(temperature_measured, tree_id, string_number) %>%
+        dplyr::arrange(tree_id)
 
     return(transpiration_rate)
 }
