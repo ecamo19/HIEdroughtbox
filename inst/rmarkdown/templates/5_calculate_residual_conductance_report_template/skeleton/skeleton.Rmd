@@ -1,5 +1,5 @@
 ---
-title: 'Species Name'
+title: 'Species Name: Residual conductance'
 author: 'Your Name'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -77,46 +77,41 @@ library(here)
 library(readxl)
 ```
 
-```{r, echo=FALSE}
-if (Sys.info()[1] != "Linux") {
-    print(paste0("Python and Bash functions not implemented for ", Sys.info()[[1]]))
-} else {
-    
-    # For running python in Rmarkdown
-    library(reticulate)
-    }
-```
-
-```{r, echo=FALSE}
-# To run python in this Rmarkdown follow the following steps:
-# 1) Create a file in your home directory called .Renviron i.e touch .Renviron
-# 2) Run which python3 in the terminal and copy the path i.e /usr/bin/python3
-# 3) Paste RETICULATE_PYTHON="/usr/bin/python3" inside the .Renviron file 
-
-# Old instructions
-# Set conda env for working with python
-#use_condaenv("/home/ecamo19/Documents/openssl/envs/r-reticulate")
-```
-
-# 1. Load Droughtbox data
+# 1. Load RWC data
 
 ```{r, raw_data_list}
-# Create list with all data frames
-[sp_name]_raw_data <- read_hie_droughtbox_data_folder("./")
+load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 ```
 
 ```{r}
 # Show the names of each element in the list
-names([sp_name]_raw_data)
+glimpse([sp_name]_rwc_data)
 ```
 
-# 2. Data preprocessing
+# 2. Plot climatic data
 
-## Plot climatic data
+## VPD
 
-```{r, plot_climatic_controls}
-map([sp_name]_raw_data, plot_droughtbox_climatic_controls)
+```{r, plot_vpd}
+
+ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
+                                           y = vpd_avg_kpa_avg)) +
+    geom_boxplot()+
+    theme_bw()
+
 ```
+
+## Temperature
+
+```{r, plot_temperature}
+ggplot(data = euc_crebra_feb_rwc_data, aes(x = factor(set_temperature), 
+                                           y = temperature_measured)) +
+    geom_boxplot()+
+    theme_bw()
+```
+
+
+
 
 ## Plot raw droughtbox data
 
