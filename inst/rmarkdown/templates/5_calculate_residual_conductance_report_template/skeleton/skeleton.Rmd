@@ -70,7 +70,7 @@ library(here)
 # For adding regression line to ggplot
 library(ggpubr)
 
-# For facts_2
+# For facets_2
 library(ggh4x)
 ```
 
