@@ -430,16 +430,31 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
     
     arrange(tree_id) %>% 
 
-    mutate(double_sided_areas_cm2 = areas_cm2*2)
+    mutate(double_sided_areas_cm2 = areas_cm2*2) %>%
+
+    mutate(tree_id = as.character(tree_id), .keep = "unused") %>%  
+
+    dplyr::mutate(string_number = dplyr::case_when(tree_id == "81"      ~ "string_1",
+                                                       tree_id == "82"  ~ "string_2",
+                                                       tree_id == "83"  ~ "string_3",
+                                                       tree_id == "84"  ~ "string_4",
+                                                       tree_id == "85"  ~ "string_5",
+                                                       tree_id == "86"  ~ "string_6",
+                                                       tree_id == "87"  ~ "string_7",
+                                                       tree_id == "88"  ~ "string_8",
+                                                       TRUE ~ tree_id)) %>% 
+
+    mutate(tree_id = as.integer(tree_id), .keep = "unused") %>%  
+    select(string_number, everything()) 
 ```
 
-```{r}
+```{r, eval=FALSE}
 glimpse([sp_name]_areas_data)
 ```
 
 # 3. Export data as Rdata
 
-```{r, export_data}
+```{r, export_data, eval=FALSE}
 save([sp_name]_areas_data, file = "./[sp_name]_processed_data/[sp_name]_areas_data.RData")
 
 ```
