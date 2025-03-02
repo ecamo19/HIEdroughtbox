@@ -110,9 +110,6 @@ ggplot(data = euc_crebra_feb_rwc_data, aes(x = factor(set_temperature),
     theme_bw()
 ```
 
-
-
-
 ## Plot raw droughtbox data
 
 ```{r, plot_raw_data}
