@@ -257,10 +257,10 @@ calculate_residual_conductance <- function(droughtbox_data,
     base::stopifnot("leaf_and_branch_area_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(leaf_and_branch_area_data))
 
     # Assert date column in droughtbox_data
-    checkmate::assert_date(droughtbox_data$date)
+    #checkmate::assert_date(droughtbox_data$date)
 
     # Assert time column in droughtbox_data
-    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+    #base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in droughtbox_data" =  c(#"strain_avg_1_microstrain_avg",
@@ -275,10 +275,10 @@ calculate_residual_conductance <- function(droughtbox_data,
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
-                                                                            #"surface_branch_area_cm2",
-                                                                            "strain_number",
-                                                                           #"set_temperature",
+                                                                            "string_number",
                                                                             "tree_id"
+                                                                            #"surface_branch_area_cm2",
+                                                                            #"set_temperature",
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
     # Get VPD parameter --------------------------------------------------------
@@ -288,27 +288,27 @@ calculate_residual_conductance <- function(droughtbox_data,
         droughtbox_data %>%
 
         # Select only the necessary variables
-        dplyr::select(time,
+        dplyr::select(date_time,
                       vpd_avg_kpa_avg,
                       tc_avg_deg_c_avg) %>%
 
         # Change temperatures measured into discrete groups i.e if
         # tc_avg_deg_c_avg is between 53 and 56 code it as 55
-        dplyr::mutate(temperature_measured = dplyr::case_when(
-            dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
-            dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
-            dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
-            dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
-            dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
-            dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
-            dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
-            TRUE ~ tc_avg_deg_c_avg)) %>%
+        #dplyr::mutate(temperature_measured = dplyr::case_when(
+            #dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
+            #dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
+            #dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
+            #dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
+            #dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
+            #dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
+            #dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
+            #TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Rename variables
-        dplyr::mutate(
+        #dplyr::mutate(
                       # Transform time to seconds
-                      time_seconds = (time - dplyr::first(time)),
-                      .keep = "unused") %>%
+        #              time_seconds = (time - dplyr::first(time)),
+        #              .keep = "unused") %>%
 
         # Group by temperature
         dplyr::group_by(temperature_measured) %>%
@@ -330,15 +330,20 @@ calculate_residual_conductance <- function(droughtbox_data,
 
             # Add VPD parameter into the dataset
             dplyr::full_join(., vpd_parameter,
-                             by = join_by(temperature_measured == temperature_measured)) %>%
+                             by = dplyr::join_by(temperature_measured == temperature_measured)) %>%
 
             # Print message residual conductance units
             {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
 
             # Residual conductance in grams * s-1 * cm-2 and
-            dplyr::mutate(residual_conductance_grams_s_cm = (transpiration_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant,
-                          residual_conductance_micro_mol_s_cm = (residual_conductance_grams_s_cm/18.02)*1000000
-                          )
+            dplyr::mutate(single_sided_residual_conductance_grams_s_cm2 = (transpiration_single_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant,
+                          single_sided_residual_conductance_micro_mol_s_cm2 = (single_sided_residual_conductance_grams_s_cm2/18.02)*1000000
+                          ) %>%
+
+            dplyr::mutate(double_sided_residual_conductance_grams_s_cm2 = (transpiration_double_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant,
+                          double_sided_residual_conductance_micro_mol_s_cm2 = (double_sided_residual_conductance_grams_s_cm2 / 18.02)*1000000
+                      ) %>%
+
 
     return(base::data.frame(residual_conductance_df))
 
