@@ -69,6 +69,18 @@ library(here)
 library(tibble)
 ```
 
+```{r echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
+```
+
 # 1. Load Droughtbox data
 
 ```{r, load_droughtbox_data}
