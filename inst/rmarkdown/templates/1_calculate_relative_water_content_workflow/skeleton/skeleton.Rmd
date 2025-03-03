@@ -63,8 +63,7 @@ library(scales)
 library(dplyr)
 library(purrr)
 library(stringr)
-library(tidyr)# Draw interval
-    geom_hline(yintercept = c(.70, .80))+
+library(tidyr)
 
 library(here)
 library(tibble)
@@ -136,6 +135,26 @@ plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 any([sp_name]_25c_reshaped$temperature_measured < 25 | [sp_name]_25c_reshaped$temperature_measured > 25)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_25c_reshaped  <- 
+    [sp_name]_25c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
 ### File 2: 30c
 
 ```{r, eval=FALSE}
@@ -178,6 +197,26 @@ plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_30c_reshaped$temperature_measured < 30 | [sp_name]_30c_reshaped$temperature_measured > 30)
+```
+
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_30c_reshaped  <- 
+    [sp_name]_30c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
 ### File 3: 35c
@@ -224,6 +263,26 @@ plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 any([sp_name]_35c_reshaped$temperature_measured < 35 | [sp_name]_35c_reshaped$temperature_measured > 35)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_35c_reshaped  <- 
+    [sp_name]_35c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
 ### File 4: 40c
 
 ```{r, eval=FALSE}
@@ -266,6 +325,26 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_40c_reshaped$temperature_measured < 40 | [sp_name]_40c_reshaped$temperature_measured >  40)
+```
+
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_40c_reshaped  <- 
+    [sp_name]_40c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
 ### File 5: 45c
@@ -312,6 +391,26 @@ plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 any([sp_name]_45c_reshaped$temperature_measured < 45 | [sp_name]_45c_reshaped$temperature_measured >  45)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_45c_reshaped  <- 
+    [sp_name]_45c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
 ### File 6: 50c
 
 ```{r, eval=FALSE}
@@ -356,6 +455,26 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 any([sp_name]_50c_reshaped$temperature_measured < 50| [sp_name]_50c_reshaped$temperature_measured > 50)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_50c_reshaped  <- 
+    [sp_name]_50c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
 ### File 7: 55c
 
 ```{r, eval=FALSE}
@@ -398,6 +517,26 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$temperature_measured > 55)
+```
+
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_55c_reshaped  <- 
+    [sp_name]_55c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
 ## Merge cleaned dataframes
@@ -533,33 +672,33 @@ glimpse([spcode]_dry_weights)
 ### Plot data with dry weights
 
 ```{r plot_raw_data_dry_weights, fig.width = 16, fig.height = 14, cache=TRUE, eval=FALSE}
-ggplot(data = [sp_name]_data, aes(x = time_seconds,
-                                           y = string_weight_grams,
-                                           colour = factor(string_number))) +
-  
-    geom_point()+
-    
-    theme_bw() +
-
-    # Move legend at the bottom
-    theme() +
-  
-    # Break plot into panels
-    facet_grid(vars(temperature_measured), vars(string_number)) +
-
-    # At lines showing range between 0-3600 sec (1 hour)
-    geom_vline(xintercept = 0,  linetype = "dotted") +
-
-    # Set colors  
-    scale_color_manual(values = string_colors) +
-    
-    # Show dry-weights
-    #geom_hline(data = euc_saligna_data, 
-    #          aes(yintercept = sample_dry_weight_grams)) +
-    
-    # Rotate labels by 90 degrees
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-        legend.position = "none")
+# ggplot(data = [sp_name]_data, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Move legend at the bottom
+#     theme() +
+#   
+#     # Break plot into panels
+#     facet_grid(vars(temperature_measured), vars(string_number)) +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Show dry-weights
+#     #geom_hline(data = euc_saligna_data, 
+#     #          aes(yintercept = sample_dry_weight_grams)) +
+#     
+#     # Rotate labels by 90 degrees
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#         legend.position = "none")
 ```
 
 # 4. Calculate the relative water content
