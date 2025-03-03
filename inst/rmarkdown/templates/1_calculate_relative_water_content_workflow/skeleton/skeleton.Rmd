@@ -167,6 +167,32 @@ any([sp_name]_25c_reshaped$temperature_measured < 25 | [sp_name]_25c_reshaped$te
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_25c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ### File 2: 30c
 
 ```{r, eval=FALSE}
@@ -229,6 +255,32 @@ any([sp_name]_30c_reshaped$temperature_measured < 30 | [sp_name]_30c_reshaped$te
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_35c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 3: 35c
@@ -295,6 +347,32 @@ any([sp_name]_35c_reshaped$temperature_measured < 35 | [sp_name]_35c_reshaped$te
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_35c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ### File 4: 40c
 
 ```{r, eval=FALSE}
@@ -357,6 +435,32 @@ any([sp_name]_40c_reshaped$temperature_measured < 40 | [sp_name]_40c_reshaped$te
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_40c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 5: 45c
@@ -423,6 +527,32 @@ any([sp_name]_45c_reshaped$temperature_measured < 45 | [sp_name]_45c_reshaped$te
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_45c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ### File 6: 50c
 
 ```{r, eval=FALSE}
@@ -485,6 +615,33 @@ any([sp_name]_50c_reshaped$temperature_measured < 50| [sp_name]_50c_reshaped$tem
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_50c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 7: 55c
@@ -551,6 +708,32 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
         #filter(!c(string_number == "string_8" & string_weight_grams < 16))
 ```
 
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_55c_reshaped, aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ## Merge cleaned dataframes
 
 ```{r, eval=FALSE}
@@ -571,18 +754,6 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
 ### Plot Merged data
 
 __Make sure that values start at 0__
-
-```{r, eval=FALSE, echo=FALSE}
-string_colors <- c(string_1 = "#eec000",
-                   string_2 = "#cf544c",
-                   string_3 = "#0175c3",
-                   string_4 = "#878687",
-                   
-                   string_5 =  "#000000",
-                   string_6 =  "#008b28",
-                   string_7 =  "#8600b6",
-                   string_8 =  "#00a0ab")
-```
 
 ```{r, plot_reshaped_data, fig.width=16, fig.height=8, eval=FALSE}
 ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
