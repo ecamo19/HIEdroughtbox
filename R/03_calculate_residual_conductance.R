@@ -41,32 +41,40 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             {print("Remember time units must be seconds and weights must be in grams"); .} %>%
             {print("Rate of change units: grams * s-1"); .} %>%
 
+
+            # Get median climatic conditions ------------------------------------
+            dplyr::group_by(temperature_measured) %>%
+
+            dplyr::mutate(median_vdp  = stats::median(vpd_avg_kpa_avg),
+                          median_rh   = stats::median(rh_avg_percent_avg),
+                          median_temp = stats::median(tc_avg_deg_c_avg)) %>%
+
             # Calculate the rate of change --------------------------------------
 
             # Create a nested dataframes excluding temperature_measured,
             # strain_number.
-    # This must return a data frame with maximum 8 row!!
-    tidyr::nest(data = -c(string_number, temperature_measured)) %>%
+            tidyr::nest(data = -c(median_vdp, median_rh, median_temp,
+                                  string_number, temperature_measured)) %>%
 
-        # Create column with the slopes by strain_number, set_temperature
-        dplyr::mutate(slope_grams_per_second = purrr::map(data,
+            # Create column with the slopes by strain_number, set_temperature
+            dplyr::mutate(slope_grams_per_second = purrr::map(data,
 
                                                           # Calculate the slope
                                                           ~stats::coef(lm(string_weight_grams ~ time_seconds,
                                                                           data = .x))[["time_seconds"]])) %>%
-        # Remove nested dataframes
-        dplyr::select(-data) %>%
+            # Remove nested dataframes
+            dplyr::select(-data) %>%
 
-        # Unnest slope data
-        tidyr::unnest(cols = slope_grams_per_second) %>%
+            # Unnest slope data
+            tidyr::unnest(cols = slope_grams_per_second) %>%
 
-        # Without this the code won't run
-        dplyr::ungroup()
+            # Without this the code won't run
+            dplyr::ungroup()
 
-    # Print message if temperature measured and set temperature are different
-    #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
-    #             "all TRUE This is ok",
-    #             print("temperature_measured and set_temperature might be diffrent. Check data"))
+        # Print message if temperature measured and set temperature are different
+        #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
+        #             "all TRUE This is ok",
+        #             print("temperature_measured and set_temperature might be diffrent. Check data"))
 
     return(rate_of_change)
 }
