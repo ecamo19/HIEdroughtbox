@@ -24,7 +24,7 @@ options(scipen = 999)
 # Save figures in specific place
 knitr::opts_chunk$set(autodep        = TRUE,
                       cache          = FALSE,
-                      cache.comments = TRUE,
+                      cache.commeneval=FALSEts = TRUE,
                       comment = "",
                       # Save figures as pdf ?
                       #dev = c( "png", "pdf"),
@@ -209,19 +209,19 @@ glimpse([sp_name]_areas_data)
 
 ## Calculate transpiration rates
 
-```{r}
+```{r, eval=FALSE}
 transpiration_rates <- calculate_transpiration_rates(droughtbox_data = [sp_name]_rwc_data_filtered_data,
                                                      leaf_and_branch_area_data = [sp_name]_areas_data_cleaned)
 ```
 
-```{r, plot_transpiration_rates_single}
+```{r, plot_transpiration_rates_single, eval=FALSE}
 ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
                           y = transpiration_single_grams_per_sec_cm2)) +
     geom_boxplot() +
     theme_bw()
 ```
 
-```{r, plot_transpiration_rates_double}
+```{r, plot_transpiration_rates_double, eval=FALSE}
 ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
                           y = transpiration_double_grams_per_sec_cm2)) +
     geom_boxplot() +
@@ -236,10 +236,14 @@ ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
                                    leaf_and_branch_area_data = [sp_name]_areas_data_cleaned)
 ```
 
+```{r, eval=FALSE}
+glimpse([sp_name]_residual_conductance)
+```
+
 ```{r residual_conductance_plot, eval=FALSE}
 [sp_name]_residual_conductance %>%
     
-    group_by(set_temperature) %>%
+    group_by(temperature_measured) %>%
     
     # Summarize data
     summarise(
