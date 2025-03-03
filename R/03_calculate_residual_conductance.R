@@ -150,7 +150,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
-                                                                            "strain_number",
+                                                                            "string_number",
                                                                             #"set_temperature",
                                                                             "tree_id") %in% base::colnames(leaf_and_branch_area_data))
 
