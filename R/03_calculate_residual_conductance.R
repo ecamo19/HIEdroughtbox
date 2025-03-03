@@ -133,10 +133,10 @@ calculate_transpiration_rates <- function(droughtbox_data,
     base::stopifnot("leaf_and_branch_area_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(leaf_and_branch_area_data))
 
     # Assert date column in droughtbox_data
-    checkmate::assert_date(droughtbox_data$date)
+    checkmate::assert_date(droughtbox_data$date_time)
 
     # Assert time column in droughtbox_data
-    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+    #base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Make sure the necessary data is in the dataframe
     # base::stopifnot("Missing weight columns in droughtbox_data. All weights should be included (4 in total)" = c("strain_avg_1_microstrain_avg",
