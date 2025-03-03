@@ -150,7 +150,7 @@ any([sp_name]_25c_reshaped$temperature_measured < 25 | [sp_name]_25c_reshaped$te
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_25c_reshaped  <- 
+[sp_name]_25c_reshaped_cleaned  <- 
     [sp_name]_25c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -168,9 +168,9 @@ any([sp_name]_25c_reshaped$temperature_measured < 25 | [sp_name]_25c_reshaped$te
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_25c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_25c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -240,7 +240,7 @@ any([sp_name]_30c_reshaped$temperature_measured < 30 | [sp_name]_30c_reshaped$te
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_30c_reshaped  <- 
+[sp_name]_30c_reshaped_cleaned  <- 
     [sp_name]_30c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -258,9 +258,9 @@ any([sp_name]_30c_reshaped$temperature_measured < 30 | [sp_name]_30c_reshaped$te
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_35c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_35c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -330,7 +330,7 @@ any([sp_name]_35c_reshaped$temperature_measured < 35 | [sp_name]_35c_reshaped$te
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_35c_reshaped  <- 
+[sp_name]_35c_reshaped_cleaned  <- 
     [sp_name]_35c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -348,9 +348,9 @@ any([sp_name]_35c_reshaped$temperature_measured < 35 | [sp_name]_35c_reshaped$te
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_35c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_35c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -420,7 +420,7 @@ any([sp_name]_40c_reshaped$temperature_measured < 40 | [sp_name]_40c_reshaped$te
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_40c_reshaped  <- 
+[sp_name]_40c_reshaped_cleaned  <- 
     [sp_name]_40c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -438,9 +438,9 @@ any([sp_name]_40c_reshaped$temperature_measured < 40 | [sp_name]_40c_reshaped$te
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_40c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_40c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -510,7 +510,7 @@ any([sp_name]_45c_reshaped$temperature_measured < 45 | [sp_name]_45c_reshaped$te
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_45c_reshaped  <- 
+[sp_name]_45c_reshaped_cleaned  <- 
     [sp_name]_45c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -528,9 +528,9 @@ any([sp_name]_45c_reshaped$temperature_measured < 45 | [sp_name]_45c_reshaped$te
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_45c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_45c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -600,7 +600,7 @@ any([sp_name]_50c_reshaped$temperature_measured < 50| [sp_name]_50c_reshaped$tem
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_50c_reshaped  <- 
+[sp_name]_50c_reshaped_cleaned  <- 
     [sp_name]_50c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -619,9 +619,9 @@ any([sp_name]_50c_reshaped$temperature_measured < 50| [sp_name]_50c_reshaped$tem
 
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_50c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_50c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -691,7 +691,7 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-[sp_name]_55c_reshaped  <- 
+[sp_name]_55c_reshaped_cleaned  <- 
     [sp_name]_55c_reshaped %>% 
 
         # Select Values measured at 25c
@@ -709,9 +709,9 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_55c_reshaped, aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
+# ggplot(data = [sp_name]_55c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
 #   
 #     geom_point()+
 #     
@@ -740,13 +740,13 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
 
 [sp_name]_merged_cleaned_data <-
  
-        list([sp_name]_25c_reshaped,
-            [sp_name]_30c_reshaped,
-            [sp_name]_35c_reshaped,
-            [sp_name]_40c_reshaped,
-            [sp_name]_45c_reshaped,
-            [sp_name]_50c_reshaped,
-            [sp_name]_55c_reshaped) %>%    
+        list([sp_name]_25c_reshaped_cleaned,
+            [sp_name]_30c_reshaped_cleaned,
+            [sp_name]_35c_reshaped_cleaned,
+            [sp_name]_40c_reshaped_cleaned,
+            [sp_name]_45c_reshaped_cleaned,
+            [sp_name]_50c_reshaped_cleaned,
+            [sp_name]_55c_reshaped_cleaned) %>%    
 
     reduce(rbind) 
 ```
