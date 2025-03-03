@@ -86,7 +86,9 @@ string_colors <- c(string_1 = "#eec000",
                    string_8 =  "#00a0ab")
 ```
 
-# 1. Load RWC data
+# 1. Load data
+
+## Load RWC data
 
 ```{r, raw_data_list, eval = FALSE}
 load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
@@ -95,6 +97,30 @@ load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 ```{r, eval = FALSE}
 # Show the names of each element in the list
 glimpse([sp_name]_rwc_data)
+```
+
+## Load Areas data file
+
+```{r, eval=FALSE}
+load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
+```
+
+```{r, clean_areas_data, eval=FALSE}
+[sp_name]_areas_data_cleaned <- 
+    [sp_name]_areas_data %>% 
+        group_by(spcode, tree_id, set_temperature, string_number) %>% 
+        summarise(areas_cm2 = sum(areas_cm2), 
+                  double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
+        
+        mutate(temperature_measured = as.integer(set_temperature), 
+               .keep =  "unused") %>% 
+    
+        select(spcode, string_number, tree_id, temperature_measured, everything())
+
+```
+
+```{r, eval=FALSE}
+glimpse([sp_name]_areas_data_cleaned)
 ```
 
 # 2. Plot climatic data
@@ -183,30 +209,6 @@ ggplot(data = slopes, aes(x = factor(temperature_measured),
     theme_bw()
 ```
 
-## Load Areas data file
-
-```{r, eval=FALSE}
-load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
-```
-
-```{r, eval=FALSE}
-glimpse([sp_name]_areas_data)
-```
-
-```{r, clean_areas_data, eval=FALSE}
-[sp_name]_areas_data_cleaned <- 
-    [sp_name]_areas_data %>% 
-        group_by(spcode, tree_id, set_temperature, string_number) %>% 
-        summarise(areas_cm2 = sum(areas_cm2), 
-                  double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
-        
-        mutate(temperature_measured = as.integer(set_temperature), 
-               .keep =  "unused") %>% 
-    
-        select(spcode, string_number, tree_id, temperature_measured, everything())
-
-```
-
 ## Calculate transpiration rates
 
 ```{r, eval=FALSE}
@@ -264,3 +266,12 @@ glimpse([sp_name]_residual_conductance)
                          position = position_dodge(0.05)) +
         theme_bw()
 ```
+
+# 4. Export data
+
+```{r, export_data, eval=FALSE}
+save([sp_name]_residual_conductance, file = "./processed_data/[sp_name]_residual_conductance.RData")
+```
+
+
+

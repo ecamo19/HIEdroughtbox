@@ -608,7 +608,6 @@ ggplot(data = [sp_name]_rwc_data,aes(x = time_seconds,
 # 5. Export data
 
 ```{r, export_data, eval=FALSE}
-getwd()
 save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_rwc_data.RData")
 ```
 
