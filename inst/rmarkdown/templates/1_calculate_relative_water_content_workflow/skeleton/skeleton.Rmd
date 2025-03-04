@@ -63,11 +63,22 @@ library(scales)
 library(dplyr)
 library(purrr)
 library(stringr)
-library(tidyr)# Draw interval
-    geom_hline(yintercept = c(.70, .80))+
+library(tidyr)
 
 library(here)
 library(tibble)
+```
+
+```{r echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
 ```
 
 # 1. Load Droughtbox data
@@ -136,6 +147,52 @@ plot_strains_weights([sp_name]_25c_cleaned, show_tare_group = FALSE)
 any([sp_name]_25c_reshaped$temperature_measured < 25 | [sp_name]_25c_reshaped$temperature_measured > 25)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_25c_reshaped_cleaned  <- 
+    [sp_name]_25c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_25c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ### File 2: 30c
 
 ```{r, eval=FALSE}
@@ -178,6 +235,52 @@ plot_strains_weights([sp_name]_30c_cleaned, show_tare_group = FALSE)
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_30c_reshaped$temperature_measured < 30 | [sp_name]_30c_reshaped$temperature_measured > 30)
+```
+
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_30c_reshaped_cleaned  <- 
+    [sp_name]_30c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_35c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 3: 35c
@@ -224,6 +327,52 @@ plot_strains_weights([sp_name]_35c_cleaned, show_tare_group = FALSE)
 any([sp_name]_35c_reshaped$temperature_measured < 35 | [sp_name]_35c_reshaped$temperature_measured > 35)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_35c_reshaped_cleaned  <- 
+    [sp_name]_35c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_35c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ### File 4: 40c
 
 ```{r, eval=FALSE}
@@ -266,6 +415,52 @@ plot_strains_weights([sp_name]_40c_cleaned, show_tare_group = FALSE)
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_40c_reshaped$temperature_measured < 40 | [sp_name]_40c_reshaped$temperature_measured >  40)
+```
+
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_40c_reshaped_cleaned  <- 
+    [sp_name]_40c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_40c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 5: 45c
@@ -312,6 +507,52 @@ plot_strains_weights([sp_name]_45c_cleaned, show_tare_group = FALSE)
 any([sp_name]_45c_reshaped$temperature_measured < 45 | [sp_name]_45c_reshaped$temperature_measured >  45)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_45c_reshaped_cleaned  <- 
+    [sp_name]_45c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_45c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ### File 6: 50c
 
 ```{r, eval=FALSE}
@@ -354,6 +595,53 @@ plot_strains_weights([sp_name]_50c_cleaned, show_tare_group = FALSE)
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_50c_reshaped$temperature_measured < 50| [sp_name]_50c_reshaped$temperature_measured > 50)
+```
+
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_50c_reshaped_cleaned  <- 
+    [sp_name]_50c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_50c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 7: 55c
@@ -400,19 +688,65 @@ plot_strains_weights([sp_name]_55c_cleaned, show_tare_group = FALSE)
 any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$temperature_measured > 55)
 ```
 
+#### Clean reshaped data
+
+```{r, eval=FALSE}
+[sp_name]_55c_reshaped_cleaned  <- 
+    [sp_name]_55c_reshaped %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+
+        # Remove string 
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Re move observations
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+```
+
+```{r, eval=FALSE}
+# ggplot(data = [sp_name]_55c_reshaped_cleaned, aes(x = time_seconds,
+#                                                   y = string_weight_grams,
+#                                                   colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
 ## Merge cleaned dataframes
 
 ```{r, eval=FALSE}
 
 [sp_name]_merged_cleaned_data <-
  
-        list([sp_name]_25c_reshaped,
-            [sp_name]_30c_reshaped,
-            [sp_name]_35c_reshaped,
-            [sp_name]_40c_reshaped,
-            [sp_name]_45c_reshaped,
-            [sp_name]_50c_reshaped,
-            [sp_name]_55c_reshaped) %>%    
+        list([sp_name]_25c_reshaped_cleaned,
+            [sp_name]_30c_reshaped_cleaned,
+            [sp_name]_35c_reshaped_cleaned,
+            [sp_name]_40c_reshaped_cleaned,
+            [sp_name]_45c_reshaped_cleaned,
+            [sp_name]_50c_reshaped_cleaned,
+            [sp_name]_55c_reshaped_cleaned) %>%    
 
     reduce(rbind) 
 ```
@@ -420,18 +754,6 @@ any([sp_name]_55c_reshaped$temperature_measured < 55| [sp_name]_55c_reshaped$tem
 ### Plot Merged data
 
 __Make sure that values start at 0__
-
-```{r, eval=FALSE, echo=FALSE}
-string_colors <- c(string_1 = "#eec000",
-                   string_2 = "#cf544c",
-                   string_3 = "#0175c3",
-                   string_4 = "#878687",
-                   
-                   string_5 =  "#000000",
-                   string_6 =  "#008b28",
-                   string_7 =  "#8600b6",
-                   string_8 =  "#00a0ab")
-```
 
 ```{r, plot_reshaped_data, fig.width=16, fig.height=8, eval=FALSE}
 ggplot(data = [sp_name]_merged_cleaned_data, aes(x = time_seconds,
@@ -501,65 +823,87 @@ ggplot(data = [sp_name]_droughtbox_data_cleaned, aes(x = time_seconds,
 ## Load dry weights data  
 
 ```{r, eval=FALSE, load_dry_weights}
-getwd()
-load("/[spcode]_processed_data/[spcode]_dry_weights.RData")
-ls()
+[sp_name]_main_spread_sheet <- read.csv("./[sp_name]_droughtbox_main_spreadsheet.csv",
+                                        header = T, na.strings = "na") %>%
+                                select(!c(X, notes, number_of_parafilm_pieces,
+                                          set_vpd))
 ```
 
 ```{r, eval=FALSE}
-glimpse([spcode]_dry_weights)
+glimpse([sp_name]_main_spread_sheet)
 ```
 
 ```{r, eval = FALSE}
-[spcode]_dry_weights <-
+[sp_name]_dry_weights <-
   
-    [spcode]_dry_weights %>% 
+    [sp_name]_main_spread_sheet %>% 
 
-        # Remove the letter c from file column, rename it and transform it for 
-        # join
-        mutate(temperature_measured = as.integer(gsub("c","", file)), 
-               .keep = "unused") 
+        select(-c(weight_paper_bag_plus_sample_scale, stem_dry_weight_mg,
+                  leaf_dry_weight_mg)) %>% 
+
+        mutate(sample_dry_weight_grams = weight_paper_bag_plus_sample_db -
+                                          empty_paper_bag_weight_grams,
+
+              total_dry_weight_scale_grams = total_dry_weight_mg / 1000,
+              
+              string_number = stringr::str_c("string_", string_number), 
+              
+              .keep = "unused") %>%   
+
+         na.omit()
 ```
+
+```{r eval=FALSE}
+# Relationship between weight measured with scale and droughtbox
+plot([sp_name]_dry_weights$sample_dry_weight_grams, 
+    [sp_name]_dry_weights$total_dry_weight_scale_grams)
+```
+
+## Merge data sets
 
 ```{r, eval=FALSE}
+[sp_name]_droughtbox_data_cleaned <- 
 
-[sp_name]_data <- 
-         
-    inner_join([sp_name]_droughtbox_data_cleaned, 
-               [sp_name]_dry_weights, 
-               by = join_by(string_number, temperature_measured)) 
+    [sp_name]_droughtbox_data_cleaned %>% 
+
+        # Remove the word string inside the column string_number 
+        mutate(set_temperature = temperature_measured, .keep = "unused") %>% 
+            
+        inner_join(., [sp_name]_dry_weights, , 
+                by = join_by(string_number, set_temperature)) %>% 
+        
+        select(-c(spcode, bag_group, time, tree_id))
 ```
 
-### Plot data with dry weights
+### Plot droughtbox data with dry weights
 
 ```{r plot_raw_data_dry_weights, fig.width = 16, fig.height = 14, cache=TRUE, eval=FALSE}
-ggplot(data = [sp_name]_data, aes(x = time_seconds,
-                                           y = string_weight_grams,
-                                           colour = factor(string_number))) +
-  
-    geom_point()+
-    
-    theme_bw() +
-
-    # Move legend at the bottom
-    theme() +
-  
-    # Break plot into panels
-    facet_grid(vars(temperature_measured), vars(string_number)) +
-
-    # At lines showing range between 0-3600 sec (1 hour)
-    geom_vline(xintercept = 0,  linetype = "dotted") +
-
-    # Set colors  
-    scale_color_manual(values = string_colors) +
-    
-    # Show dry-weights
-    #geom_hline(data = euc_saligna_data, 
-    #          aes(yintercept = sample_dry_weight_grams)) +
-    
-    # Rotate labels by 90 degrees
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-        legend.position = "none")
+# ggplot(data = [sp_name]_droughtbox_data_cleaned , aes(x = time_seconds,
+#                                            y = string_weight_grams,
+#                                            colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Move legend at the bottom
+#     theme() +
+#   
+#     # Break plot into panels
+#     facet_grid(vars(temperature_measured), vars(string_number)) +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Show dry-weights
+#     geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+#
+#     # Rotate labels by 90 degrees
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#         legend.position = "none")
 ```
 
 # 4. Calculate the relative water content
@@ -567,7 +911,7 @@ ggplot(data = [sp_name]_data, aes(x = time_seconds,
 ```{r,eval=FALSE}
 [sp_name]_rwc_data <- 
   
-    [sp_name]_data %>%
+    [sp_name]_droughtbox_data_cleaned %>%
   
       select(-c(tc_avg_deg_c_avg, spcode, paper_bag_group, file)) %>%
       rowwise() %>%
