@@ -138,10 +138,10 @@ def crop_images_for_imagej(path, blur = 15):
     
     # Get coordiantes of the 2x2 squared tag in all images.
     # The coordinates were obtained using gThumb
-    mask_width = 544
-    mask_height = 498
-    mask_x = 1982
-    mask_y = 26
+    #mask_width = 544
+    #mask_height = 498
+    #mask_x = 1982
+    #mask_y = 26
 
     # Get adjacent pixels values for coloring the mask. 
     adjacen_width = 321
@@ -187,10 +187,10 @@ def crop_images_for_imagej(path, blur = 15):
             
             # Calculate the median value of the adjacent pixels for coloring the 
             # mask
-            median_pixel_value = numpy.median(img[adjacen_y :adjacen_y + adjacen_height, adjacen_x:adjacen_x + adjacen_width])
+            #median_pixel_value = numpy.median(img[adjacen_y :adjacen_y + adjacen_height, adjacen_x:adjacen_x + adjacen_width])
             
             # Color the mask
-            img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = median_pixel_value
+            #img[mask_y:mask_y + mask_height, mask_x:mask_x + mask_width] = median_pixel_value
 
             # Apply filter to image for improving quality
             blurred_image = cv2.medianBlur(img, blur)
@@ -216,13 +216,13 @@ def crop_images_for_imagej(path, blur = 15):
     # Save ImageJ code as .ijm ------------------------------------------------
 
     # Check if file exist
-    if os.path.exists("../leaf_area_600dpi.ijm"):
+    if os.path.exists("../leaf_area_300dpi.ijm"):
 
         print(f'\nMacro Code for ImageJ already exist')
 
     # Create file
     else:
-        imagej_macro_file = open(f"../leaf_area_600dpi.ijm", "x")
+        imagej_macro_file = open(f"../leaf_area_300dpi.ijm", "x")
 
         # Write code to file
         imagej_macro_file.write('''
@@ -232,7 +232,7 @@ def crop_images_for_imagej(path, blur = 15):
 // dpi = dots per inch
 //
 // ImageJ macro for calculating the area (cm2) of scanned leaves at a resolution
-// of 600 dpi.
+// of 300 dpi.
 //
 // This macro is meant to be run in headless mode using Fiji
 //
@@ -271,9 +271,9 @@ File.setDefaultDir(input_path)
 
 //1- Function for calculating the leaf area ------------------------------------
 function leaf_area(){
-            var dpi = 600;
+            var dpi = 300;
 
-            // 600 dpi
+            // 300 dpi
             var pixels_per_centimeter = dpi / 2.54;
 
             // ImageJ functions
@@ -380,11 +380,11 @@ crop_images_for_imagej(path = path, blur = 15)
 pwd
 # Enter the path where Fiji was installed
 
-# Locate leaf_area_600dpi.ijm macro
+# Locate leaf_area_300dpi.ijm macro
 
 # Copy path to cropped_images_for_imagej
 
-# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_600dpi.ijm 'path/to/cropped_images_for_imagej'
+# ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
 
 ```{bash, move_areas_file, results = "hide", eval=FALSE}
