@@ -104,7 +104,7 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 #' areas.
 #'
 #' This dataframe must contain the following columns:
-#'  areas_cm2
+#'  areas_m2
 #'  strain_number
 #'  set_temperature
 #'  tree_id
@@ -157,7 +157,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
         "date_time") %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
+    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_m2",
                                                                             "string_number",
                                                                             #"set_temperature",
                                                                             "tree_id") %in% base::colnames(leaf_and_branch_area_data))
@@ -176,10 +176,10 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
         # Calculate transpiration for single and double sided areas
         dplyr::mutate(transpiration_single_grams_per_sec_cm2 =
-                          -(.$slope_grams_per_second/(.$areas_cm2)),
+                          -(.$slope_grams_per_second/(.$areas_m2)),
 
                       transpiration_double_grams_per_sec_cm2 =
-                          -(.$slope_grams_per_second/(.$double_sided_areas_cm2))
+                          -(.$slope_grams_per_second/(.$double_sided_areas_m2))
                       ) %>%
 
         # Remove unused columns if present
@@ -222,7 +222,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 #' areas.
 #'
 #' This dataframe must contain the following columns:
-#'  areas_cm2
+#'  areas_m2
 #'  strain_number
 #'  set_temperature
 #'  tree_id
@@ -282,7 +282,7 @@ calculate_residual_conductance <- function(droughtbox_data,
                                                               ) %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
+    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_m2",
                                                                             "string_number",
                                                                             "tree_id"
                                                                             #"surface_branch_area_cm2",
