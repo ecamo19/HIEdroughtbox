@@ -95,7 +95,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 # 1. Calculate samples areas from scanner images
 
-```{bash, check_image_dpi_bash echo=FALSE, eval = FALSE}
+```{bash, check_image_dpi_bash, echo=FALSE, eval = FALSE}
 # Check the dpi of the images
 # Create a loop for checking all dpi of all images
 echo "Image dpi:"
@@ -403,10 +403,11 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
                          delim = ".",
                          names = c("file_name", "file_extension")) %>%
 
-    # Separate column into 5 based on _
+    # Separate column into 8 columns based on underscore separation
     separate(., col = file_name,
-             into = c('image', 'genera', 'specie', 'tree_id',  'set_temperature'),
-             sep = '_') %>%
+             into = c('image', 'genera', 'specie','place', 'tree_id',
+                      'set_temperature', 'organ', 'image_number' ),
+             sep = '_') 
 
    # Unite Genera and specie columns
     unite("spcode", genera:specie, sep = "_", remove = TRUE) %>%
@@ -433,16 +434,16 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
     mutate(double_sided_areas_cm2 = areas_cm2*2) %>%
 
     mutate(tree_id = as.character(tree_id), .keep = "unused") %>%  
-
-    dplyr::mutate(string_number = dplyr::case_when(tree_id == "1"      ~ "string_1",
-                                                       tree_id == "2"  ~ "string_2",
-                                                       tree_id == "3"  ~ "string_3",
-                                                       tree_id == "4"  ~ "string_4",
-                                                       tree_id == "5"  ~ "string_5",
-                                                       tree_id == "6"  ~ "string_6",
-                                                       tree_id == "7"  ~ "string_7",
-                                                       tree_id == "8"  ~ "string_8",
-                                                       TRUE ~ tree_id)) %>% 
+    
+    dplyr::mutate(string_number = dplyr::case_when(tree_id == "X1"  ~ "string_1",
+                                                   tree_id == "X2"  ~ "string_2",
+                                                   tree_id == "X3"  ~ "string_3",
+                                                   tree_id == "X4"  ~ "string_4",
+                                                   tree_id == "X5"  ~ "string_5",
+                                                   tree_id == "X6"  ~ "string_6",
+                                                   tree_id == "X7"  ~ "string_7",
+                                                   tree_id == "X8"  ~ "string_8",
+                                                   TRUE ~ tree_id)) %>% 
 
     mutate(tree_id = as.integer(tree_id), .keep = "unused") %>%  
     select(string_number, everything()) 
@@ -456,6 +457,5 @@ glimpse([sp_name]_areas_data)
 
 ```{r, export_data, eval=FALSE}
 save([sp_name]_areas_data, file = "./[sp_name]_processed_data/[sp_name]_areas_data.RData")
-
 ```
 
