@@ -226,14 +226,14 @@ transpiration_rates <- calculate_transpiration_rates(droughtbox_data = [sp_name]
 
 ```{r, plot_transpiration_rates_single, eval=FALSE}
 ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
-                          y = transpiration_single_grams_per_sec_cm2)) +
+                          y = transpiration_single_grams_per_sec_m2)) +
     geom_boxplot() +
     theme_bw()
 ```
 
 ```{r, plot_transpiration_rates_double, eval=FALSE}
 ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
-                          y = transpiration_double_grams_per_sec_cm2)) +
+                          y = transpiration_double_grams_per_sec_m2)) +
     geom_boxplot() +
     theme_bw()
 ```
@@ -259,8 +259,8 @@ glimpse([sp_name]_residual_conductance)
     
     # Summarize data
     summarise(
-        median_residual_conductance = median(double_sided_residual_conductance_micro_mol_s_cm2),
-        sd_residual_conductance = sd(double_sided_residual_conductance_micro_mol_s_cm2),
+        median_residual_conductance = median(double_sided_residual_conductance_micro_mol_s_m2),
+        sd_residual_conductance = sd(double_sided_residual_conductance_micro_mol_s_m2),
         median_vpd = median(median_vpd),
         n_residual_conductance = n(),
         se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
