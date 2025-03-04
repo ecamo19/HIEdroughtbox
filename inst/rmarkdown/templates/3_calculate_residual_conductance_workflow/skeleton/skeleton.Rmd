@@ -24,7 +24,7 @@ options(scipen = 999)
 # Save figures in specific place
 knitr::opts_chunk$set(autodep        = TRUE,
                       cache          = FALSE,
-                      cache.commeneval=FALSEts = TRUE,
+                      cache.comments = TRUE,
                       comment = "",
                       # Save figures as pdf ?
                       #dev = c( "png", "pdf"),
@@ -109,14 +109,19 @@ load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
 [sp_name]_areas_data_cleaned <- 
     [sp_name]_areas_data %>% 
         group_by(spcode, tree_id, set_temperature, string_number) %>% 
-        summarise(areas_cm2 = sum(areas_cm2), 
-                  double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
+        
+         # Convert cm2 to m2
+        mutate(areas_m2 = areas_cm2/10000,
+               double_sided_areas_m2 = double_sided_areas_cm2/10000,
+               .keep = "unused") %>% 
+
+        summarise(areas_m2 = sum(areas_m2),
+                  double_sided_areas_m2 = sum(double_sided_areas_m2)) %>% 
         
         mutate(temperature_measured = as.integer(set_temperature), 
                .keep =  "unused") %>% 
     
         select(spcode, string_number, tree_id, temperature_measured, everything())
-
 ```
 
 ```{r, eval=FALSE}
@@ -131,18 +136,19 @@ glimpse([sp_name]_areas_data_cleaned)
 
 ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
                                            y = vpd_avg_kpa_avg)) +
-    geom_boxplot()+
-    theme_bw()
-
+    geom_boxplot() +
+    theme_bw() +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
 ## Temperature
 
 ```{r, plot_temperature, eval = FALSE}
 ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
-                                           y = temperature_measured)) +
-    geom_boxplot()+
-    theme_bw()
+                                           y = tc_avg_deg_c_avg)) +
+    geom_boxplot() +
+    theme_bw() +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
 # 3. Calculate species residual conductance 
@@ -167,7 +173,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ```{r, plot_filtered_data, eval = FALSE}
 ggplot(data = [sp_name]_rwc_data_filtered_data,
                 aes(x = time_seconds, 
-                    y = relative_water_content_perc, 
+                    y = string_weight_grams, 
                     colour = string_number)) +
     
     geom_point() + 
@@ -178,7 +184,7 @@ ggplot(data = [sp_name]_rwc_data_filtered_data,
     theme_bw() +
 
     # Put legend at the bottom
-    theme(legend.position = "bottom") +
+    theme(legend.position = "none") +
 
     # Break plot into panels
     facet_grid(vars(temperature_measured), vars(string_number)) +
@@ -188,7 +194,9 @@ ggplot(data = [sp_name]_rwc_data_filtered_data,
     
     # Show slope and R2
     stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
-    stat_regline_equation(label.y = 40,  size = 3)
+    stat_regline_equation(label.y = 40,  size = 3)+
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
 ## Calculate the rate of change between water loss
@@ -247,24 +255,35 @@ glimpse([sp_name]_residual_conductance)
     
     group_by(temperature_measured) %>%
     
+    na.omit() %>% 
+    
     # Summarize data
     summarise(
-        mean_residual_conductance = mean(residual_conductance),
-        sd_residual_conductance = sd(residual_conductance),
+        median_residual_conductance = median(double_sided_residual_conductance_micro_mol_s_cm2),
+        sd_residual_conductance = sd(double_sided_residual_conductance_micro_mol_s_cm2),
+        median_vpd = median(median_vpd),
         n_residual_conductance = n(),
-        se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%
+        se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
     
         # Plot
-        ggplot(data = ., aes(x =  set_temperature,
-                            y = mean_residual_conductance)) +
+        ggplot(data = ., aes(x = temperature_measured,
+                            y = median_residual_conductance)) +
 
         geom_point(size = 4) +
 
-        geom_errorbar(aes(ymin =  mean_residual_conductance - se_residual_conductance,
-                         ymax  =  mean_residual_conductance + se_residual_conductance),
+        geom_errorbar(aes(ymin =  median_residual_conductance - se_residual_conductance,
+                         ymax  =  median_residual_conductance + se_residual_conductance),
                          width = 1.5,
                          position = position_dodge(0.05)) +
-        theme_bw()
+
+        geom_point(aes(y = median_vpd, x = temperature_measured), 
+                        color = "#008b28", stroke = 2, shape = 8, size = 4)  +
+       
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 5),
+                          sec.axis = sec_axis(~ ., name = "VPD")) +
+        
+        scale_x_continuous(breaks = scales::pretty_breaks(n = 7))+
+        theme_bw() 
 ```
 
 # 4. Export data
