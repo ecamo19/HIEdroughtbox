@@ -104,7 +104,7 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 #' areas.
 #'
 #' This dataframe must contain the following columns:
-#'  areas_cm2
+#'  areas_m2
 #'  strain_number
 #'  set_temperature
 #'  tree_id
@@ -157,7 +157,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
         "date_time") %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
+    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_m2",
                                                                             "string_number",
                                                                             #"set_temperature",
                                                                             "tree_id") %in% base::colnames(leaf_and_branch_area_data))
@@ -175,11 +175,11 @@ calculate_transpiration_rates <- function(droughtbox_data,
                      by = c("string_number", "temperature_measured")) %>%
 
         # Calculate transpiration for single and double sided areas
-        dplyr::mutate(transpiration_single_grams_per_sec_cm2 =
-                          -(.$slope_grams_per_second/(.$areas_cm2)),
+        dplyr::mutate(transpiration_single_grams_per_sec_m2 =
+                          -(.$slope_grams_per_second/(.$areas_m2)),
 
-                      transpiration_double_grams_per_sec_cm2 =
-                          -(.$slope_grams_per_second/(.$double_sided_areas_cm2))
+                      transpiration_double_grams_per_sec_m2 =
+                          -(.$slope_grams_per_second/(.$double_sided_areas_m2))
                       ) %>%
 
         # Remove unused columns if present
@@ -222,7 +222,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 #' areas.
 #'
 #' This dataframe must contain the following columns:
-#'  areas_cm2
+#'  areas_m2
 #'  strain_number
 #'  set_temperature
 #'  tree_id
@@ -230,7 +230,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 #' @importFrom magrittr %>%
 #'
 #' @return A dataframe with the species_name, tree_id, strain_number,
-#' set_temperature, transpiration_grams_per_sec_cm2 and
+#' set_temperature, transpiration_grams_per_sec_m2 and
 #' median_vpd residual_conductance as columns.
 #'
 #' @examples
@@ -282,10 +282,10 @@ calculate_residual_conductance <- function(droughtbox_data,
                                                               ) %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_cm2",
+    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_m2",
                                                                             "string_number",
                                                                             "tree_id"
-                                                                            #"surface_branch_area_cm2",
+                                                                            #"surface_branch_area_m2",
                                                                             #"set_temperature",
                                                                             ) %in% base::colnames(leaf_and_branch_area_data))
 
@@ -344,12 +344,12 @@ calculate_residual_conductance <- function(droughtbox_data,
             {print("Residual conductance units: grams * s-1 * cm-2"); .} %>%
 
             # Residual conductance in grams * s-1 * cm-2 and
-            dplyr::mutate(single_sided_residual_conductance_grams_s_cm2 = (transpiration_single_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant,
-                          single_sided_residual_conductance_micro_mol_s_cm2 = (single_sided_residual_conductance_grams_s_cm2/18.02)*1000000
+            dplyr::mutate(single_sided_residual_conductance_grams_s_m2 = (transpiration_single_grams_per_sec_m2 / median_vpd)*atmospheric_pressure_constant,
+                          single_sided_residual_conductance_micro_mol_s_m2 = (single_sided_residual_conductance_grams_s_m2/18.02)*1000000
                           ) %>%
 
-            dplyr::mutate(double_sided_residual_conductance_grams_s_cm2 = (transpiration_double_grams_per_sec_cm2 / median_vpd)*atmospheric_pressure_constant,
-                          double_sided_residual_conductance_micro_mol_s_cm2 = (double_sided_residual_conductance_grams_s_cm2 / 18.02)*1000000
+            dplyr::mutate(double_sided_residual_conductance_grams_s_m2 = (transpiration_double_grams_per_sec_m2 / median_vpd)*atmospheric_pressure_constant,
+                          double_sided_residual_conductance_micro_mol_s_m2 = (double_sided_residual_conductance_grams_s_m2 / 18.02)*1000000
                       ) %>%
 
 
