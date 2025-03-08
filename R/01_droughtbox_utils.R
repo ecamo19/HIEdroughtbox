@@ -1102,6 +1102,10 @@ reshape_droughtbox_data <- function(droughtbox_data){
              dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
              TRUE ~ tc_avg_deg_c_avg)) %>%
 
+        # Join temperature_measured with tare_count_smp
+        tidyr::unite("tare_count_smp", temperature_measured, tare_count_smp,
+                     sep = "_", remove = FALSE) %>%
+
         # Step done for transforming time to seconds
         dplyr::group_by(string_number, temperature_measured) %>%
 
