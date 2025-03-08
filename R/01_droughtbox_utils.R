@@ -1059,6 +1059,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
         # Select only the necessary variables calculating the rate of change
         dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg","date_time",
                                       "rh_avg_percent_avg","vpd_avg_kpa_avg",
+                                      "tare_count_smp",
                                       "strain_avg_1_microstrain_avg",
                                       "strain_avg_2_microstrain_avg",
                                       "strain_avg_3_microstrain_avg",
@@ -1069,7 +1070,8 @@ reshape_droughtbox_data <- function(droughtbox_data){
                                       "strain_avg_8_microstrain_avg"))) %>%
 
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg, date_time, vpd_avg_kpa_avg,rh_avg_percent_avg),
+        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg, date_time, vpd_avg_kpa_avg,
+                               rh_avg_percent_avg, tare_count_smp),
 
                             # Create new columns
                             names_to = "strings",
