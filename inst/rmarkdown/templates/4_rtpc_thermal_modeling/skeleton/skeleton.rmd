@@ -1,0 +1,845 @@
+---
+title: '[spcode]: Residual conductance TPC modeling'
+author: 'ecamo19'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r, setup_wd, include=FALSE}
+# Set knit directory
+setwd(here::here())
+knitr::opts_knit$set(root.dir = setwd(here::here()))
+getwd()
+```
+
+```{r setup, include = FALSE}
+options(scipen = 999)
+
+# Save figures in specific place
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = FALSE,
+                      cache.comments = TRUE,
+                      comment = "",
+                      # Save figures as pdf ?
+                      #dev = c( "png", "pdf"),
+                  
+                      # Include code?
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path where figures are going to be store pdf single 
+                      # figures
+                      Edit path in line 44 and comment out this line   
+                      fig.path       = paste0("./figures_temp_modeling_[spcode]", "/"),
+                      fig.width      = 11,
+                      fig.height     = 7,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+
+```{r cleanup-docs, cache = FALSE,echo = FALSE}
+# save a html copy file in a specific place
+# doc.files <- c(list.files(pattern = "pdf"),
+#                list.files(pattern = "html"),
+#                list.files(pattern = "docx"))
+# 
+# for (file in doc.files) {   
+#     file.rename(file, file.path("../../[insert_folder_name]/", file))
+# }
+```
+
+```{r libaries, message = FALSE, warning = FALSE, cache = FALSE}
+library(HIEdroughtbox)
+library(ggplot2)
+
+# For data manipulation
+library(dplyr)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(here)
+library(broom)
+
+
+# For facets_2
+library(ggh4x)
+
+# For modeling temperature
+library(nls.multstart)
+library(rTPC)
+library(ggrepel)
+```
+
+```{r echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
+
+
+```
+
+```{r}
+# write function to label ggplot2 panels
+label_facets_num <- function(string){
+  len <- length(string)
+  string = paste('(', 1:len, ') ', string, sep = '')
+  return(string)
+}
+```
+
+# 1. Load data
+
+```{r}
+load("./[spcode]_processed_data/[spcode]_residual_conductance.RData")
+ls()
+```
+
+# Thermal Performance Curve parameters definitions
+
++ rmax:
+
++ topt: Estimate optimum temperature of a thermal performance curve
+
++ ctmin:
+
++ ctmax:  Critical thermal maximum is calculated by predicting over a 
+          temperature range 50 ºC beyond the maximum value in the dataset. The 
+          predicted rate value closest to 0 is then extracted. When this is 
+          impossible due to the curve formula (i.e the Sharpe-Schoolfield model), 
+          the temperature where the rate is 5 percent of the maximum rate is 
+          estimated. Predictions are done every 0.001 ºC so the estimate of the 
+          critical thermal maximum should be accurate up to 0.001 ºC
+          
+          
++ e:
+
++ eh:
+
++ Q10: The Q10 temperature coefficient is a measure of temperature sensitivity 
+       based on the chemical reactions. (Source Wiki)
+       
++ thermal_safety_margin: Measure used to understand the thermal sensitivity of 
+                          organisms relative to environmental temperatures. They 
+                          are generally estimated as the temperature differential 
+                          between the highest temperature an organism can tolerate 
+                          (critical thermal maximum, CT_max) and the mean or 
+                          maximum environmental temperature it experiences.
+
+
++ thermal_tolerance:
+
+
++ breadth:  Thermal performance breadth is calculated as the range of 
+            temperatures over which a curve's rate is at least 0.8 of peak. This 
+            defaults to a proportion of 0.8 but can be changed using the level 
+            argument.
+
++ skewess:                          
+                          
+# 1. Model thermal response of Residual conductance
+
+## Get single string 
+
+```{r eval=FALSE}
+[spcode]_string_[#]_data <- 
+    [spcode]_residual_conductance %>% 
+    ungroup() %>% 
+  
+    filter(string_number == "string_#")  %>%
+  
+    select(temperature_measured, 
+           double_sided_residual_conductance_micro_mol_s_m2) %>% 
+  
+    rename(rate = "double_sided_residual_conductance_micro_mol_s_m2",
+           temp = "temperature_measured")  
+```
+
+### Plot String 1
+
+```{r, raw_data_string_1, eval=FALSE}
+ggplot(data = [spcode]_string_[#]_data, aes(x = temp, y = rate)) +
+    geom_point() +
+    theme_bw()
+```
+
+### Fit models for string 1
+
+```{r, model_fitting_string_1, eval=FALSE, cache=TRUE, echo=FALSE}
+models_fits_string_# <- 
+    nest([spcode]_string_[#]_data, data = c(temp, rate)) %>%
+    mutate(
+      
+      # Model 1 
+      beta = map(data, ~nls_multstart(rate~beta_2012(temp = temp, a, b, c, d, e),
+                                      data = .x,
+                                      iter = c(6,6,6,6,6),
+                                      start_lower = get_start_vals(.x$temp, 
+                                                                   .x$rate,
+                                                                   model_name = 'beta_2012') - 1,
+                                      
+                                      start_upper = get_start_vals(.x$temp,
+                                                                   .x$rate,
+                                                                   model_name = 'beta_2012') + 1
+                                      
+                                      lower = get_lower_lims(.x$temp,
+                                                             .x$rate,
+                                                             model_name = 'beta_2012'),
+                                      
+                                      upper = get_upper_lims(.x$temp,
+                                                             .x$rate,
+                                                             model_name = 'beta_2012'),
+                                      lhstype = 'improved',
+                                      supp_errors = 'Y',
+                                      sconvergence_count = FALSE)),
+      
+      # Model 2
+      boatman = map(data, ~nls_multstart(rate~boatman_2017(temp = temp, rmax, tmin, tmax, a,b),
+                                         data = .x,
+                                         iter = c(4,4,4,4,4),
+                                         start_lower = get_start_vals(.x$temp,
+                                                                      .x$rate,
+                                                                      model_name = 'boatman_2017') - 1,
+                                         
+                                         start_upper = get_start_vals(.x$temp,
+                                                                      .x$rate,
+                                                                      model_name = 'boatman_2017') + 1,
+                                         
+                                         lower = get_lower_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'boatman_2017'),
+                                         
+                                         upper = get_upper_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'boatman_2017'),
+                                         lhstype = 'improved',
+                                         supp_errors = 'Y',
+                                         convergence_count = FALSE)),
+      
+      # Model 3
+      briere2 = map(data, ~nls_multstart(rate~briere2_1999(temp = temp, tmin, tmax, a,b),
+                            data = .x,
+                            iter = c(4,4,4,4),
+                            start_lower = get_start_vals(.x$temp, 
+                                                         .x$rate, 
+                                                         model_name = 'briere2_1999') - 1,
+                            
+                            start_upper = get_start_vals(.x$temp, 
+                                                         .x$rate, 
+                                                         model_name = 'briere2_1999') + 1,
+                            
+                            lower = get_lower_lims(.x$temp, 
+                                                   .x$rate, 
+                                                   model_name = 'briere2_1999'),
+                            
+                            upper = get_upper_lims(.x$temp, 
+                                                   .x$rate, 
+                                                   model_name = 'briere2_1999'),
+                            lhstype = 'improved',
+                            supp_errors = 'Y',
+                            convergence_count = FALSE)),
+      
+      # Model 4
+      flinn = map(data, ~nls_multstart(rate~flinn_1991(temp = temp, a, b, c),
+                                       data = .x,
+                                       iter = c(5,5,5),
+                                       
+                                       start_lower = get_start_vals(.x$temp, 
+                                                                    .x$rate, 
+                                                                    model_name = 'flinn_1991') - 1,
+                                       
+                                       start_upper = get_start_vals(.x$temp, 
+                                                                    .x$rate, 
+                                                                    model_name = 'flinn_1991') + 1,
+                                       
+                                       lower = get_lower_lims(.x$temp, 
+                                                              .x$rate, 
+                                                              model_name = 'flinn_1991'),
+                                       
+                                       upper = get_upper_lims(.x$temp, 
+                                                              .x$rate, 
+                                                              model_name = 'flinn_1991'),
+                                       lhstype = 'improved',
+                                       supp_errors = 'Y',
+                                       convergence_count = FALSE)),
+      
+      # Model 5
+      gaussian = map(data, ~nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
+                                          data = .x,
+                                          iter = c(4,4,4),
+                                          
+                                          start_lower = get_start_vals(.x$temp, 
+                                                                       .x$rate, 
+                                                                       model_name = 'gaussian_1987') - 1,
+                                          
+                                          start_upper = get_start_vals(.x$temp, 
+                                                                       .x$rate, 
+                                                                       model_name = 'gaussian_1987') + 1,
+                                          lower = get_lower_lims(.x$temp, 
+                                                                 .x$rate, 
+                                                                 model_name = 'gaussian_1987'),
+                                          
+                                          upper = get_upper_lims(.x$temp, 
+                                                                 .x$rate, 
+                                                                 model_name = 'gaussian_1987'),
+                                          lhstype = 'improved',
+                                          supp_errors = 'Y',
+                                          convergence_count = FALSE)),
+      
+      # Model 6
+      hinshelwood = map(data, ~nls_multstart(rate~hinshelwood_1947(temp = temp, a, e, b, eh),
+                                             data = .x,
+                                             iter = c(5,5,5,5),
+                                             
+                                             start_lower = get_start_vals(.x$temp, 
+                                                                          .x$rate, 
+                                                                          model_name = 'hinshelwood_1947')-1,
+                                             
+                                             start_upper = get_start_vals(.x$temp, 
+                                                                          .x$rate, 
+                                                                          model_name = 'hinshelwood_1947')+1,
+                                             
+                                             lower = get_lower_lims(.x$temp, 
+                                                                    .x$rate, 
+                                                                    model_name = 'hinshelwood_1947'),
+                                             
+                                             upper = get_upper_lims(.x$temp, 
+                                                                    .x$rate, 
+                                                                    model_name = 'hinshelwood_1947'),
+                                             supp_errors = 'Y',
+                                             lhstype = 'improved',
+                                             convergence_count = FALSE)),
+      
+      # Model 7
+      joehnk = map(data, ~nls_multstart(rate~joehnk_2008(temp = temp, rmax, topt, a, b, c),
+                                        data = .x,
+                                        iter = c(4,4,4,4, 4),
+                                        start_lower = get_start_vals(.x$temp, 
+                                                                     .x$rate, 
+                                                                     model_name = 'joehnk_2008') - 1,
+                                        
+                                        start_upper = get_start_vals(.x$temp, 
+                                                                     .x$rate, 
+                                                                     model_name = 'joehnk_2008') + 1,
+                                        
+                                        lower = get_lower_lims(.x$temp, 
+                                                               .x$rate, 
+                                                               model_name = 'joehnk_2008'),
+                                        
+                                        upper = get_upper_lims(.x$temp, 
+                                                               .x$rate, 
+                                                               model_name = 'joehnk_2008'),
+                                        supp_errors = 'Y',
+                                        lhstype = 'improved',
+                                        convergence_count = FALSE)),
+      
+      # Model 8
+      johnson_lewin = map(data, 
+                          ~suppressWarnings(nls_multstart(rate~ johnsonlewisn_1946(temp = temp,r0,e,eh, 
+                                                                                         topt),
+                                      data = .x, iter = c(4,4,4,4),
+                                                          
+                                      start_lower = get_start_vals(.x$temp,.x$rate,
+                                                                   model_name = 'johnsonlewin_1946') - 1,
+                                      start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                   model_name = 'johnsonlewin_1946') + 1,
+                                      
+                                      lower = get_lower_lims(.x$temp, 
+                                                             .x$rate, 
+                                                             model_name = 'johnsonlewin_1946'),
+                                      
+                                      upper = get_upper_lims(.x$temp, .x$rate, 
+                                                             model_name = 'johnsonlewin_1946'),
+                                      supp_errors = 'Y',
+                                      lhstype = 'improved',
+                                      convergence_count = FALSE))),
+      
+      # Model 9
+      lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
+                                         data = .x,
+                                         iter = c(4,4,4,4),
+                                         start_lower = get_start_vals(.x$temp, 
+                                                                      .x$rate, 
+                                                                      model_name = 'lactin2_1995') - 1,
+                                         
+                                         start_upper = get_start_vals(.x$temp, 
+                                                                      .x$rate, 
+                                                                      model_name = 'lactin2_1995') + 1,
+                                         lower = get_lower_lims(.x$temp, 
+                                                                .x$rate,
+                                                                model_name = 'lactin2_1995'),
+                                         
+                                         upper = get_upper_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'lactin2_1995'),
+                                         supp_errors = 'Y',
+                                         lhstype = 'improved',
+                                         convergence_count = FALSE)),
+      
+      # Model 10
+      lrf = map(data, ~nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
+                                     data = .x,
+                                     iter = c(4,4,4,4),
+                                     
+                                     start_lower = get_start_vals(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'lrf_1991') - 1,
+                                     
+                                     start_upper = get_start_vals(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'lrf_1991') + 1,
+                                     
+                                     lower = get_lower_lims(.x$temp, 
+                                                            .x$rate, 
+                                                            model_name = 'lrf_1991'),
+                                     
+                                     upper = get_upper_lims(.x$temp, 
+                                                            .x$rate, 
+                                                            model_name = 'lrf_1991'),
+                                     supp_errors = 'Y',
+                                     lhstype = 'improved',
+                                     convergence_count = FALSE)),
+      
+      # Model 11
+      pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
+                                       data = .x,
+                                       iter = c(4,4,4,4),
+                                       
+                                       start_lower = get_start_vals(.x$temp, 
+                                                                    .x$rate, 
+                                                                    model_name = 'pawar_2018') - 1,
+                                       
+                                       start_upper = get_start_vals(.x$temp, 
+                                                                    .x$rate, 
+                                                                    model_name = 'pawar_2018') + 1,
+                                       
+                                       lower = get_lower_lims(.x$temp, 
+                                                              .x$rate, 
+                                                              model_name = 'pawar_2018'),
+                                       
+                                       upper = get_upper_lims(.x$temp, 
+                                                              .x$rate, 
+                                                              model_name = 'pawar_2018'),
+                                       supp_errors = 'Y',
+                                       lhstype = 'improved',
+                                       sconvergence_count = FALSE)),
+      
+      # Model 12
+      quadratic = map(data, ~nls_multstart(rate~quadratic_2008(temp = temp, a, b, c),
+                                           data = .x,
+                                           iter = c(4,4,4),
+                                           
+                                           start_lower = get_start_vals(.x$temp, 
+                                                                        .x$rate, 
+                                                                        model_name = 'quadratic_2008') - 0.5,
+                                           
+                                           start_upper = get_start_vals(.x$temp, 
+                                                                        .x$rate, 
+                                                                        model_name = 'quadratic_2008') + 0.5,
+                                           
+                                           lower = get_lower_lims(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'quadratic_2008'),
+                                           
+                                           upper = get_upper_lims(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'quadratic_2008'),
+                                           supp_errors = 'Y',
+                                           lhstype = 'improved',
+                                           convergence_count = FALSE)),
+      
+      # Model 13
+      ratkowsky = map(data, ~nls_multstart(rate~ratkowsky_1983(temp = temp, tmin, tmax, a, b),
+                                           data = .x,
+                                           iter = c(4,4,4,4),
+                                           
+                                           start_lower = get_start_vals(.x$temp, 
+                                                                        .x$rate, 
+                                                                        model_name = 'ratkowsky_1983') - 1,
+                                           
+                                           start_upper = get_start_vals(.x$temp, 
+                                                                        .x$rate, 
+                                                                        model_name = 'ratkowsky_1983') + 1,
+                                           
+                                           lower = get_lower_lims(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'ratkowsky_1983'),
+                                           
+                                           upper = get_upper_lims(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'ratkowsky_1983'),
+                                           lhstype = 'improved',
+                                           supp_errors = 'Y',
+                                           convergence_count = FALSE)),
+      
+      # Model 14
+      rezende = map(data, ~nls_multstart(rate~rezende_2019(temp = temp, q10, a,b,c),
+                                         data = .x,
+                                         iter = c(4,4,4,4),
+                                         
+                                         start_lower = get_start_vals(.x$temp, 
+                                                                      .x$rate, 
+                                                                      model_name = 'rezende_2019') - 1,
+                                         
+                                         start_upper = get_start_vals(.x$temp, 
+                                                                      .x$rate, 
+                                                                      model_name = 'rezende_2019') + 1,
+                                         
+                                         lower = get_lower_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'rezende_2019'),
+                                         lhstype = 'improved',
+                                         upper = get_upper_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'rezende_2019'),
+                                         supp_errors = 'Y',
+                                         convergence_count = FALSE)),
+      
+      # Model 15
+      sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
+                                                                             e,el,tl,eh,th, 
+                                                                             tref = 25),
+                                                  data = .x,
+                                                  iter = c(4,4,4,4,4,4),
+                            
+                                                  start_lower = get_start_vals(.x$temp,.x$rate,
+                                                                    model_name = 'sharpeschoolfull_1981')-1,
+                                                  
+                                                  start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                    model_name = 'sharpeschoolfull_1981')+1,
+                                                  
+                                                  lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                      model_name = 'sharpeschoolfull_1981'),
+                                                  
+                                                  upper = get_upper_lims(.x$temp, 
+                                                                         .x$rate, 
+                                                                         model_name ='sharpeschoolfull_1981'),
+                                                  supp_errors = 'Y',
+                                                  lhstype = 'improved',
+                                                  convergence_count = FALSE)),
+      
+      # Model 16 
+      sharpeschoolhigh = map(data, 
+                             ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
+                                            data = .x,
+                                            iter = c(4,4,4,4),
+                                            
+                                        start_lower = get_start_vals(.x$temp,.x$rate, 
+                                                                     model_name = 'sharpeschoolhigh_1981')-1,
+                                        
+                                        start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoolhigh_1981')+1,
+                                        
+                                        lower = get_lower_lims(.x$temp,
+                                                               .x$rate,
+                                                               model_name = 'sharpeschoolhigh_1981'),
+                                        
+                                        upper = get_upper_lims(.x$temp, .x$rate, 
+                                                               model_name = 'sharpeschoolhigh_1981'),
+                                        supp_errors = 'Y',
+                                        lhstype = 'improved',
+                                        convergence_count = FALSE)),
+      
+      # Model 17
+      sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, r_tref,e,el,tl, 
+                                                                           tref = 25),
+                                                 data = .x,
+                                                 iter = c(4,4,4,4),
+                                                  
+                                          start_lower=get_start_vals(.x$temp,.x$rate,
+                                                                     model_name='sharpeschoollow_1981')-1,
+                            
+                                          start_upper=get_start_vals(.x$temp,.x$rate,
+                                                                     model_name = 'sharpeschoollow_1981')+1,
+                                          
+                                          lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                 model_name = 'sharpeschoollow_1981'),
+                                          
+                                          upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                 model_name = 'sharpeschoollow_1981'),
+                                          supp_errors = 'Y',
+                                          lhstype = 'improved',
+                                          sconvergence_count = FALSE)),
+      
+      # Model 20
+      spain = map(data, ~nls_multstart(rate~spain_1982(temp = temp, a,b,c,r0),
+                                       data = .x,
+                                       iter = c(4,4,4,4),
+                                       
+                                       start_lower = get_start_vals(.x$temp, .x$rate, 
+                                                                    model_name = 'spain_1982') - 1,
+                                       
+                                       start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                    model_name = 'spain_1982') + 1,
+                                       
+                                       lower = get_lower_lims(.x$temp, .x$rate, 
+                                                              model_name = 'spain_1982'),
+                                       
+                                       upper = get_upper_lims(.x$temp, .x$rate, 
+                                                              model_name = 'spain_1982'),
+                                       supp_errors = 'Y',
+                                       lhstype = 'improved',
+                                       convergence_count = FALSE)),
+      
+      # Model 21
+      thomas_1 = map(data, ~nls_multstart(rate~thomas_2012(temp = temp, a, b, c, tref),
+                                          data = .x,
+                                          iter = c(4,4,4,4),
+                                          
+                                          start_lower = get_start_vals(.x$temp, .x$rate, 
+                                                                       model_name = 'thomas_2012') - 1,
+                                          
+                                          start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                       model_name = 'thomas_2012') + 2,
+                                          
+                                          lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                 model_name = 'thomas_2012'),
+                                          
+                                          upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                 model_name = 'thomas_2012'),
+                                          supp_errors = 'Y',
+                                          slhstype = 'improved',
+                                          convergence_count = FALSE)),
+      
+      # Model 22
+      thomas_2 = map(data, ~nls_multstart(rate~thomas_2017(temp = temp, a,b,c,d,e),
+                                          data = .x,
+                                          iter = c(3,3,3,3,3),
+                                          
+                                          start_lower = get_start_vals(.x$temp, .x$rate, 
+                                                                       model_name = 'thomas_2017') - 1,
+                                          
+                                          start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                       model_name = 'thomas_2017') + 1,
+                                          
+                                          lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                 model_name = 'thomas_2017'),
+                                          
+                                          upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                 model_name = 'thomas_2017'),
+                                          supp_errors = 'Y',
+                                          lhstype = 'improved',
+                                          convergence_count = FALSE)),
+      
+      # Model 23
+      weibull = map(data, ~nls_multstart(rate~weibull_1995(temp = temp, a,topt,b,c),
+                                         data = .x,
+                                         iter = c(4,4,4,4),
+                                         start_lower = get_start_vals(.x$temp,
+                                                                      .x$rate, 
+                                                                      model_name = 'weibull_1995') - 1,
+                                         
+                                         start_upper = get_start_vals(.x$temp, 
+                                                                      .x$rate, 
+                                                                      model_name = 'weibull_1995') + 1,
+                                         
+                                         lower = get_lower_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'weibull_1995'),
+                                         
+                                         upper = get_upper_lims(.x$temp, 
+                                                                .x$rate, 
+                                                                model_name = 'weibull_1995'),
+                                         supp_errors = 'Y',
+                                         lhstype = 'improved',
+                                         convergence_count = FALSE)))
+print("Model fitting done")
+```
+
+### Stack models
+
+```{r eval=FALSE}
+model_stack_string_[#] <- 
+    select(models_fits_string_[#], -data) %>%
+    pivot_longer(., names_to = 'model_name', values_to = 'fit', beta:weibull)
+```
+
+### Get model parameters
+
+```{r, eval=FALSE}
+string_[#]_params <- 
+    model_stack_string_[#] %>%
+    mutate(., est = map(fit, tidy)) %>%
+    select(-fit) %>%
+    unnest(est)
+```
+
+### Get predictions 
+
+```{r eval=FALSE}
+newdata <- tibble(temp = seq(min([spcode]_string_[#]_data$temp), 
+                            max([spcode]_string_[#]_data$temp), 
+                            length.out = 100))
+```
+
+```{r, eval=FALSE}
+string_[#]_preds <- 
+    model_stack_string_[#] %>%
+    mutate(., preds = map(fit, augment, newdata = newdata)) %>%
+    select(-fit) %>%
+    unnest(preds)
+```
+
+```{r eval=FALSE}
+# take a random point from each model for labelling
+d_labs <- filter(string_[#]_preds, temp <= 40) %>%
+  group_by(., model_name) %>%
+  sample_n(., 1) %>%
+  ungroup()
+```
+
+#### Plot predictions
+
+```{r, plot_model_fits_all_models, eval=FALSE}
+ggplot(string_1_preds, aes(temp, rate)) +
+  geom_point(aes(temp, rate), [spcode]_string_[#]_data) +
+  
+  geom_line(aes(temp, .fitted), col = 'blue') +
+  
+  facet_wrap(~model_name, labeller = labeller(model_name = label_facets_num),
+             scales = 'free', ncol = 5) +
+  
+  theme_bw(base_size = 12) +
+  
+  theme(legend.position = 'none',
+        strip.text = element_text(hjust = 0),
+        strip.background = element_blank()) +
+  
+  labs(x = 'Temperature (ºC)',
+       y = 'Residual conductance',
+       title = 'Model fits') +
+  
+  geom_hline(aes(yintercept = 0), linetype = 2)
+```
+
+```{r, plot_join_model_fits, eval=FALSE}
+ggplot(string_[#]_preds, aes(temp, .fitted)) +
+  
+  geom_line(aes(col = model_name)) +
+  
+  geom_label_repel(aes(temp, .fitted, label = model_name, col = model_name),
+                   fill = 'white', nudge_y = 0.8, segment.size = 0.2,
+                   segment.colour = 'grey50', d_labs) +
+
+  geom_point(aes(temp, rate), [spcode]_string_[#]_data) +
+  
+  theme_bw(base_size = 12) +
+  
+  theme(legend.position = 'none') +
+  
+  labs(x = 'Temperature (ºC)',
+       y = 'Residual conductance') +
+
+  #ylim(c(-40000, 40000)) +
+  
+  geom_hline(aes(yintercept = 0), linetype = 2) +
+  
+  scale_color_brewer(type = 'qual', palette = 2)
+```
+
+### Get AIC values
+
+```{r eval=FALSE}
+string_[#]_ic_values <- 
+    model_stack_string_1 %>%
+    mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
+    select(-fit) %>%
+    unnest(info) %>%
+    select(model_name, sigma, AIC, AICc, BIC, df.residual) %>%  
+    mutate(., weight = MuMIn::Weights(AICc)) %>% 
+    arrange(., desc(weight)) %>% 
+    add_column(string_number = "string_#")
+```
+
+### Model averaging
+
+For a model averaging approach, predictions and parameters from the models are 
+averaged. In ecology, this is usually done based on each model’s weighting. The 
+best supported model’s predictions are taken into account more than the least 
+supported. Often the number of models is reduced by setting a cut-off for the 
+difference in the information criterion metric being used. A common approach is 
+to only keep models within $\Delta2AIC$ of the best model.
+
+```{r, eval=FALSE}
+# model_average_string_1 <- 
+#     select(string_1_ic_values, model_name, weight) %>% 
+#     left_join(., string_1_preds) %>% 
+#     group_by(temp) %>%
+#     summarise(., .fitted = sum(.fitted*weight)) %>%
+#     ungroup() %>%
+#     mutate(model_name = 'model average')
+```
+
+```{r, eval=FALSE}
+# d_labs <- filter(model_average_string_1, temp < 30) %>% sample_n(., 1)
+```
+
+```{r, plot_model_average}
+# ggplot(string_1_preds, aes(temp, .fitted)) +
+#   geom_line(aes(col = model_name), alpha = 0.3) +
+#   geom_line(data = model_average_string_1, col = 'blue') + 
+# 
+#   geom_label_repel(aes(label = model_name), fill = 'white', nudge_y = 0.8, 
+#                       segment.size = 0.2, segment.colour = 'grey50',
+#                        data = d_labs, col = 'blue') +
+#   
+#   geom_point(aes(temp, rate),euc_tere_eucface_string_1) +
+#   theme_bw() +
+#   theme(legend.position = 'none') +
+#   geom_hline(aes(yintercept = 0), linetype = 2) +
+#   scale_color_brewer(type = 'qual', palette = 2)
+```
+
+#2. Calcualte thermal parameters
+
+```{r, eval=FALSE}
+thermal_parameters_string_[#] <- 
+  model_stack_string_[#] %>%
+    mutate(., params = map(fit, calc_params)) %>%
+    select(-fit) %>%
+    unnest(params) %>% 
+    add_column(string_number = "string_#")
+    #filter(model_name == "sharpeschoolfull")
+```
+
+```{r, eval=FALSE}
+# get averaged parameters based on model weights
+#thermal_parameters_string_1_model_average <- 
+#    select(d_ic, model_name, weight) %>% 
+#
+#    left_join(.,params) %>%
+#    summarise(., across(rmax:skewness, function(x){sum(x*.$weight)})) %>%  
+#    mutate(model_name = 'model average')
+```
+
+```{r, eval=FALSE}
+#bind_rows(select(params, model_name, rmax:skewness), ave_params) %>%
+#  mutate_if(is.numeric, round, 2)
+  
+```
+
+# 3. Export data
+
+```{r, export_aic_values}
+save(string_[#]_ic_values, 
+    file = "./[spcode]_processed_data/[spcode]_string_[#]_rtpc_aic_models_values.RData")
+```
+
+```{r,export_thermal_params}
+save(thermal_parameters_string_[#], 
+    file = "./[spcode]_processed_data/[spcode]_string_[#]_rtpc_param_values.RData")
+
+```
