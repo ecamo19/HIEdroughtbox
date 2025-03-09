@@ -110,6 +110,8 @@ ls()
 
 # Thermal Performance Curve parameters definitions
 
+![Thermal Performance Curve](https://www.researchgate.net/profile/Luis-Miguel-Gutierrez-Pesquera/publication/303825084/figure/fig16/AS:669082739290125@1536533164346/A-typical-thermal-performance-curve-in-ectotherms-CTmax-critical-thermal-maxima-CTmin.ppm)
+
 + rmax:
 
 + topt: Estimate optimum temperature of a thermal performance curve
