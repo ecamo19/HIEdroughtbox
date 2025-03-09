@@ -1,5 +1,5 @@
 ---
-title: '[spcode]: Residual conductance TPC modeling'
+title: '[spcode]: Residual conductance TPC model selection'
 author: 'ecamo19'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -37,7 +37,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # Path where figures are going to be store pdf single 
                       # figures
                       Edit path in line 44 and comment out this line   
-                      fig.path       = paste0("./figures_temp_modeling_[spcode]", "/"),
+                      fig.path       = paste0("./figures_tpc_model_selection_[spcode]", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -66,7 +66,7 @@ library(stringr)
 library(tidyr)
 library(here)
 library(broom)
-
+library(tibble)
 
 # For facets_2
 library(ggh4x)
@@ -171,7 +171,7 @@ ls()
 
 ### Plot String 1
 
-```{r, raw_data_string_1, eval=FALSE}
+```{r, raw_data_string, eval=FALSE}
 ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
     geom_point() +
     theme_bw()
@@ -179,7 +179,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ### Fit models for string 1
 
-```{r, model_fitting_string_1, eval=FALSE, cache=TRUE, echo=FALSE}
+```{r, model_fitting_string, eval=FALSE, cache=TRUE, echo=FALSE}
 models_fits_string_ <- 
     nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
     mutate(
@@ -194,7 +194,7 @@ models_fits_string_ <-
                                       
                                       start_upper = get_start_vals(.x$temp,
                                                                    .x$rate,
-                                                                   model_name = 'beta_2012') + 1
+                                                                   model_name = 'beta_2012') + 1,
                                       
                                       lower = get_lower_lims(.x$temp,
                                                              .x$rate,
@@ -205,7 +205,7 @@ models_fits_string_ <-
                                                              model_name = 'beta_2012'),
                                       lhstype = 'improved',
                                       supp_errors = 'Y',
-                                      sconvergence_count = FALSE)),
+                                      convergence_count = FALSE)),
       
       # Model 2
       boatman = map(data, ~nls_multstart(rate~boatman_2017(temp = temp, rmax, tmin, tmax, a,b),
@@ -347,26 +347,17 @@ models_fits_string_ <-
                                         lhstype = 'improved',
                                         convergence_count = FALSE)),
       
-      # Model 8
-      johnson_lewin = map(data, 
-                          ~suppressWarnings(nls_multstart(rate~ johnsonlewisn_1946(temp = temp,r0,e,eh, 
-                                                                                         topt),
-                                      data = .x, iter = c(4,4,4,4),
-                                                          
-                                      start_lower = get_start_vals(.x$temp,.x$rate,
-                                                                   model_name = 'johnsonlewin_1946') - 1,
-                                      start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                   model_name = 'johnsonlewin_1946') + 1,
-                                      
-                                      lower = get_lower_lims(.x$temp, 
-                                                             .x$rate, 
-                                                             model_name = 'johnsonlewin_1946'),
-                                      
-                                      upper = get_upper_lims(.x$temp, .x$rate, 
-                                                             model_name = 'johnsonlewin_1946'),
-                                      supp_errors = 'Y',
-                                      lhstype = 'improved',
-                                      convergence_count = FALSE))),
+    # Model 8
+    johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
+                            data = .x,
+                            iter = c(4,4,4,4),
+                            start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'johnsonlewin_1946') - 1,
+                            start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'johnsonlewin_1946') + 1,
+                            lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+                            upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+                            supp_errors = 'Y',
+                            lhstype = 'improved',
+                            convergence_count = FALSE))),
       
       # Model 9
       lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
@@ -436,7 +427,7 @@ models_fits_string_ <-
                                                               model_name = 'pawar_2018'),
                                        supp_errors = 'Y',
                                        lhstype = 'improved',
-                                       sconvergence_count = FALSE)),
+                                       convergence_count = FALSE)),
       
       # Model 12
       quadratic = map(data, ~nls_multstart(rate~quadratic_2008(temp = temp, a, b, c),
@@ -573,7 +564,7 @@ models_fits_string_ <-
                                                                  model_name = 'sharpeschoollow_1981'),
                                           supp_errors = 'Y',
                                           lhstype = 'improved',
-                                          sconvergence_count = FALSE)),
+                                          convergence_count = FALSE)),
       
       # Model 20
       spain = map(data, ~nls_multstart(rate~spain_1982(temp = temp, a,b,c,r0),
@@ -612,7 +603,7 @@ models_fits_string_ <-
                                           upper = get_upper_lims(.x$temp, .x$rate, 
                                                                  model_name = 'thomas_2012'),
                                           supp_errors = 'Y',
-                                          slhstype = 'improved',
+                                          lhstype = 'improved',
                                           convergence_count = FALSE)),
       
       # Model 22
@@ -663,7 +654,7 @@ print("Model fitting done")
 ### Stack models
 
 ```{r eval=FALSE}
-model_stack_string_NUMBER <- 
+#model_stack_string_NUMBER <- 
     select(models_fits_string_NUMBER, -data) %>%
     pivot_longer(., names_to = 'model_name', values_to = 'fit', beta:weibull)
 ```
@@ -671,7 +662,7 @@ model_stack_string_NUMBER <-
 ### Get model parameters
 
 ```{r, eval=FALSE}
-string_NUMBER_params <- 
+#string_NUMBER_params <- 
     model_stack_string_NUMBER %>%
     mutate(., est = map(fit, tidy)) %>%
     select(-fit) %>%
@@ -681,13 +672,14 @@ string_NUMBER_params <-
 ### Get predictions 
 
 ```{r eval=FALSE}
-newdata <- tibble(temp = seq(min([spcode]_string_NUMBER_data$temp), 
-                            max([spcode]_string_NUMBER_data$temp), 
-                            length.out = 100))
+#newdata <- 
+  tibble(temp = seq(min([spcode]_string_NUMBER_data$temp),
+                    max([spcode]_string_NUMBER_data$temp),
+                    length.out = 100))
 ```
 
 ```{r, eval=FALSE}
-string_NUMBER_preds <- 
+#string_NUMBER_preds <- 
     model_stack_string_NUMBER %>%
     mutate(., preds = map(fit, augment, newdata = newdata)) %>%
     select(-fit) %>%
@@ -705,7 +697,7 @@ d_labs <- filter(string_NUMBER_preds, temp <= 40) %>%
 #### Plot predictions
 
 ```{r, plot_model_fits_all_models, eval=FALSE}
-ggplot(string_1_preds, aes(temp, rate)) +
+ggplot(string_NUMBER_preds, aes(temp, rate)) +
   geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
   
   geom_line(aes(temp, .fitted), col = 'blue') +
@@ -727,42 +719,44 @@ ggplot(string_1_preds, aes(temp, rate)) +
 ```
 
 ```{r, plot_join_model_fits, eval=FALSE}
-ggplot(string_NUMBER_preds, aes(temp, .fitted)) +
-  
-  geom_line(aes(col = model_name)) +
-  
-  geom_label_repel(aes(temp, .fitted, label = model_name, col = model_name),
-                   fill = 'white', nudge_y = 0.8, segment.size = 0.2,
-                   segment.colour = 'grey50', d_labs) +
-
-  geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
-  
-  theme_bw(base_size = 12) +
-  
-  theme(legend.position = 'none') +
-  
-  labs(x = 'Temperature (ºC)',
-       y = 'Residual conductance') +
-
-  #ylim(c(-40000, 40000)) +
-  
-  geom_hline(aes(yintercept = 0), linetype = 2) +
-  
-  scale_color_brewer(type = 'qual', palette = 2)
+# ggplot(string_NUMBER_preds, aes(temp, .fitted)) +
+#   
+#   geom_line(aes(col = model_name)) +
+#   
+#   geom_label_repel(aes(temp, .fitted, label = model_name, col = model_name),
+#                    fill = 'white', nudge_y = 0.8, segment.size = 0.2,
+#                    segment.colour = 'grey50', d_labs) +
+# 
+#   geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
+#   
+#   theme_bw(base_size = 12) +
+#   
+#   theme(legend.position = 'none') +
+#   
+#   labs(x = 'Temperature (ºC)',
+#        y = 'Residual conductance') +
+# 
+#   ylim(c(-40000, 40000)) +
+#   
+#   geom_hline(aes(yintercept = 0), linetype = 2) +
+#   
+#   scale_color_brewer(type = 'qual', palette = 2)
 ```
 
 ### Get AIC values
 
 ```{r eval=FALSE}
-string_NUMBER_ic_values <- 
-    model_stack_string_1 %>%
-    mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
-    select(-fit) %>%
-    unnest(info) %>%
-    select(model_name, sigma, AIC, AICc, BIC, df.residual) %>%  
-    mutate(., weight = MuMIn::Weights(AICc)) %>% 
-    arrange(., desc(weight)) %>% 
-    add_column(string_number = "string_#")
+#string_NUMBER_ic_values <- 
+    model_stack_string_NUMBER %>%
+        mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
+        select(-fit) %>%
+        unnest(info) %>%
+        select(model_name, sigma, AIC, AICc, BIC, df.residual) %>%  
+        mutate(., weight = MuMIn::Weights(AICc)) %>% 
+        arrange(., desc(weight)) %>% 
+        add_column(string_number = "string_NUMBER")
+
+knitr::kable(string_NUMBER_ic_values)
 ```
 
 ### Model averaging
@@ -804,17 +798,6 @@ to only keep models within $\Delta2AIC$ of the best model.
 #   scale_color_brewer(type = 'qual', palette = 2)
 ```
 
-#2. Calcualte thermal parameters
-
-```{r, eval=FALSE}
-thermal_parameters_string_NUMBER <- 
-  model_stack_string_NUMBER %>%
-    mutate(., params = map(fit, calc_params)) %>%
-    select(-fit) %>%
-    unnest(params) %>% 
-    add_column(string_number = "string_#")
-    #filter(model_name == "sharpeschoolfull")
-```
 
 ```{r, eval=FALSE}
 # get averaged parameters based on model weights
@@ -834,13 +817,9 @@ thermal_parameters_string_NUMBER <-
 
 # 3. Export data
 
-```{r, export_aic_values}
+```{r, export_aic_values, eval=FALSE}
 save(string_NUMBER_ic_values, 
     file = "./[spcode]_processed_data/[spcode]_string_NUMBER_rtpc_aic_models_values.RData")
 ```
 
-```{r,export_thermal_params}
-save(thermal_parameters_string_NUMBER, 
-    file = "./[spcode]_processed_data/[spcode]_string_NUMBER_rtpc_param_values.RData")
 
-```
