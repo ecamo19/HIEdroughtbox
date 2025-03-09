@@ -44,7 +44,6 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       warning        = FALSE)
 ```
 
-
 ```{r cleanup-docs, cache = FALSE,echo = FALSE}
 # save a html copy file in a specific place
 # doc.files <- c(list.files(pattern = "pdf"),
@@ -78,7 +77,7 @@ library(rTPC)
 library(ggrepel)
 ```
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 string_colors <- c(string_1 = "#eec000",
                    string_2 = "#cf544c",
                    string_3 = "#0175c3",
@@ -92,7 +91,7 @@ string_colors <- c(string_1 = "#eec000",
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 # write function to label ggplot2 panels
 label_facets_num <- function(string){
   len <- length(string)
