@@ -153,10 +153,10 @@ ls()
                           
 # 1. Model thermal response of Residual conductance
 
-## Get single string 
+## Select string   
 
 ```{r eval=FALSE}
-[spcode]_string_NUMBER_data <- 
+#[spcode]_string_NUMBER_data <- 
     [spcode]_residual_conductance %>% 
     ungroup() %>% 
   
@@ -169,7 +169,7 @@ ls()
            temp = "temperature_measured")  
 ```
 
-### Plot String 1
+### Plot string selected 
 
 ```{r, raw_data_string, eval=FALSE}
 ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
@@ -177,7 +177,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
     theme_bw()
 ```
 
-### Fit models for string 1
+### Fit models for the string selected 
 
 ```{r, model_fitting_string, eval=FALSE, cache=TRUE, echo=FALSE}
 models_fits_string_ <- 
@@ -718,7 +718,7 @@ ggplot(string_NUMBER_preds, aes(temp, rate)) +
   geom_hline(aes(yintercept = 0), linetype = 2)
 ```
 
-```{r, plot_join_model_fits, eval=FALSE}
+```{r, plot_join_model_fits, eval=FALSE, echo=FALSE}
 # ggplot(string_NUMBER_preds, aes(temp, .fitted)) +
 #   
 #   geom_line(aes(col = model_name)) +
@@ -768,7 +768,7 @@ supported. Often the number of models is reduced by setting a cut-off for the
 difference in the information criterion metric being used. A common approach is 
 to only keep models within $\Delta2AIC$ of the best model.
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # model_average_string_1 <- 
 #     select(string_1_ic_values, model_name, weight) %>% 
 #     left_join(., string_1_preds) %>% 
@@ -778,11 +778,11 @@ to only keep models within $\Delta2AIC$ of the best model.
 #     mutate(model_name = 'model average')
 ```
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # d_labs <- filter(model_average_string_1, temp < 30) %>% sample_n(., 1)
 ```
 
-```{r, plot_model_average}
+```{r, plot_model_average, echo=FALSE}
 # ggplot(string_1_preds, aes(temp, .fitted)) +
 #   geom_line(aes(col = model_name), alpha = 0.3) +
 #   geom_line(data = model_average_string_1, col = 'blue') + 
@@ -799,7 +799,7 @@ to only keep models within $\Delta2AIC$ of the best model.
 ```
 
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 # get averaged parameters based on model weights
 #thermal_parameters_string_1_model_average <- 
 #    select(d_ic, model_name, weight) %>% 
@@ -809,13 +809,12 @@ to only keep models within $\Delta2AIC$ of the best model.
 #    mutate(model_name = 'model average')
 ```
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 #bind_rows(select(params, model_name, rmax:skewness), ave_params) %>%
 #  mutate_if(is.numeric, round, 2)
-  
 ```
 
-# 3. Export data
+# 2. Export data
 
 ```{r, export_aic_values, eval=FALSE}
 save(string_NUMBER_ic_values, 
