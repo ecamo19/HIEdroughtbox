@@ -156,7 +156,7 @@ ls()
 ## Get single string 
 
 ```{r eval=FALSE}
-[spcode]_string_[#]_data <- 
+[spcode]_string_NUMBER_data <- 
     [spcode]_residual_conductance %>% 
     ungroup() %>% 
   
@@ -172,7 +172,7 @@ ls()
 ### Plot String 1
 
 ```{r, raw_data_string_1, eval=FALSE}
-ggplot(data = [spcode]_string_[#]_data, aes(x = temp, y = rate)) +
+ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
     geom_point() +
     theme_bw()
 ```
@@ -180,8 +180,8 @@ ggplot(data = [spcode]_string_[#]_data, aes(x = temp, y = rate)) +
 ### Fit models for string 1
 
 ```{r, model_fitting_string_1, eval=FALSE, cache=TRUE, echo=FALSE}
-models_fits_string_# <- 
-    nest([spcode]_string_[#]_data, data = c(temp, rate)) %>%
+models_fits_string_ <- 
+    nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
     mutate(
       
       # Model 1 
@@ -663,16 +663,16 @@ print("Model fitting done")
 ### Stack models
 
 ```{r eval=FALSE}
-model_stack_string_[#] <- 
-    select(models_fits_string_[#], -data) %>%
+model_stack_string_NUMBER <- 
+    select(models_fits_string_NUMBER, -data) %>%
     pivot_longer(., names_to = 'model_name', values_to = 'fit', beta:weibull)
 ```
 
 ### Get model parameters
 
 ```{r, eval=FALSE}
-string_[#]_params <- 
-    model_stack_string_[#] %>%
+string_NUMBER_params <- 
+    model_stack_string_NUMBER %>%
     mutate(., est = map(fit, tidy)) %>%
     select(-fit) %>%
     unnest(est)
@@ -681,14 +681,14 @@ string_[#]_params <-
 ### Get predictions 
 
 ```{r eval=FALSE}
-newdata <- tibble(temp = seq(min([spcode]_string_[#]_data$temp), 
-                            max([spcode]_string_[#]_data$temp), 
+newdata <- tibble(temp = seq(min([spcode]_string_NUMBER_data$temp), 
+                            max([spcode]_string_NUMBER_data$temp), 
                             length.out = 100))
 ```
 
 ```{r, eval=FALSE}
-string_[#]_preds <- 
-    model_stack_string_[#] %>%
+string_NUMBER_preds <- 
+    model_stack_string_NUMBER %>%
     mutate(., preds = map(fit, augment, newdata = newdata)) %>%
     select(-fit) %>%
     unnest(preds)
@@ -696,7 +696,7 @@ string_[#]_preds <-
 
 ```{r eval=FALSE}
 # take a random point from each model for labelling
-d_labs <- filter(string_[#]_preds, temp <= 40) %>%
+d_labs <- filter(string_NUMBER_preds, temp <= 40) %>%
   group_by(., model_name) %>%
   sample_n(., 1) %>%
   ungroup()
@@ -706,7 +706,7 @@ d_labs <- filter(string_[#]_preds, temp <= 40) %>%
 
 ```{r, plot_model_fits_all_models, eval=FALSE}
 ggplot(string_1_preds, aes(temp, rate)) +
-  geom_point(aes(temp, rate), [spcode]_string_[#]_data) +
+  geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
   
   geom_line(aes(temp, .fitted), col = 'blue') +
   
@@ -727,7 +727,7 @@ ggplot(string_1_preds, aes(temp, rate)) +
 ```
 
 ```{r, plot_join_model_fits, eval=FALSE}
-ggplot(string_[#]_preds, aes(temp, .fitted)) +
+ggplot(string_NUMBER_preds, aes(temp, .fitted)) +
   
   geom_line(aes(col = model_name)) +
   
@@ -735,7 +735,7 @@ ggplot(string_[#]_preds, aes(temp, .fitted)) +
                    fill = 'white', nudge_y = 0.8, segment.size = 0.2,
                    segment.colour = 'grey50', d_labs) +
 
-  geom_point(aes(temp, rate), [spcode]_string_[#]_data) +
+  geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
   
   theme_bw(base_size = 12) +
   
@@ -754,7 +754,7 @@ ggplot(string_[#]_preds, aes(temp, .fitted)) +
 ### Get AIC values
 
 ```{r eval=FALSE}
-string_[#]_ic_values <- 
+string_NUMBER_ic_values <- 
     model_stack_string_1 %>%
     mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
     select(-fit) %>%
@@ -807,8 +807,8 @@ to only keep models within $\Delta2AIC$ of the best model.
 #2. Calcualte thermal parameters
 
 ```{r, eval=FALSE}
-thermal_parameters_string_[#] <- 
-  model_stack_string_[#] %>%
+thermal_parameters_string_NUMBER <- 
+  model_stack_string_NUMBER %>%
     mutate(., params = map(fit, calc_params)) %>%
     select(-fit) %>%
     unnest(params) %>% 
@@ -835,12 +835,12 @@ thermal_parameters_string_[#] <-
 # 3. Export data
 
 ```{r, export_aic_values}
-save(string_[#]_ic_values, 
-    file = "./[spcode]_processed_data/[spcode]_string_[#]_rtpc_aic_models_values.RData")
+save(string_NUMBER_ic_values, 
+    file = "./[spcode]_processed_data/[spcode]_string_NUMBER_rtpc_aic_models_values.RData")
 ```
 
 ```{r,export_thermal_params}
-save(thermal_parameters_string_[#], 
-    file = "./[spcode]_processed_data/[spcode]_string_[#]_rtpc_param_values.RData")
+save(thermal_parameters_string_NUMBER, 
+    file = "./[spcode]_processed_data/[spcode]_string_NUMBER_rtpc_param_values.RData")
 
 ```
