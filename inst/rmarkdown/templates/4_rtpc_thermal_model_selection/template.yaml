@@ -1,4 +1,4 @@
-name: 4-Residual conductance thermal modeling workflow
+name: 4-Residual conductance TPC model selection workflow
 description: >
    This template was created for facilitating the data analysis of the data coming
    out of the Droughtbox
