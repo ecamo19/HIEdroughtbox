@@ -180,14 +180,14 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 ### Fit models for the string selected 
 
 ```{r, model_fitting_string, eval=FALSE, cache=TRUE, echo=FALSE}
-models_fits_string_ <- 
+#models_fits_string_NUMBER <- 
     nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
     mutate(
       
       # Model 1 
       beta = map(data, ~nls_multstart(rate~beta_2012(temp = temp, a, b, c, d, e),
                                       data = .x,
-                                      iter = c(6,6,6,6,6),
+                                      iter = c(6, 6, 6, 6, 6),
                                       start_lower = get_start_vals(.x$temp, 
                                                                    .x$rate,
                                                                    model_name = 'beta_2012') - 1,
@@ -210,7 +210,7 @@ models_fits_string_ <-
       # Model 2
       boatman = map(data, ~nls_multstart(rate~boatman_2017(temp = temp, rmax, tmin, tmax, a,b),
                                          data = .x,
-                                         iter = c(4,4,4,4,4),
+                                         iter = c(6, 6, 6, 6, 6),
                                          start_lower = get_start_vals(.x$temp,
                                                                       .x$rate,
                                                                       model_name = 'boatman_2017') - 1,
@@ -233,7 +233,7 @@ models_fits_string_ <-
       # Model 3
       briere2 = map(data, ~nls_multstart(rate~briere2_1999(temp = temp, tmin, tmax, a,b),
                             data = .x,
-                            iter = c(4,4,4,4),
+                            iter = c(6, 6, 6, 6),
                             start_lower = get_start_vals(.x$temp, 
                                                          .x$rate, 
                                                          model_name = 'briere2_1999') - 1,
@@ -256,7 +256,7 @@ models_fits_string_ <-
       # Model 4
       flinn = map(data, ~nls_multstart(rate~flinn_1991(temp = temp, a, b, c),
                                        data = .x,
-                                       iter = c(5,5,5),
+                                       iter = c(6, 6, 6),
                                        
                                        start_lower = get_start_vals(.x$temp, 
                                                                     .x$rate, 
@@ -280,7 +280,7 @@ models_fits_string_ <-
       # Model 5
       gaussian = map(data, ~nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
                                           data = .x,
-                                          iter = c(4,4,4),
+                                          iter = c(6, 6, 6),
                                           
                                           start_lower = get_start_vals(.x$temp, 
                                                                        .x$rate, 
@@ -303,7 +303,7 @@ models_fits_string_ <-
       # Model 6
       hinshelwood = map(data, ~nls_multstart(rate~hinshelwood_1947(temp = temp, a, e, b, eh),
                                              data = .x,
-                                             iter = c(5,5,5,5),
+                                             iter = c(6, 6, 6, 6),
                                              
                                              start_lower = get_start_vals(.x$temp, 
                                                                           .x$rate, 
@@ -327,7 +327,7 @@ models_fits_string_ <-
       # Model 7
       joehnk = map(data, ~nls_multstart(rate~joehnk_2008(temp = temp, rmax, topt, a, b, c),
                                         data = .x,
-                                        iter = c(4,4,4,4, 4),
+                                        iter = c(6, 6, 6, 6, 6),
                                         start_lower = get_start_vals(.x$temp, 
                                                                      .x$rate, 
                                                                      model_name = 'joehnk_2008') - 1,
@@ -350,10 +350,15 @@ models_fits_string_ <-
     # Model 8
     johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
                             data = .x,
-                            iter = c(4,4,4,4),
-                            start_lower = get_start_vals(.x$temp, .x$rate, model_name = 'johnsonlewin_1946') - 1,
-                            start_upper = get_start_vals(.x$temp, .x$rate, model_name = 'johnsonlewin_1946') + 1,
+                            
+                            iter = c(6, 6, 6, 6),
+                            
+                            start_lower = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')-1,
+                            
+                            start_upper = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')+1,
+                            
                             lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+                            
                             upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
                             supp_errors = 'Y',
                             lhstype = 'genetic',
@@ -362,7 +367,9 @@ models_fits_string_ <-
       # Model 9
       lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
                                          data = .x,
-                                         iter = c(4,4,4,4),
+                                         
+                                         iter = c(6, 6, 6, 6),
+                                         
                                          start_lower = get_start_vals(.x$temp, 
                                                                       .x$rate, 
                                                                       model_name = 'lactin2_1995') - 1,
@@ -370,6 +377,7 @@ models_fits_string_ <-
                                          start_upper = get_start_vals(.x$temp, 
                                                                       .x$rate, 
                                                                       model_name = 'lactin2_1995') + 1,
+                                         
                                          lower = get_lower_lims(.x$temp, 
                                                                 .x$rate,
                                                                 model_name = 'lactin2_1995'),
@@ -408,7 +416,8 @@ models_fits_string_ <-
       # Model 11
       pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
                                        data = .x,
-                                       iter = c(4,4,4,4),
+                                       
+                                       iter = c(6, 6, 6, 6),
                                        
                                        start_lower = get_start_vals(.x$temp, 
                                                                     .x$rate, 
@@ -432,7 +441,8 @@ models_fits_string_ <-
       # Model 12
       quadratic = map(data, ~nls_multstart(rate~quadratic_2008(temp = temp, a, b, c),
                                            data = .x,
-                                           iter = c(4,4,4),
+                                           
+                                           iter = c(6, 6, 6),
                                            
                                            start_lower = get_start_vals(.x$temp, 
                                                                         .x$rate, 
@@ -456,7 +466,8 @@ models_fits_string_ <-
       # Model 13
       ratkowsky = map(data, ~nls_multstart(rate~ratkowsky_1983(temp = temp, tmin, tmax, a, b),
                                            data = .x,
-                                           iter = c(4,4,4,4),
+                                           
+                                           iter = c(6, 6, 6, 6),
                                            
                                            start_lower = get_start_vals(.x$temp, 
                                                                         .x$rate, 
@@ -480,7 +491,8 @@ models_fits_string_ <-
       # Model 14
       rezende = map(data, ~nls_multstart(rate~rezende_2019(temp = temp, q10, a,b,c),
                                          data = .x,
-                                         iter = c(4,4,4,4),
+                                         
+                                         iter = c(6, 6, 6, 6),
                                          
                                          start_lower = get_start_vals(.x$temp, 
                                                                       .x$rate, 
@@ -505,7 +517,8 @@ models_fits_string_ <-
                                                                              e,el,tl,eh,th, 
                                                                              tref = 25),
                                                   data = .x,
-                                                  iter = c(4,4,4,4,4,4),
+                                                  
+                                                  iter = c(6, 6, 6, 6, 6, 6),
                             
                                                   start_lower = get_start_vals(.x$temp,.x$rate,
                                                                     model_name = 'sharpeschoolfull_1981')-1,
@@ -526,8 +539,9 @@ models_fits_string_ <-
       # Model 16 
       sharpeschoolhigh = map(data, 
                              ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
-                                            data = .x,
-                                            iter = c(4,4,4,4),
+                                        
+                                        data = .x,
+                                        iter = c(6, 6, 6, 6),
                                             
                                         start_lower = get_start_vals(.x$temp,.x$rate, 
                                                                      model_name = 'sharpeschoolhigh_1981')-1,
@@ -548,8 +562,9 @@ models_fits_string_ <-
       # Model 17
       sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, r_tref,e,el,tl, 
                                                                            tref = 25),
-                                                 data = .x,
-                                                 iter = c(4,4,4,4),
+                                          data = .x,
+                                          
+                                          iter = c(6, 6, 6, 6),
                                                   
                                           start_lower=get_start_vals(.x$temp,.x$rate,
                                                                      model_name='sharpeschoollow_1981')-1,
@@ -566,10 +581,12 @@ models_fits_string_ <-
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
       
-      # Model 20
+      # Model 18
       spain = map(data, ~nls_multstart(rate~spain_1982(temp = temp, a,b,c,r0),
+                                       
                                        data = .x,
-                                       iter = c(4,4,4,4),
+                                       
+                                       iter = c(6, 6, 6, 6),
                                        
                                        start_lower = get_start_vals(.x$temp, .x$rate, 
                                                                     model_name = 'spain_1982') - 1,
@@ -586,10 +603,12 @@ models_fits_string_ <-
                                        lhstype = 'genetic',
                                        convergence_count = FALSE)),
       
-      # Model 21
+      # Model 19
       thomas_1 = map(data, ~nls_multstart(rate~thomas_2012(temp = temp, a, b, c, tref),
+                                          
                                           data = .x,
-                                          iter = c(4,4,4,4),
+                                          
+                                          iter = c(6, 6, 6, 6),
                                           
                                           start_lower = get_start_vals(.x$temp, .x$rate, 
                                                                        model_name = 'thomas_2012') - 1,
@@ -606,10 +625,12 @@ models_fits_string_ <-
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
       
-      # Model 22
+      # Model 20
       thomas_2 = map(data, ~nls_multstart(rate~thomas_2017(temp = temp, a,b,c,d,e),
+                                          
                                           data = .x,
-                                          iter = c(3,3,3,3,3),
+                                          
+                                          iter = c(6, 6, 6, 6, 6),
                                           
                                           start_lower = get_start_vals(.x$temp, .x$rate, 
                                                                        model_name = 'thomas_2017') - 1,
@@ -626,10 +647,12 @@ models_fits_string_ <-
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
       
-      # Model 23
+      # Model 21
       weibull = map(data, ~nls_multstart(rate~weibull_1995(temp = temp, a,topt,b,c),
                                          data = .x,
-                                         iter = c(4,4,4,4),
+                                         
+                                         iter = c(6, 6, 6, 6),
+                                         
                                          start_lower = get_start_vals(.x$temp,
                                                                       .x$rate, 
                                                                       model_name = 'weibull_1995') - 1,
