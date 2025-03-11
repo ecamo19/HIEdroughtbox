@@ -203,7 +203,7 @@ models_fits_string_ <-
                                       upper = get_upper_lims(.x$temp,
                                                              .x$rate,
                                                              model_name = 'beta_2012'),
-                                      lhstype = 'improved',
+                                      lhstype = 'genetic',
                                       supp_errors = 'Y',
                                       convergence_count = FALSE)),
       
@@ -226,7 +226,7 @@ models_fits_string_ <-
                                          upper = get_upper_lims(.x$temp, 
                                                                 .x$rate, 
                                                                 model_name = 'boatman_2017'),
-                                         lhstype = 'improved',
+                                         lhstype = 'genetic',
                                          supp_errors = 'Y',
                                          convergence_count = FALSE)),
       
@@ -249,7 +249,7 @@ models_fits_string_ <-
                             upper = get_upper_lims(.x$temp, 
                                                    .x$rate, 
                                                    model_name = 'briere2_1999'),
-                            lhstype = 'improved',
+                            lhstype = 'genetic',
                             supp_errors = 'Y',
                             convergence_count = FALSE)),
       
@@ -273,7 +273,7 @@ models_fits_string_ <-
                                        upper = get_upper_lims(.x$temp, 
                                                               .x$rate, 
                                                               model_name = 'flinn_1991'),
-                                       lhstype = 'improved',
+                                       lhstype = 'genetic',
                                        supp_errors = 'Y',
                                        convergence_count = FALSE)),
       
@@ -296,7 +296,7 @@ models_fits_string_ <-
                                           upper = get_upper_lims(.x$temp, 
                                                                  .x$rate, 
                                                                  model_name = 'gaussian_1987'),
-                                          lhstype = 'improved',
+                                          lhstype = 'genetic',
                                           supp_errors = 'Y',
                                           convergence_count = FALSE)),
       
@@ -321,7 +321,7 @@ models_fits_string_ <-
                                                                     .x$rate, 
                                                                     model_name = 'hinshelwood_1947'),
                                              supp_errors = 'Y',
-                                             lhstype = 'improved',
+                                             lhstype = 'genetic',
                                              convergence_count = FALSE)),
       
       # Model 7
@@ -344,7 +344,7 @@ models_fits_string_ <-
                                                                .x$rate, 
                                                                model_name = 'joehnk_2008'),
                                         supp_errors = 'Y',
-                                        lhstype = 'improved',
+                                        lhstype = 'genetic',
                                         convergence_count = FALSE)),
       
     # Model 8
@@ -356,7 +356,7 @@ models_fits_string_ <-
                             lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
                             upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
                             supp_errors = 'Y',
-                            lhstype = 'improved',
+                            lhstype = 'genetic',
                             convergence_count = FALSE))),
       
       # Model 9
@@ -378,33 +378,33 @@ models_fits_string_ <-
                                                                 .x$rate, 
                                                                 model_name = 'lactin2_1995'),
                                          supp_errors = 'Y',
-                                         lhstype = 'improved',
+                                         lhstype = 'genetic',
                                          convergence_count = FALSE)),
       
       # Model 10
-      lrf = map(data, ~nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
-                                     data = .x,
-                                     iter = c(4,4,4,4),
-                                     
-                                     start_lower = get_start_vals(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'lrf_1991') - 1,
-                                     
-                                     start_upper = get_start_vals(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'lrf_1991') + 1,
-                                     
-                                     lower = get_lower_lims(.x$temp, 
-                                                            .x$rate, 
-                                                            model_name = 'lrf_1991'),
-                                     
-                                     upper = get_upper_lims(.x$temp, 
-                                                            .x$rate, 
-                                                            model_name = 'lrf_1991'),
-                                     supp_errors = 'Y',
-                                     lhstype = 'improved',
-                                     convergence_count = FALSE)),
-      
+      # lrf = map(data, ~nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
+      #                                data = .x,
+      #                                iter = c(4,4,4,4),
+      #                                
+      #                                start_lower = get_start_vals(.x$temp, 
+      #                                                             .x$rate, 
+      #                                                             model_name = 'lrf_1991') - 1,
+      #                                
+      #                                start_upper = get_start_vals(.x$temp, 
+      #                                                             .x$rate, 
+      #                                                             model_name = 'lrf_1991') + 1,
+      #                                
+      #                                lower = get_lower_lims(.x$temp, 
+      #                                                       .x$rate, 
+      #                                                       model_name = 'lrf_1991'),
+      #                                
+      #                                upper = get_upper_lims(.x$temp, 
+      #                                                       .x$rate, 
+      #                                                       model_name = 'lrf_1991'),
+      #                                supp_errors = 'Y',
+      #                                lhstype = 'genetic',
+      #                                convergence_count = FALSE)),
+      # 
       # Model 11
       pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
                                        data = .x,
@@ -426,7 +426,7 @@ models_fits_string_ <-
                                                               .x$rate, 
                                                               model_name = 'pawar_2018'),
                                        supp_errors = 'Y',
-                                       lhstype = 'improved',
+                                       lhstype = 'genetic',
                                        convergence_count = FALSE)),
       
       # Model 12
@@ -450,7 +450,7 @@ models_fits_string_ <-
                                                                   .x$rate, 
                                                                   model_name = 'quadratic_2008'),
                                            supp_errors = 'Y',
-                                           lhstype = 'improved',
+                                           lhstype = 'genetic',
                                            convergence_count = FALSE)),
       
       # Model 13
@@ -473,7 +473,7 @@ models_fits_string_ <-
                                            upper = get_upper_lims(.x$temp, 
                                                                   .x$rate, 
                                                                   model_name = 'ratkowsky_1983'),
-                                           lhstype = 'improved',
+                                           lhstype = 'genetic',
                                            supp_errors = 'Y',
                                            convergence_count = FALSE)),
       
@@ -493,7 +493,7 @@ models_fits_string_ <-
                                          lower = get_lower_lims(.x$temp, 
                                                                 .x$rate, 
                                                                 model_name = 'rezende_2019'),
-                                         lhstype = 'improved',
+                                         lhstype = 'genetic',
                                          upper = get_upper_lims(.x$temp, 
                                                                 .x$rate, 
                                                                 model_name = 'rezende_2019'),
@@ -520,7 +520,7 @@ models_fits_string_ <-
                                                                          .x$rate, 
                                                                          model_name ='sharpeschoolfull_1981'),
                                                   supp_errors = 'Y',
-                                                  lhstype = 'improved',
+                                                  lhstype = 'genetic',
                                                   convergence_count = FALSE)),
       
       # Model 16 
@@ -542,7 +542,7 @@ models_fits_string_ <-
                                         upper = get_upper_lims(.x$temp, .x$rate, 
                                                                model_name = 'sharpeschoolhigh_1981'),
                                         supp_errors = 'Y',
-                                        lhstype = 'improved',
+                                        lhstype = 'genetic',
                                         convergence_count = FALSE)),
       
       # Model 17
@@ -563,7 +563,7 @@ models_fits_string_ <-
                                           upper = get_upper_lims(.x$temp, .x$rate, 
                                                                  model_name = 'sharpeschoollow_1981'),
                                           supp_errors = 'Y',
-                                          lhstype = 'improved',
+                                          lhstype = 'genetic',
                                           convergence_count = FALSE)),
       
       # Model 20
@@ -583,7 +583,7 @@ models_fits_string_ <-
                                        upper = get_upper_lims(.x$temp, .x$rate, 
                                                               model_name = 'spain_1982'),
                                        supp_errors = 'Y',
-                                       lhstype = 'improved',
+                                       lhstype = 'genetic',
                                        convergence_count = FALSE)),
       
       # Model 21
@@ -603,7 +603,7 @@ models_fits_string_ <-
                                           upper = get_upper_lims(.x$temp, .x$rate, 
                                                                  model_name = 'thomas_2012'),
                                           supp_errors = 'Y',
-                                          lhstype = 'improved',
+                                          lhstype = 'genetic',
                                           convergence_count = FALSE)),
       
       # Model 22
@@ -623,7 +623,7 @@ models_fits_string_ <-
                                           upper = get_upper_lims(.x$temp, .x$rate, 
                                                                  model_name = 'thomas_2017'),
                                           supp_errors = 'Y',
-                                          lhstype = 'improved',
+                                          lhstype = 'genetic',
                                           convergence_count = FALSE)),
       
       # Model 23
@@ -646,7 +646,7 @@ models_fits_string_ <-
                                                                 .x$rate, 
                                                                 model_name = 'weibull_1995'),
                                          supp_errors = 'Y',
-                                         lhstype = 'improved',
+                                         lhstype = 'genetic',
                                          convergence_count = FALSE)))
 print("Model fitting done")
 ```
