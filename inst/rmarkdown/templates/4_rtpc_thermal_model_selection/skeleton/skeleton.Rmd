@@ -179,7 +179,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ```{r, model_fitting_string, eval=FALSE, cache=TRUE, echo=FALSE}
 #models_fits_string_NUMBER <- 
-    nest(euc_tere_eucface_string_4_data, data = c(temp, rate)) %>%
+    nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
     mutate(
       
       # Model 1 
@@ -706,9 +706,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                                                 model_name = 'weibull_1995'),
                                          supp_errors = 'Y',
                                          lhstype = 'genetic',
-                                         convergence_count = FALSE)))
-
-      print("21) Thomas 2 model done")
+                                         convergence_count = FALSE))
+    {print("21) Thomas 2 model done"); .})
 ```
 
 ### Stack models
