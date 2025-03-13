@@ -341,15 +341,15 @@ calculate_residual_conductance <- function(droughtbox_data,
                              by = dplyr::join_by(temperature_measured == temperature_measured)) %>%
 
             # Print message residual conductance units
-            {print("Residual conductance units: grams * s-1 * m-2 and micro mols * s-1 * m-2"); .} %>%
+            {print("Residual conductance units: grams * s-1 * m-2 and mmols * s-1 * m-2"); .} %>%
 
             # Residual conductance in grams * s-1 * m-2 and
             dplyr::mutate(single_sided_residual_conductance_grams_s_m2 = (transpiration_single_grams_per_sec_m2 / median_vpd)*atmospheric_pressure_constant,
-                          single_sided_residual_conductance_micro_mol_s_m2 = (single_sided_residual_conductance_grams_s_m2/18.02)*1000000
+                          single_sided_residual_conductance_mmol_s_m2 = (single_sided_residual_conductance_grams_s_m2/18.02)*1000000
                           ) %>%
 
             dplyr::mutate(double_sided_residual_conductance_grams_s_m2 = (transpiration_double_grams_per_sec_m2 / median_vpd)*atmospheric_pressure_constant,
-                          double_sided_residual_conductance_micro_mol_s_m2 = (double_sided_residual_conductance_grams_s_m2 / 18.02)*1000000
+                          double_sided_residual_conductance_mmol_s_m2 = (double_sided_residual_conductance_grams_s_m2 / 18.02)*1000000
                       ) %>%
 
 

@@ -163,9 +163,9 @@ ls()
     filter(string_number == "string_#")  %>%
   
     select(temperature_measured, 
-           double_sided_residual_conductance_micro_mol_s_m2) %>% 
+           double_sided_residual_conductance_mmol_s_m2) %>% 
   
-    rename(rate = "double_sided_residual_conductance_micro_mol_s_m2",
+    rename(rate = "double_sided_residual_conductance_mmol_s_m2",
            temp = "temperature_measured")  
 ```
 
