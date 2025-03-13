@@ -36,7 +36,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       
                       # Path where figures are going to be store pdf single 
                       # figures
-                      Edit path in line 44 and comment out this line   
+                      Edit path in the next line and comment out this line   
                       fig.path       = paste0("./figures_tpc_model_selection_[spcode]", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
@@ -87,8 +87,6 @@ string_colors <- c(string_1 = "#eec000",
                    string_6 =  "#008b28",
                    string_7 =  "#8600b6",
                    string_8 =  "#00a0ab")
-
-
 ```
 
 ```{r, echo=FALSE}
@@ -181,7 +179,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ```{r, model_fitting_string, eval=FALSE, cache=TRUE, echo=FALSE}
 #models_fits_string_NUMBER <- 
-    nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
+    nest(euc_tere_eucface_string_4_data, data = c(temp, rate)) %>%
     mutate(
       
       # Model 1 
@@ -207,6 +205,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                       supp_errors = 'Y',
                                       convergence_count = FALSE)),
       
+      {print("1) Beta model done"); .},
+
       # Model 2
       boatman = map(data, ~nls_multstart(rate~boatman_2017(temp = temp, rmax, tmin, tmax, a,b),
                                          data = .x,
@@ -230,6 +230,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                          supp_errors = 'Y',
                                          convergence_count = FALSE)),
       
+      {print("2) Boatman model done"); .},
+
       # Model 3
       briere2 = map(data, ~nls_multstart(rate~briere2_1999(temp = temp, tmin, tmax, a,b),
                             data = .x,
@@ -253,6 +255,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                             supp_errors = 'Y',
                             convergence_count = FALSE)),
       
+      {print("3) Briere model done"); .},
+
       # Model 4
       flinn = map(data, ~nls_multstart(rate~flinn_1991(temp = temp, a, b, c),
                                        data = .x,
@@ -277,6 +281,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                        supp_errors = 'Y',
                                        convergence_count = FALSE)),
       
+      {print("4) Flinn model done"); .},
+      
       # Model 5
       gaussian = map(data, ~nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
                                           data = .x,
@@ -300,6 +306,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                           supp_errors = 'Y',
                                           convergence_count = FALSE)),
       
+      {print("5) Gaussian model done"); .},
+
       # Model 6
       hinshelwood = map(data, ~nls_multstart(rate~hinshelwood_1947(temp = temp, a, e, b, eh),
                                              data = .x,
@@ -324,6 +332,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                              lhstype = 'genetic',
                                              convergence_count = FALSE)),
       
+      {print("6) Hinshelwood model done"); .},
+
       # Model 7
       joehnk = map(data, ~nls_multstart(rate~joehnk_2008(temp = temp, rmax, topt, a, b, c),
                                         data = .x,
@@ -346,7 +356,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                         supp_errors = 'Y',
                                         lhstype = 'genetic',
                                         convergence_count = FALSE)),
-      
+
+    {print("7) Joehnk model done"); .},
+
     # Model 8
     johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
                             data = .x,
@@ -363,7 +375,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                             supp_errors = 'Y',
                             lhstype = 'genetic',
                             convergence_count = FALSE))),
-      
+    
+      {print("8) Johnson/Lewin model done"); .},
+
       # Model 9
       lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
                                          data = .x,
@@ -388,7 +402,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                          supp_errors = 'Y',
                                          lhstype = 'genetic',
                                          convergence_count = FALSE)),
-      
+    
+      {print("9) Lactin model done"); .},  
+    
       # Model 10
       # lrf = map(data, ~nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
       #                                data = .x,
@@ -437,7 +453,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                        supp_errors = 'Y',
                                        lhstype = 'genetic',
                                        convergence_count = FALSE)),
-      
+    
+      {print("11) Pawar model done"); .},
+    
       # Model 12
       quadratic = map(data, ~nls_multstart(rate~quadratic_2008(temp = temp, a, b, c),
                                            data = .x,
@@ -463,6 +481,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                            lhstype = 'genetic',
                                            convergence_count = FALSE)),
       
+      {print("12) Quadratic model done"); .},
+
       # Model 13
       ratkowsky = map(data, ~nls_multstart(rate~ratkowsky_1983(temp = temp, tmin, tmax, a, b),
                                            data = .x,
@@ -487,7 +507,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                            lhstype = 'genetic',
                                            supp_errors = 'Y',
                                            convergence_count = FALSE)),
-      
+    
+      {print("13) Ratkowsky model done"); .},
+
       # Model 14
       rezende = map(data, ~nls_multstart(rate~rezende_2019(temp = temp, q10, a,b,c),
                                          data = .x,
@@ -512,6 +534,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                          supp_errors = 'Y',
                                          convergence_count = FALSE)),
       
+      {print("14) Rezende model done"); .},
+    
       # Model 15
       sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
                                                                              e,el,tl,eh,th, 
@@ -535,7 +559,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                                   supp_errors = 'Y',
                                                   lhstype = 'genetic',
                                                   convergence_count = FALSE)),
-      
+    
+      {print("15) Sharpeshoolfull model done"); .},
+
       # Model 16 
       sharpeschoolhigh = map(data, 
                              ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
@@ -558,7 +584,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                         supp_errors = 'Y',
                                         lhstype = 'genetic',
                                         convergence_count = FALSE)),
-      
+    
+      {print("16) Sharpeshoolhigh model done"); .},
+
       # Model 17
       sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, r_tref,e,el,tl, 
                                                                            tref = 25),
@@ -580,7 +608,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                           supp_errors = 'Y',
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
-      
+    
+      {print("17) Sharpeshoolhollow model done"); .},
+
       # Model 18
       spain = map(data, ~nls_multstart(rate~spain_1982(temp = temp, a,b,c,r0),
                                        
@@ -602,7 +632,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                        supp_errors = 'Y',
                                        lhstype = 'genetic',
                                        convergence_count = FALSE)),
-      
+    
+      {print("18) Spain model done"); .},  
+    
       # Model 19
       thomas_1 = map(data, ~nls_multstart(rate~thomas_2012(temp = temp, a, b, c, tref),
                                           
@@ -624,7 +656,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                           supp_errors = 'Y',
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
-      
+    
+      {print("19) Thomas 1 model done"); .},  
+    
       # Model 20
       thomas_2 = map(data, ~nls_multstart(rate~thomas_2017(temp = temp, a,b,c,d,e),
                                           
@@ -633,10 +667,10 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                           iter = c(6, 6, 6, 6, 6),
                                           
                                           start_lower = get_start_vals(.x$temp, .x$rate, 
-                                                                       model_name = 'thomas_2017') - 1,
+                                                                       model_name = 'thomas_2017')- 1,
                                           
                                           start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                       model_name = 'thomas_2017') + 1,
+                                                                       model_name = 'thomas_2017')+ 1,
                                           
                                           lower = get_lower_lims(.x$temp, .x$rate, 
                                                                  model_name = 'thomas_2017'),
@@ -646,7 +680,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                           supp_errors = 'Y',
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
-      
+    
+      {print("20) Thomas 2 model done"); .},  
+    
       # Model 21
       weibull = map(data, ~nls_multstart(rate~weibull_1995(temp = temp, a,topt,b,c),
                                          data = .x,
@@ -655,11 +691,11 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                          
                                          start_lower = get_start_vals(.x$temp,
                                                                       .x$rate, 
-                                                                      model_name = 'weibull_1995') - 1,
+                                                                      model_name = 'weibull_1995')- 1,
                                          
                                          start_upper = get_start_vals(.x$temp, 
                                                                       .x$rate, 
-                                                                      model_name = 'weibull_1995') + 1,
+                                                                      model_name = 'weibull_1995')+ 1,
                                          
                                          lower = get_lower_lims(.x$temp, 
                                                                 .x$rate, 
@@ -671,7 +707,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                          supp_errors = 'Y',
                                          lhstype = 'genetic',
                                          convergence_count = FALSE)))
-print("Model fitting done")
+
+      print("21) Thomas 2 model done")
 ```
 
 ### Stack models
