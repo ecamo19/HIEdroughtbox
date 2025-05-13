@@ -309,9 +309,8 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 
             # Print message indicating where the file will be saved
             {print(paste0("Empty CSV saved at: ",
-                          euc_saligna_apr_vpd_controlled_25c_reshaped
-                      # Print working directory where csv will be saved
-                      path_output_file)); .}
+                          # Print working directory where csv will be saved
+                          path_output_file)); .}
 
     # Save Empty dataframe
     utils::write.csv(empty_sheet, file = path_output_file)
