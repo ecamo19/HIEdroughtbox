@@ -1,5 +1,5 @@
 ---
-title: 'Filter, reshape and clean: Species Name'
+title: 'Species Name data cleaning'
 author: 'Your Name'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -97,7 +97,7 @@ Remember to remove the `eval=FALSE` from each chunk
 
 ## Plot raw droughtbox data
 
-```{r, plot_raw_data}
+```{r, plot_raw_data, cache = TRUE}
 map([sp_name]_raw_data, plot_strains_weights)
 ```
 
@@ -127,9 +127,12 @@ map([sp_name]_raw_data, plot_strains_weights)
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
   
-    # Remove Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-  
+    # Filter Zeros
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+
     # Step done to avoid breaking the time sequence
     arrange(date_time)
 ```
@@ -156,7 +159,12 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_25c_reshaped_cleaned  <- 
+  
   [sp_name]_vpd_controlled_25c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
         # Select Values measured at 25c
         #filter( temperature_measured <= 25)  %>% 
@@ -239,8 +247,11 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
                            to_end_time = "HH:MM:SS") %>%
   
     # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-    
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+
     # Step done to avoid breaking the time sequence
     arrange(date_time)
 ```
@@ -267,7 +278,12 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_30c_reshaped_cleaned  <- 
+  
     [sp_name]_vpd_controlled_30c_reshaped %>%   
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
         # Select Values measured at 30c
         #filter( temperature_measured <= 30c)  %>% 
@@ -349,7 +365,10 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
                            to_end_time = "HH:MM:SS") %>%
   
     # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%   
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
     
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
@@ -377,7 +396,12 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_35c_reshaped_cleaned  <- 
+  
     [sp_name]_vpd_controlled_35c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
         # Select Values measured at 35c
         #filter( temperature_measured <= 35)  %>% 
@@ -461,6 +485,10 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
   
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
@@ -488,7 +516,12 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_40c_reshaped_cleaned  <- 
+  
     [sp_name]_vpd_controlled_40c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
         # Select Values measured at 40c
         #filter( temperature_measured <= 40) %>%
@@ -572,7 +605,11 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
-  
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+    
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -599,7 +636,12 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_45c_reshaped_cleaned  <- 
+  
     [sp_name]_vpd_controlled_45c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
         # Select Values measured at 45c
         #filter( temperature_measured <= 45)  %>% 
@@ -684,6 +726,9 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>%   
   
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
@@ -711,7 +756,12 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_50c_reshaped_cleaned  <- 
-    [sp_name]_vpd_controlled_50c_reshaped  
+  
+    [sp_name]_vpd_controlled_50c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
         # Select Values measured at 50c
         #filter( temperature_measured <= 50)  %>%
@@ -793,7 +843,10 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
     # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%   
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
   
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
@@ -821,38 +874,43 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 
 ```{r, eval=FALSE}
 [sp_name]_vpd_controlled_55c_reshaped_cleaned  <- 
+  
     [sp_name]_vpd_controlled_55c_reshaped %>%  
-  
-      # Select Values measured at 55c
-      #filter(temperature_measured >= 55)  %>% 
       
-      # Filter strings if required
-      
-      #filter(!c(string_number == "string_5")) %>% 
-          
-      #filter(!c(string_number == "string_6")) %>% 
-  
-      # Filter observations if required
-      
-      #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-  
-      #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-  
-      # Average over a 1 minute
-      # Remember data is collected every 10 seconds
-      mutate(date_time = floor_date(date_time, "1 minute"),
-             
-             time_seconds = time_length(interval(first(date_time), date_time),
-                                          unit = "second")) %>% 
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
 
-      group_by(string_number, time_seconds, date_time, tare_count_smp,
-               temperature_measured) %>%     
-      
-      # Filter data before summarize
-      #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-      #                 \(x) mean(x, na.rm = TRUE))) %>% 
+        # Select Values measured at 55c
+        #filter(temperature_measured >= 55)  %>% 
         
-      arrange(date_time)
+        # Filter strings if required
+        
+        #filter(!c(string_number == "string_5")) %>% 
+            
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter observations if required
+        
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+    
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+    
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                            unit = "second")) %>% 
+  
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) mean(x, na.rm = TRUE))) %>% 
+          
+        arrange(date_time)
 ```
 
 ```{r, eval=FALSE}
