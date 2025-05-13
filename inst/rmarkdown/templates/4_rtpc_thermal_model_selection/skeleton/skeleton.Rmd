@@ -36,8 +36,8 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       
                       # Path where figures are going to be store pdf single 
                       # figures
-                      Edit path in the next line and comment out this line   
-                      fig.path       = paste0("./figures_tpc_model_selection_[spcode]", "/"),
+                      #Edit path in the next line and comment out this line   
+                      fig.path       = paste0("./figures_temp_modeling", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -706,7 +706,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                                                 model_name = 'weibull_1995'),
                                          supp_errors = 'Y',
                                          lhstype = 'genetic',
-                                         convergence_count = FALSE))
+                                         convergence_count = FALSE)),
     {print("21) Thomas 2 model done"); .})
 ```
 

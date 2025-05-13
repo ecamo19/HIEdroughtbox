@@ -1,0 +1,5 @@
+name: 0-Filter, reshape and clean droughtbox data workflow
+description: >
+   This template was created for facilitating the data analysis of the data coming
+   out of the Droughtbox
+create_dir: FALSE
