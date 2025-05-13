@@ -371,6 +371,9 @@ plot_strains_weights <- function(droughtbox_data, show_strain = "all",
         # Set strain colors
         ggplot2::scale_color_manual(values = strain_colors) +
 
+        # Increase the number of y-axis tick marks
+        ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+
         # Add median and set temp to the title
         ggplot2::ggtitle(stringr::str_c("Set temperature: ", .$set_point_t_avg_avg,
                                " Median temperature: ", stats::median(.$tc_avg_deg_c_avg))) +
