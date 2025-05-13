@@ -309,7 +309,7 @@ create_empty_droughtbox_leaf_branch_areas_sheet <- function(save_empty_df_at = N
 
             # Print message indicating where the file will be saved
             {print(paste0("Empty CSV saved at: ",
-
+                          euc_saligna_apr_vpd_controlled_25c_reshaped
                       # Print working directory where csv will be saved
                       path_output_file)); .}
 
@@ -1039,7 +1039,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
     checkmate::assert_date(droughtbox_data$date)
 
     # Assert time column in droughtbox_data
-    base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
+    #base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Make sure the necessary data is in the dataframe
     base::stopifnot("Missing date_time or tare_count_smp column" = c("date_time",
@@ -1057,7 +1057,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
         droughtbox_data %>%
 
         # Select only the necessary variables calculating the rate of change
-        dplyr::select(dplyr::any_of(c("time","tc_avg_deg_c_avg","date_time",
+        dplyr::select(dplyr::any_of(c("tc_avg_deg_c_avg","date_time",
                                       "rh_avg_percent_avg","vpd_avg_kpa_avg",
                                       "tare_count_smp",
                                       "strain_avg_1_microstrain_avg",
@@ -1070,7 +1070,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
                                       "strain_avg_8_microstrain_avg"))) %>%
 
         # Reshape data into a long format
-        tidyr::pivot_longer(!c(time, tc_avg_deg_c_avg, date_time, vpd_avg_kpa_avg,
+        tidyr::pivot_longer(!c(tc_avg_deg_c_avg, date_time, vpd_avg_kpa_avg,
                                rh_avg_percent_avg, tare_count_smp),
 
                             # Create new columns
@@ -1122,7 +1122,7 @@ reshape_droughtbox_data <- function(droughtbox_data){
             ) %>%
 
         # Organize columns
-        dplyr::select(date_time, string_number, tc_avg_deg_c_avg, temperature_measured, everything())
+        dplyr::select(date_time, string_number, temperature_measured, tc_avg_deg_c_avg, everything())
 
     return(droughtbox_data_reshaped)
 
