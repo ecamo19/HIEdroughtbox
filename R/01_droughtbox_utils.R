@@ -1093,13 +1093,13 @@ reshape_droughtbox_data <- function(droughtbox_data){
         # Change temperatures measured into discrete groups i.e if
         # tc_avg_deg_c_avg is between 53 and 56 code it as 55
         dplyr::mutate( temperature_measured = dplyr::case_when(
-             dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
-             dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
-             dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
-             dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
-             dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
-             dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
-             dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
+             dplyr::between(tc_avg_deg_c_avg, 20, 27.5) ~ 25,
+             dplyr::between(tc_avg_deg_c_avg, 27.50001, 32.5) ~ 30,
+             dplyr::between(tc_avg_deg_c_avg, 32.50001, 37.5) ~ 35,
+             dplyr::between(tc_avg_deg_c_avg, 37.50001, 42.5) ~ 40,
+             dplyr::between(tc_avg_deg_c_avg, 42.50001, 47.5) ~ 45,
+             dplyr::between(tc_avg_deg_c_avg, 47.50001, 52.5) ~ 50,
+             dplyr::between(tc_avg_deg_c_avg, 52.50001, 60) ~ 55,
              TRUE ~ tc_avg_deg_c_avg)) %>%
 
         # Join temperature_measured with tare_count_smp
@@ -1116,9 +1116,10 @@ reshape_droughtbox_data <- function(droughtbox_data){
 
             # Get time in seconds
             #time_seconds = (time - dplyr::first(time)), .keep = "unused") %>%
-            time_seconds = lubridate::time_length(lubridate::interval(dplyr::first(date_time),
-                                                                      date_time),
-                                                  unit = "second")) %>%
+            #time_seconds = lubridate::time_length(lubridate::interval(dplyr::first(date_time),
+            #                                                          date_time),
+            #                                      unit = "second")
+            ) %>%
 
         # Organize columns
         dplyr::select(date_time, string_number, tc_avg_deg_c_avg, temperature_measured, everything())
