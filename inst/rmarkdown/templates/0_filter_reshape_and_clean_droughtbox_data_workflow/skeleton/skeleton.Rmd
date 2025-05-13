@@ -174,14 +174,16 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-        group_by(date_time, tare_count_smp) %>% 
-        summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
-  
-        # Transform dates into seconds
-        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
+        
+        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+                         \(x) mean(x, na.rm = TRUE))) %>% 
         
         arrange(date_time)
 ```
@@ -279,16 +281,17 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
 
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-        group_by(date_time, tare_count_smp) %>% 
-        summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
+        
+        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
-        # Transform dates into seconds
-        mutate(time_seconds = time_length(interval(first(date_time),date_time),
-                                          unit = "second")) %>% 
-      
-        # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
 
@@ -387,16 +390,17 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-        group_by(date_time, tare_count_smp) %>% 
-        summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
-  
-        # Transform dates into seconds
-        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
         
-        # Step done to avoid breaking the time sequence
+        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+                         \(x) mean(x, na.rm = TRUE))) %>% 
+        
         arrange(date_time)
 ```
 
@@ -496,16 +500,17 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
  
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-        group_by(date_time, tare_count_smp) %>% 
-        summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
+        
+        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
-        # Transform dates into seconds
-        mutate(time_seconds = time_length(interval(first(date_time),date_time),
-                                          unit = "second")) %>% 
-  
-        # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
 
@@ -605,16 +610,17 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-        group_by(date_time, tare_count_smp) %>% 
-        summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
+        
+        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
-        # Transform dates into seconds
-        mutate(time_seconds = time_length(interval(first(date_time),date_time),
-                                          unit = "second")) %>%       
-  
-        # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
 
@@ -715,16 +721,17 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
  
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-        group_by(date_time, tare_count_smp) %>% 
-        summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, tare_count_smp,
+                 temperature_measured) %>%     
+        
+        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
-        # Transform dates into seconds
-        mutate(time_seconds = time_length(interval(first(date_time),date_time),
-                                          unit = "second")) %>%   
-          
-        # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
 
@@ -822,16 +829,17 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
   
       # Average over a 1 minute
       # Remember data is collected every 10 seconds
-      mutate(date_time = floor_date(date_time, "1 minute")) %>% 
-      group_by(date_time, tare_count_smp) %>% 
-      summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
-                       \(x) mean(x, na.rm = TRUE))) %>% 
-      
-      # Transform dates into seconds
-      mutate(time_seconds = time_length(interval(first(date_time),date_time),
+      mutate(date_time = floor_date(date_time, "1 minute"),
+             
+             time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
-      
-      s# Step done to avoid breaking the time sequence
+
+      group_by(string_number, time_seconds, date_time, tare_count_smp,
+               temperature_measured) %>%     
+        
+      summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+                       \(x) mean(x, na.rm = TRUE))) %>% 
+        
       arrange(date_time)
 ```
 
