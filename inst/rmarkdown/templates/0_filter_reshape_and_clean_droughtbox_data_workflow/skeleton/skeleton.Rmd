@@ -101,7 +101,7 @@ Remember to remove the `eval=FALSE` from each chunk
 map([sp_name]_raw_data, plot_strains_weights)
 ```
 
-## Data with VPD controlled 
+## __Data with VPD controlled__ 
 
 ### File 1: 25c
 
@@ -129,6 +129,7 @@ map([sp_name]_raw_data, plot_strains_weights)
   
     # Remove Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+  
     # Step done to avoid breaking the time sequence
     arrange(date_time)
 ```
@@ -182,8 +183,9 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
         group_by(string_number, time_seconds, date_time, tare_count_smp,
                  temperature_measured) %>%     
         
-        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) mean(x, na.rm = TRUE))) %>% 
         
         arrange(date_time)
 ```
@@ -238,6 +240,8 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    
+    # Step done to avoid breaking the time sequence
     arrange(date_time)
 ```
 
@@ -289,9 +293,10 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
         group_by(string_number, time_seconds, date_time, tare_count_smp,
                  temperature_measured) %>%     
         
-        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
-        
+        # Filter data before summarize
+        # summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                  \(x) mean(x, na.rm = TRUE))) %>% 
+         
         arrange(date_time)
 ```
 
@@ -345,6 +350,7 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -398,8 +404,9 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
         group_by(string_number, time_seconds, date_time, tare_count_smp,
                  temperature_measured) %>%     
         
-        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) mean(x, na.rm = TRUE))) %>% 
         
         arrange(date_time)
 ```
@@ -508,8 +515,9 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
         group_by(string_number, time_seconds, date_time, tare_count_smp,
                  temperature_measured) %>%     
         
-        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) mean(x, na.rm = TRUE))) %>% 
         
         arrange(date_time)
 ```
@@ -618,8 +626,9 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
         group_by(string_number, time_seconds, date_time, tare_count_smp,
                  temperature_measured) %>%     
         
-        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) mean(x, na.rm = TRUE))) %>% 
         
         arrange(date_time)
 ```
@@ -673,9 +682,9 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
   
-      
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+  
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -729,8 +738,9 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
         group_by(string_number, time_seconds, date_time, tare_count_smp,
                  temperature_measured) %>%     
         
-        summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                         \(x) mean(x, na.rm = TRUE))) %>% 
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) mean(x, na.rm = TRUE))) %>% 
         
         arrange(date_time)
 ```
@@ -784,6 +794,7 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
                            to_end_time = "HH:MM:SS") %>% 
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+  
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -836,9 +847,10 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 
       group_by(string_number, time_seconds, date_time, tare_count_smp,
                temperature_measured) %>%     
-        
-      summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
-                       \(x) mean(x, na.rm = TRUE))) %>% 
+      
+      # Filter data before summarize
+      #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+      #                 \(x) mean(x, na.rm = TRUE))) %>% 
         
       arrange(date_time)
 ```
@@ -914,7 +926,7 @@ ggplot(data [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds,
           legend.position = "bottom")
 ```
 
-## Data with VPD not controlled 
+## __Data with VPD not controlled__ 
 
 
 # 3. Add dry weights to cleaned dataframe
