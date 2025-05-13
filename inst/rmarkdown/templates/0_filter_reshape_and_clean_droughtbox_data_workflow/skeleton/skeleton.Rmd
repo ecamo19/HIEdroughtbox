@@ -101,7 +101,7 @@ Remember to remove the `eval=FALSE` from each chunk
 map([sp_name]_raw_data, plot_strains_weights)
 ```
 
-## VPD controlled 
+## Data with VPD controlled 
 
 ### File 1: 25c
 
@@ -128,21 +128,8 @@ map([sp_name]_raw_data, plot_strains_weights)
                            to_end_time = "HH:MM:SS") %>% 
   
     # Remove Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-  
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
-    # Step done to avoid breaking the time sequence 
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    # Step done to avoid breaking the time sequence
     arrange(date_time)
 ```
 
@@ -172,15 +159,30 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
 
         # Select Values measured at 25c
         #filter( temperature_measured <= 25)  %>% 
-
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>% 
+            
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter observations if required
+        
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+    
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute")) %>% 
         group_by(date_time, tare_count_smp) %>% 
         summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
+  
+        # Transform dates into seconds
+        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>% 
         
-        # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
 
@@ -233,21 +235,7 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
                            to_end_time = "HH:MM:SS") %>%
   
     # Filter Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-  
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
-    # Step done to avoid breaking the time sequence 
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
     arrange(date_time)
 ```
 
@@ -277,14 +265,29 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 
         # Select Values measured at 30c
         #filter( temperature_measured <= 30c)  %>% 
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>% 
+            
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter observations if required
+        
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+    
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
 
-        # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute")) %>% 
         group_by(date_time, tare_count_smp) %>% 
         summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
+        # Transform dates into seconds
+        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>% 
+      
         # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
@@ -338,20 +341,7 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
                            to_end_time = "HH:MM:SS") %>%
   
     # Filter Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-  
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -382,6 +372,18 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 
         # Select Values measured at 35c
         #filter( temperature_measured <= 35)  %>% 
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>% 
+            
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter observations if required
+        
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+    
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
@@ -389,6 +391,10 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
         group_by(date_time, tare_count_smp) %>% 
         summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
+  
+        # Transform dates into seconds
+        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>% 
         
         # Step done to avoid breaking the time sequence
         arrange(date_time)
@@ -443,20 +449,8 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
                            to_end_time = "HH:MM:SS") %>%
   
     # Filter Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
   
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -486,8 +480,20 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
     [sp_name]_vpd_controlled_40c_reshaped %>% 
 
         # Select Values measured at 40c
-        #filter( temperature_measured <= 40)  %>% 
+        #filter( temperature_measured <= 40) %>%
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
 
+        # Filter observations if required
+    
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+ 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute")) %>% 
@@ -495,6 +501,10 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
         summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
+        # Transform dates into seconds
+        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>% 
+  
         # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
@@ -548,20 +558,8 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
                            to_end_time = "HH:MM:SS") %>%
   
     # Filter Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
   
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -592,6 +590,18 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 
         # Select Values measured at 45c
         #filter( temperature_measured <= 45)  %>% 
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>% 
+            
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter observations if required
+        
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+    
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
@@ -600,6 +610,10 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
         summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
+        # Transform dates into seconds
+        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>%       
+  
         # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
@@ -655,20 +669,7 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
   
       
     # Filter Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-  
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -698,8 +699,20 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
     [sp_name]_vpd_controlled_50c_reshaped  
 
         # Select Values measured at 50c
-        #filter( temperature_measured <= 50)  %>% 
+        #filter( temperature_measured <= 50)  %>%
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>% 
+        
+        #filter(!c(string_number == "string_6")) %>% 
 
+        # Filter observations if required
+    
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+ 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute")) %>% 
@@ -707,6 +720,10 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
         summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
                          \(x) mean(x, na.rm = TRUE))) %>% 
         
+        # Transform dates into seconds
+        mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>%   
+          
         # Step done to avoid breaking the time sequence
         arrange(date_time)
 ```
@@ -758,23 +775,8 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
-  
-      
     # Filter Zeros
-    filter(if_any(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-  
-    # Filter strings if required
-    
-    #filter(!c(string_number == "string_5")) %>% 
-        
-    #filter(!c(string_number == "string_6")) %>% 
-
-    # Filter observations if required
-    
-    #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
-
-    #filter(!c(string_number == "string_8" & string_weight_grams < 16))
-
+    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
     # Step done to avoid breaking the time sequence 
     arrange(date_time)
 ```
@@ -805,15 +807,32 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
   
       # Select Values measured at 55c
       #filter(temperature_measured >= 55)  %>% 
-
-
+      
+      # Filter strings if required
+      
+      #filter(!c(string_number == "string_5")) %>% 
+          
+      #filter(!c(string_number == "string_6")) %>% 
+  
+      # Filter observations if required
+      
+      #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+  
+      #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+  
       # Average over a 1 minute
       # Remember data is collected every 10 seconds
       mutate(date_time = floor_date(date_time, "1 minute")) %>% 
       group_by(date_time, tare_count_smp) %>% 
       summarise(across(air_tc_avg_deg_c_avg:vr1000_avg_8_mv_v_avg, 
-                       \(x) mean(x, na.rm = TRUE)))
+                       \(x) mean(x, na.rm = TRUE))) %>% 
       
+      # Transform dates into seconds
+      mutate(time_seconds = time_length(interval(first(date_time),date_time),
+                                          unit = "second")) %>% 
+      
+      s# Step done to avoid breaking the time sequence
+      arrange(date_time)
 ```
 
 ```{r, eval=FALSE}
@@ -887,47 +906,7 @@ ggplot(data [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds,
           legend.position = "bottom")
 ```
 
-#### Remove strings if need it
-
-```{r, eval=FALSE}
-[sp_name]_vpd_controlled_droughtbox_data_cleaned <-
-
-  [sp_name]_vpd_controlled_merged_cleaned_data
-        
-        # Remove strings
-        # filter(!c(temperature_measured == 30 & string_number == "string_4")) %>% 
-        # filter(!c(temperature_measured == 35 & string_number == "string_4")) %>%
-        # filter(!c(temperature_measured == 40 & string_number == "string_4")) %>% 
-        # filter(!c(temperature_measured == 50 & string_number == "string_3"))       
-```
-
-#### Plot droughtbox data cleaned
-
-```{r, plot_reshaped_data_after_removing_strings, fig.width=20 , fig.height=8, eval=FALSE}
-
-ggplot(data = [sp_name]_vpd_controlled_droughtbox_data_cleaned, aes(x = time_seconds,
-                                                                    y = string_weight_grams,
-                                                                    colour = factor(string_number))) +
-  
-    geom_point()+
-    
-    theme_bw() +
-
-    # Break plot into panels
-    facet_grid(~temperature_measured, scales = "free") +
-
-    # At lines showing range between 0-3600 sec (1 hour)
-    geom_vline(xintercept = 0,  linetype = "dotted") +
-
-    # Set colors  
-    scale_color_manual(values = string_colors) +
-    
-    # Rotate labels by 90 degrees and move legend at the bottom
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-          legend.position = "bottom")
-```
-
-## VPD not controlled 
+## Data with VPD not controlled 
 
 
 # 3. Add dry weights to cleaned dataframe
