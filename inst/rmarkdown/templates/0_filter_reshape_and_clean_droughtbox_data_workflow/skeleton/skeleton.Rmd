@@ -917,7 +917,8 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 
 #[sp_name]_vpd_controlled_merged_cleaned_data <-
  
-        list([sp_name]_vpd_controlled_25c_reshaped_cleaned,
+        list(
+            [sp_name]_vpd_controlled_25c_reshaped_cleaned,
             [sp_name]_vpd_controlled_30c_reshaped_cleaned,
             [sp_name]_vpd_controlled_35c_reshaped_cleaned,
             [sp_name]_vpd_controlled_40c_reshaped_cleaned,
@@ -926,7 +927,8 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
             [sp_name]_vpd_controlled_55c_reshaped_cleaned) %>%    
             
     reduce(rbind) %>% 
-    add_column(vpd_control = "yes")
+    add_column(vpd_control = factor("yes")) %>%
+    arrange(string_number)
 ```
 
 #### Plot Merged data
@@ -934,9 +936,9 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 __Make sure that values start at 0__
 
 ```{r, plot_vpd_controlled_merged_data, fig.width=16, fig.height=8, eval=FALSE}
-ggplot(data [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds,
-                                                              y = string_weight_grams,
-                                                              colour = factor(string_number))) +
+ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds,
+                                                                y = string_weight_grams,
+                                                                colour = factor(string_number))) +
   
     geom_point()+
     
