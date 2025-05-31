@@ -129,6 +129,7 @@ map([sp_name]_raw_data, plot_strains_weights)
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
+    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -238,11 +239,14 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
   
     # Choose a interval of time
     filter_droughtbox_data(.,
+                           from_start_date = "20YY-MM-DD",
+                           to_end_date =  "20YY-MM-DD",
                            from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>%
+                           to_end_time = "HH:MM:SS") %>% 
   
     # Filter Zeros
     filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
+    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
