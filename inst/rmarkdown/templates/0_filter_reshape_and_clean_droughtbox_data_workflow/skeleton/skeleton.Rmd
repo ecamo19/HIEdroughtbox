@@ -955,7 +955,9 @@ ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds
     
     # Rotate labels by 90 degrees and move legend at the bottom
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-          legend.position = "bottom")
+          legend.position = "bottom") +
+    
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 ```
 
 ## __Data with VPD not controlled__ 
