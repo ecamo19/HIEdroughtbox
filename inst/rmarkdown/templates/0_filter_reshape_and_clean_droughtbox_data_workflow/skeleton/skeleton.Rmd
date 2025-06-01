@@ -98,7 +98,7 @@ Remember to remove the `eval=FALSE` from each chunk
 ## Plot raw droughtbox data
 
 ```{r, plot_raw_data_vpd_controlled, cache = TRUE}
-map([sp_name]_raw_data, plot_strains_weights)
+map([sp_name]_raw_data[!grepl("no-vpd-control", names([sp_name]_raw_data))], plot_strains_weights)
 ```
 
 ## __Data with VPD controlled__ 
@@ -147,7 +147,7 @@ plot_strains_weights([sp_name]_vpd_controlled_25c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_25c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_25c_filtered)
+[sp_name]_vpd_controlled_25c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_25c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -264,7 +264,7 @@ plot_strains_weights([sp_name]_vpd_controlled_30c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_30c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_30c_filtered)
+[sp_name]_vpd_controlled_30c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_30c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -378,7 +378,7 @@ plot_strains_weights([sp_name]_vpd_controlled_35c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_35c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_35c_filtered)
+[sp_name]_vpd_controlled_35c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_35c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -493,7 +493,7 @@ plot_strains_weights([sp_name]_vpd_controlled_40c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_40c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_40c_filtered)
+[sp_name]_vpd_controlled_40c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_40c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -505,7 +505,7 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_40c_reshaped_cleaned  <- 
+#[sp_name]_vpd_controlled_40c_reshaped_cleaned <- 
   
     [sp_name]_vpd_controlled_40c_reshaped %>% 
         
@@ -545,7 +545,7 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 #                                                               y = string_weight_grams,
 #                                                               colour = factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -608,19 +608,19 @@ plot_strains_weights([sp_name]_vpd_controlled_45c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_45c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_45c_filtered)
+[sp_name]_vpd_controlled_45c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_45c_filtered)
 ```
 
 ```{r, eval=FALSE}
 # Check data
 any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
-    [sp_name]_vpd_controlled_45c_reshaped$temperature_measured >  45)
+    [sp_name]_vpd_controlled_45c_reshaped$temperature_measured > 45)
 ```
 
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_45c_reshaped_cleaned  <- 
+#[sp_name]_vpd_controlled_45c_reshaped_cleaned <- 
   
     [sp_name]_vpd_controlled_45c_reshaped %>% 
         
@@ -723,7 +723,7 @@ plot_strains_weights([sp_name]_vpd_controlled_50c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_50c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_50c_filtered)
+[sp_name]_vpd_controlled_50c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_50c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -735,7 +735,7 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_50c_reshaped_cleaned  <- 
+#[sp_name]_vpd_controlled_50c_reshaped_cleaned <- 
   
     [sp_name]_vpd_controlled_50c_reshaped %>% 
         
@@ -838,7 +838,7 @@ plot_strains_weights([sp_name]_vpd_controlled_55c_filtered, show_tare_group = FA
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_55c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_55c_filtered)
+[sp_name]_vpd_controlled_55c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_55c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -890,7 +890,7 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 #                                                               y = string_weight_grams,
 #                                                               colour = factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -940,7 +940,7 @@ ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds
                                                                 y = string_weight_grams,
                                                                 colour = factor(string_number))) +
   
-    geom_point()+
+    geom_point() +
     
     theme_bw() +
 
@@ -964,21 +964,21 @@ ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds
 glimpse([sp_name]_vpd_controlled_merged_cleaned_data)
 ```
 
-## __Data with VPD not controlled__ 
+## __Data with VPD _not_ controlled__ 
 
 ### Plot raw data
 
-```{r, plot_raw_data__no_vpd_control, cache = TRUE}
-map([sp_name]_raw_data, plot_strains_weights)
+```{r, plot_raw_data_no_vpd_control, cache = TRUE}
+map([sp_name]_raw_data[grepl("no-vpd-control", names([sp_name]_raw_data))], plot_strains_weights)
 ```
 
 ### File 2: 30c
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_30c_filtered <-
+#[sp_name]_no_vpd_control_30c_filtered <-
 
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_30c.dat"] %>%
+    [sp_name]_raw_data["file_name_no-vpd-control_30c.dat"] %>%
 
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -1009,20 +1009,20 @@ map([sp_name]_raw_data, plot_strains_weights)
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_30c, eval=FALSE}
-plot_strains_weights([sp_name]_vpd_controlled_30c_filtered, show_tare_group = FALSE)
+```{r, plot_filtered_data_no_vpd_control_30c, eval=FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_30c_filtered, show_tare_group = FALSE)
 ```
 
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_30c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_30c_filtered)
+[sp_name]_no_vpd_control_30c_reshaped  <- reshape_droughtbox_data([sp_name]_no_vpd_control_30c_filtered)
 ```
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
-    [sp_name]_vpd_controlled_30c_reshaped$temperature_measured > 30)
+any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
+    [sp_name]_no_vpd_control_30c_reshaped$temperature_measured > 30)
 ```
 
 #### Clean reshaped data
@@ -1030,7 +1030,7 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 ```{r, eval=FALSE}
 #[sp_name]_vpd_controlled_30c_reshaped_cleaned  <- 
   
-    [sp_name]_vpd_controlled_30c_reshaped %>%   
+    [sp_name]_no_vpd_control_30c_reshaped %>%   
         
         # Remove tare_count_smp column
         ungroup() %>%     
@@ -1063,11 +1063,11 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_vpd_controlled_30c_reshaped_cleaned, aes(x = time_seconds,
+# ggplot(data = [sp_name]_no_vpd_control_30c_reshaped_cleaned, aes(x = time_seconds,
 #                                                                 y = string_weight_grams,
 #                                                                 colour =factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -1084,17 +1084,17 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 #     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
 #           legend.position = "bottom") +
 #     
-#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20)) +
 #     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
 ### File 3: 35c
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_35c_filtered <-
+#[sp_name]_no_vpd_control_35c_filtered <-
 
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_35c.dat"] %>%
+    [sp_name]_raw_data["file_name_no-vpd-control_35c.dat"] %>%
 
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -1124,13 +1124,13 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 #### Plot filtered data
 
 ```{r, plot_filtered_data_35c, eval=FALSE}
-plot_strains_weights([sp_name]_vpd_controlled_35c_filtered, show_tare_group = FALSE)
+plot_strains_weights([sp_name]_no_vpd_control_35c_filtered, show_tare_group = FALSE)
 ```
 
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_35c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_35c_filtered)
+[sp_name]_no_vpd_control_35c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_35c_filtered)
 ```
 
 ```{r, eval=FALSE}
@@ -1142,9 +1142,9 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_35c_reshaped_cleaned <- 
+#[sp_name]_no_vpd_control_35c_reshaped_cleaned <- 
   
-    [sp_name]_vpd_controlled_35c_reshaped %>% 
+    [sp_name]_no_vpd_control_35c_reshaped %>% 
         
         # Remove tare_count_smp column
         ungroup() %>%     
@@ -1178,11 +1178,11 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_vpd_controlled_35c_reshaped_cleaned, aes(x = time_seconds,
+# ggplot(data = [sp_name]_no_vpd_control_35c_reshaped_cleaned, aes(x = time_seconds,
 #                                                                 y = string_weight_grams,
 #                                                                 colour = factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -1206,10 +1206,10 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 ### File 4: 40c
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_40c_filtered <-
+#[sp_name]_no_vpd_control_40c_filtered <-
 
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_40c.dat"] %>%
+    [sp_name]_raw_data["file_name_no-vpd-control_40c.dat"] %>%
 
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -1239,27 +1239,27 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 #### Plot filtered data
 
 ```{r, plot_filtered_data_40c, eval=FALSE}
-plot_strains_weights([sp_name]_vpd_controlled_40c_filtered, show_tare_group = FALSE)
+plot_strains_weights([sp_name]_no_vpd_control_40c_filtered, show_tare_group = FALSE)
 ```
 
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_40c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_40c_filtered)
+[sp_name]_no_vpd_control_40c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_40c_filtered)
 ```
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
-    [sp_name]_vpd_controlled_40c_reshaped$temperature_measured >  40)
+any([sp_name]_no_vpd_control_40c_reshaped$temperature_measured < 40 |
+    [sp_name]_no_vpd_control_40c_reshaped$temperature_measured > 40)
 ```
 
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_40c_reshaped_cleaned  <- 
+#[sp_name]_no_vpd_control_40c_reshaped_cleaned <- 
   
-    [sp_name]_vpd_controlled_40c_reshaped %>% 
+    [sp_name]_no_vpd_control_40c_reshaped %>% 
         
         # Remove tare_count_smp column
         ungroup() %>%     
@@ -1293,11 +1293,11 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_vpd_controlled_40c_reshaped_cleaned, aes(x = time_seconds,
+# ggplot(data = [sp_name]_no_vpd_control_40c_reshaped_cleaned, aes(x = time_seconds,
 #                                                               y = string_weight_grams,
 #                                                               colour = factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -1321,10 +1321,10 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 ### File 5: 45c
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_45c_filtered <-
+#[sp_name]_no_vpd_control_45c_filtered <-
 
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_45c.dat"] %>%
+    [sp_name]_raw_data["file_name_no-vpd-control_45c.dat"] %>%
 
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -1354,34 +1354,34 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 #### Plot filtered data
 
 ```{r, plot_filtered_data_45c, eval=FALSE}
-plot_strains_weights([sp_name]_vpd_controlled_45c_filtered, show_tare_group = FALSE)
+plot_strains_weights([sp_name]_no_vpd_control_45c_filtered, show_tare_group = FALSE)
 ```
 
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_45c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_45c_filtered)
+[sp_name]_no_vpd_control_45c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_45c_filtered)
 ```
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
-    [sp_name]_vpd_controlled_45c_reshaped$temperature_measured >  45)
+any([sp_name]_no_vpd_control_45c_reshaped$temperature_measured < 45 |
+    [sp_name]_no_vpd_control_45c_reshaped$temperature_measured > 45)
 ```
 
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_45c_reshaped_cleaned  <- 
+#[sp_name]_no_vpd_control_45c_reshaped_cleaned <- 
   
-    [sp_name]_vpd_controlled_45c_reshaped %>% 
+    [sp_name]_no_vpd_control_45c_reshaped %>% 
         
         # Remove tare_count_smp column
         ungroup() %>%     
         select(-tare_count_smp) %>% 
 
         # Select Values measured at 45c
-        #filter( temperature_measured <= 45)  %>% 
+        #filter( temperature_measured <= 45) %>% 
         
         # Filter strings if required
         #filter(!c(string_number == "string_5")) %>%
@@ -1408,7 +1408,7 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_vpd_controlled_45c_reshaped_cleaned, aes(x = time_seconds,
+# ggplot(data = [sp_name]_no_vpd_control_45c_reshaped_cleaned, aes(x = time_seconds,
 #                                                               y = string_weight_grams,
 #                                                               colour = factor(string_number))) +
 #   
@@ -1436,10 +1436,10 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 ### File 6: 50c
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_50c_filtered <- 
+#[sp_name]_no_vpd_control_50c_filtered <- 
     
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_50c.dat"] %>% 
+    [sp_name]_raw_data["file_name_no-vpd-control_50c.dat"] %>% 
     
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -1469,27 +1469,27 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 #### Plot filtered data
 
 ```{r, plot_filtered_data_50c, eval=FALSE}
-plot_strains_weights([sp_name]_vpd_controlled_50c_filtered, show_tare_group = FALSE)
+plot_strains_weights([sp_name]_no_vpd_control_50c_filtered, show_tare_group = FALSE)
 ```
 
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_50c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_50c_filtered)
+[sp_name]_no_vpd_control_50c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_50c_filtered)
 ```
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50| 
-    [sp_name]_vpd_controlled_50c_reshaped$temperature_measured > 50)
+any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50| 
+    [sp_name]_no_vpd_control_50c_reshaped$temperature_measured > 50)
 ```
 
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_50c_reshaped_cleaned  <- 
+#[sp_name]_no_vpd_control_50c_reshaped_cleaned  <- 
   
-    [sp_name]_vpd_controlled_50c_reshaped %>% 
+    [sp_name]_no_vpd_control_50c_reshaped %>% 
         
         # Remove tare_count_smp column
         ungroup() %>%     
@@ -1528,7 +1528,7 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
 #                                                                 y = string_weight_grams,
 #                                                                 colour = factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -1552,10 +1552,10 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
 ### File 7: 55c
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_55c_filtered <- 
+#[sp_name]_no_vpd_control_55c_filtered <- 
     
     # Select the data to be clean
-    [sp_name]_raw_data["file_name_55c.dat"] %>% 
+    [sp_name]_raw_data["file_name_no-vpd-control_55c.dat"] %>% 
     
     # Transform list element to dataframe type
     as.data.frame(.) %>%
@@ -1584,27 +1584,27 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
 #### Plot filtered data
 
 ```{r, plot_filtered_data_55c, eval=FALSE}
-plot_strains_weights([sp_name]_vpd_controlled_55c_filtered, show_tare_group = FALSE)
+plot_strains_weights([sp_name]_no_vpd_control_55c_filtered, show_tare_group = FALSE)
 ```
 
 #### Reshape data
 
 ```{r, eval=FALSE}
-[sp_name]_vpd_controlled_55c_reshaped  <- reshape_droughtbox_data([sp_name]_vpd_controlled_55c_filtered)
+[sp_name]_no_vpd_control_55c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_55c_filtered)
 ```
 
 ```{r, eval=FALSE}
 # Check data
-any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55| 
-    [sp_name]_vpd_controlled_55c_reshaped$temperature_measured > 55)
+any([sp_name]_no_vpd_control_55c_reshaped$temperature_measured < 55| 
+    [sp_name]_no_vpd_control_55c_reshaped$temperature_measured > 55)
 ```
 
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_55c_reshaped_cleaned <- 
+#[sp_name]_no_vpd_control_55c_reshaped_cleaned <- 
   
-    [sp_name]_vpd_controlled_55c_reshaped %>%  
+    [sp_name]_no_vpd_control_55c_reshaped %>%  
       
         # Remove tare_count_smp column
         ungroup() %>%     
@@ -1638,11 +1638,11 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 ```
 
 ```{r, eval=FALSE}
-# ggplot(data = [sp_name]_vpd_controlled_55c_reshaped_cleaned, aes(x = time_seconds,
+# ggplot(data = [sp_name]_no_vpd_control_55c_reshaped_cleaned, aes(x = time_seconds,
 #                                                               y = string_weight_grams,
 #                                                               colour = factor(string_number))) +
 #   
-#     geom_point()+
+#     geom_point() +
 #     
 #     theme_bw() +
 # 
@@ -1659,7 +1659,7 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 #     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
 #           legend.position = "bottom") +
 #     
-#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20)) +
 #     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
 ```
 
@@ -1667,19 +1667,18 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 
 ```{r, eval=FALSE}
 
-#[sp_name]_vpd_controlled_merged_cleaned_data <-
+#[sp_name]_no_vpd_control_merged_cleaned_data <-
  
         list(
-            [sp_name]_vpd_controlled_25c_reshaped_cleaned,
-            [sp_name]_vpd_controlled_30c_reshaped_cleaned,
-            [sp_name]_vpd_controlled_35c_reshaped_cleaned,
-            [sp_name]_vpd_controlled_40c_reshaped_cleaned,
-            [sp_name]_vpd_controlled_45c_reshaped_cleaned,
-            [sp_name]_vpd_controlled_50c_reshaped_cleaned,
-            [sp_name]_vpd_controlled_55c_reshaped_cleaned) %>%    
+            [sp_name]_no_vpd_control_30c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_35c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_40c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_45c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_50c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_55c_reshaped_cleaned) %>%    
             
     reduce(rbind) %>% 
-    add_column(vpd_control = factor("yes")) %>%
+    add_column(vpd_control = factor("no")) %>%
     arrange(string_number)
 ```
 
@@ -1688,7 +1687,7 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
 __Make sure that values start at 0__
 
 ```{r, plot_vpd_controlled_merged_data, fig.width=16, fig.height=8, eval=FALSE}
-ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds,
+ggplot(data = [sp_name]_no_vpd_control_merged_cleaned_data, aes(x = time_seconds,
                                                                 y = string_weight_grams,
                                                                 colour = factor(string_number))) +
   
@@ -1713,7 +1712,7 @@ ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds
 ```
 
 ```{r}
-glimpse([sp_name]_vpd_controlled_merged_cleaned_data)
+glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
 ```
 
 # 3. Add dry weights to cleaned dataframe
@@ -1807,7 +1806,7 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
 # 4. Export data
 
 ```{r, export_data, eval=FALSE}
-save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_rwc_data.RData")
+save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_droughtbox_weights_cleaned.RData")
 ```
 
 
