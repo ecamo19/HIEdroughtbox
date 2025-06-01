@@ -1716,6 +1716,8 @@ glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
 ```
 
 ```{r, remove_all_raw_data, eval = FALSE}
+
+# Remove all raw_data
 rm(list = setdiff(ls(), c("[sp_name]_no_vpd_control_merged_cleaned_data",
                           "[sp_name]_vpd_controlled_merged_cleaned_data",
                           "string_colors"))
