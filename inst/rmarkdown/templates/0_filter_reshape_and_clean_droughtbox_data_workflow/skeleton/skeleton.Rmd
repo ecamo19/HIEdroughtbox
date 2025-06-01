@@ -1728,26 +1728,33 @@ rm(list = setdiff(ls(), c("[sp_name]_no_vpd_control_merged_cleaned_data",
 ## Load dry weights data  
 
 ```{r, eval=FALSE, load_dry_weights}
-[sp_name]_main_spread_sheet <- read.csv("./[sp_name]_droughtbox_main_spreadsheet.csv",
-                                        header = T, na.strings = "na") %>%
-                                select(!c(X, notes, number_of_parafilm_pieces,
-                                          set_vpd))
+[sp_name]_main_spread_sheet <- 
+    
+    # Read file
+    readxl::read_xlsx("./[sp_name]_droughtbox_main_spreadsheet.xlsx") %>%
+    
+    # Remove columns
+    select(!c(notes, number_of_parafilm_pieces, date, started_at))
 ```
 
 ```{r, eval=FALSE}
 glimpse([sp_name]_main_spread_sheet)
 ```
 
-```{r, eval = FALSE}
+```{r, load_dry_weights_data, eval = FALSE}
 [sp_name]_dry_weights <-
   
     [sp_name]_main_spread_sheet %>% 
 
-        select(-c(weight_paper_bag_plus_sample_scale, stem_dry_weight_mg,
-                  leaf_dry_weight_mg)) %>% 
+        # Remove columns    
+        select(-c(stem_dry_weight_mg, leaf_dry_weight_mg)) %>% 
 
-        mutate(sample_dry_weight_grams = weight_paper_bag_plus_sample_db -
-                                          empty_paper_bag_weight_grams,
+        # sample_weight_in_db =          sample + parafilm pieces + prensa + gancho_db   
+        # weight_paper_bag_plus_sample = sample + parafilm pieces + prensa + paper_bag  
+        # sample_dry_weight =           (weight_paper_bag_plus_sample - paper_bag_weight) + gancho_db      
+        mutate(sample_dry_weight_mg =  (weight_paper_bag_plus_sample_scale -
+                                       empty_paper_bag_weight_grams) + 
+                                       gancho_db,
 
               total_dry_weight_scale_grams = total_dry_weight_mg / 1000,
               
