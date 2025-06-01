@@ -1028,7 +1028,7 @@ any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
 #### Clean reshaped data
 
 ```{r, eval=FALSE}
-#[sp_name]_vpd_controlled_30c_reshaped_cleaned  <- 
+#[sp_name]_no_vpd_control_30c_reshaped_cleaned  <- 
   
     [sp_name]_no_vpd_control_30c_reshaped %>%   
         
@@ -1713,6 +1713,12 @@ ggplot(data = [sp_name]_no_vpd_control_merged_cleaned_data, aes(x = time_seconds
 
 ```{r, eval=FALSE}
 glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
+```
+
+```{r, remove_all_raw_data, eval = FALSE}
+rm(list = setdiff(ls(), c("[sp_name]_no_vpd_control_merged_cleaned_data",
+                          "[sp_name]_vpd_controlled_merged_cleaned_data",
+                          "string_colors"))
 ```
 
 # 3. Add dry weights to cleaned dataframe
