@@ -140,7 +140,7 @@ map([sp_name]_raw_data[!grepl("no-vpd-control", names([sp_name]_raw_data))], plo
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_25c, eval = FALSE}
+```{r, plot_filtered_data_25c_vpd_controlled, eval = FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_25c_filtered, show_tare_group = FALSE)
 ```
 
@@ -257,7 +257,7 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_30c, eval=FALSE}
+```{r, plot_filtered_data_30c_vpd_controlled, eval=FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_30c_filtered, show_tare_group = FALSE)
 ```
 
@@ -371,7 +371,7 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_35c, eval=FALSE}
+```{r, plot_filtered_data_35c_vpd_controlled, eval=FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_35c_filtered, show_tare_group = FALSE)
 ```
 
@@ -486,7 +486,7 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_40c, eval=FALSE}
+```{r, plot_filtered_data_40c_vpd_controlled, eval=FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_40c_filtered, show_tare_group = FALSE)
 ```
 
@@ -601,7 +601,7 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_45c, eval=FALSE}
+```{r, plot_filtered_data_45c_vpd_controlled, eval=FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_45c_filtered, show_tare_group = FALSE)
 ```
 
@@ -716,7 +716,7 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_50c, eval=FALSE}
+```{r, plot_filtered_data_50c_vpd_controlled, eval=FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_50c_filtered, show_tare_group = FALSE)
 ```
 
@@ -831,7 +831,7 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_55c, eval=FALSE}
+```{r, plot_filtered_data_55c_vpd_controlled, eval=FALSE}
 plot_strains_weights([sp_name]_vpd_controlled_55c_filtered, show_tare_group = FALSE)
 ```
 
@@ -960,7 +960,7 @@ ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds
     scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 ```
 
-```{r}
+```{r, eval=FALSE}
 glimpse([sp_name]_vpd_controlled_merged_cleaned_data)
 ```
 
@@ -968,7 +968,7 @@ glimpse([sp_name]_vpd_controlled_merged_cleaned_data)
 
 ### Plot raw data
 
-```{r, plot_raw_data_no_vpd_control, cache = TRUE}
+```{r, plot_raw_data_no_vpd_control, cache = TRUE, eval=FALSE}
 map([sp_name]_raw_data[grepl("no-vpd-control", names([sp_name]_raw_data))], plot_strains_weights)
 ```
 
@@ -1009,7 +1009,7 @@ map([sp_name]_raw_data[grepl("no-vpd-control", names([sp_name]_raw_data))], plot
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_no_vpd_control_30c, eval=FALSE}
+```{r, plot_filtered_data_30c_no_vpd_control, eval=FALSE}
 plot_strains_weights([sp_name]_no_vpd_control_30c_filtered, show_tare_group = FALSE)
 ```
 
@@ -1123,7 +1123,7 @@ any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_35c, eval=FALSE}
+```{r, plot_filtered_data_35c_no_vpd_control, eval=FALSE}
 plot_strains_weights([sp_name]_no_vpd_control_35c_filtered, show_tare_group = FALSE)
 ```
 
@@ -1238,7 +1238,7 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_40c, eval=FALSE}
+```{r, plot_filtered_data_40c_no_vpd_control, eval=FALSE}
 plot_strains_weights([sp_name]_no_vpd_control_40c_filtered, show_tare_group = FALSE)
 ```
 
@@ -1353,7 +1353,7 @@ any([sp_name]_no_vpd_control_40c_reshaped$temperature_measured < 40 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_45c, eval=FALSE}
+```{r, plot_filtered_data_45c_no_vpd_control, eval=FALSE}
 plot_strains_weights([sp_name]_no_vpd_control_45c_filtered, show_tare_group = FALSE)
 ```
 
@@ -1468,7 +1468,7 @@ any([sp_name]_no_vpd_control_45c_reshaped$temperature_measured < 45 |
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_50c, eval=FALSE}
+```{r, plot_filtered_data_50c_no_vpd_control, eval=FALSE}
 plot_strains_weights([sp_name]_no_vpd_control_50c_filtered, show_tare_group = FALSE)
 ```
 
@@ -1583,7 +1583,7 @@ any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50|
 
 #### Plot filtered data
 
-```{r, plot_filtered_data_55c, eval=FALSE}
+```{r, plot_filtered_data_55c_no_vpd_control, eval=FALSE}
 plot_strains_weights([sp_name]_no_vpd_control_55c_filtered, show_tare_group = FALSE)
 ```
 
@@ -1686,7 +1686,7 @@ any([sp_name]_no_vpd_control_55c_reshaped$temperature_measured < 55|
 
 __Make sure that values start at 0__
 
-```{r, plot_vpd_controlled_merged_data, fig.width=16, fig.height=8, eval=FALSE}
+```{r, plot_merged_data_no_vpd_control, fig.width=16, fig.height=8, eval=FALSE}
 ggplot(data = [sp_name]_no_vpd_control_merged_cleaned_data, aes(x = time_seconds,
                                                                 y = string_weight_grams,
                                                                 colour = factor(string_number))) +
@@ -1711,7 +1711,7 @@ ggplot(data = [sp_name]_no_vpd_control_merged_cleaned_data, aes(x = time_seconds
     scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 ```
 
-```{r}
+```{r, eval=FALSE}
 glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
 ```
 
