@@ -1715,11 +1715,24 @@ ggplot(data = [sp_name]_no_vpd_control_merged_cleaned_data, aes(x = time_seconds
 glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
 ```
 
+## Merge datasets
+
+```{r, merge_data, eval=FALSE }
+[sp_name]_droughtbox_data_cleaned <- 
+            list(
+              [sp_name]_no_vpd_control_merged_cleaned_data,
+              [sp_name]_vpd_controlled_merged_cleaned_data
+              ) %>%    
+            
+    reduce(rbind) %>%
+    arrange(string_number)
+
+```
+
 ```{r, remove_all_raw_data, eval = FALSE}
 
 # Remove all raw_data
-rm(list = setdiff(ls(), c("[sp_name]_no_vpd_control_merged_cleaned_data",
-                          "[sp_name]_vpd_controlled_merged_cleaned_data",
+rm(list = setdiff(ls(), c("[sp_name]_droughtbox_data_cleaned",
                           "string_colors"))
 ```
 
@@ -1775,7 +1788,7 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
     [sp_name]_dry_weights$total_dry_weight_scale_grams)
 ```
 
-## Merge data sets
+## Merge dry weights data with droughtbox data
 
 ```{r, eval=FALSE}
 #[sp_name]_droughtbox_data_cleaned <- 
