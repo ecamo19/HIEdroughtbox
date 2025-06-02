@@ -1747,17 +1747,21 @@ glimpse([sp_name]_main_spread_sheet)
     [sp_name]_main_spread_sheet %>% 
 
         # Remove columns    
-        select(-c(stem_dry_weight_mg, leaf_dry_weight_mg)) %>% 
+        select(-c(stem_dry_weight_mg, leaf_dry_weight_mg)) %>%
+
+        # Transform mg to grams
+        mutate(weight_paper_bag_plus_sample_scale_grams = weight_paper_bag_plus_sample_scale_mg /1000,
+              .keep = "unused") %>% 
 
         # sample_weight_in_db =          sample + parafilm pieces + prensa + gancho_db   
         # weight_paper_bag_plus_sample = sample + parafilm pieces + prensa + paper_bag  
         # sample_dry_weight =           (weight_paper_bag_plus_sample - paper_bag_weight) + gancho_db      
-        mutate(sample_dry_weight_mg =  (weight_paper_bag_plus_sample_scale -
-                                       empty_paper_bag_weight_grams) + 
-                                       gancho_db,
+        mutate(sample_dry_weight_mg =  hook_weight_g + weight_paper_bag_plus_sample_scale_grams -
 
-              total_dry_weight_scale_grams = total_dry_weight_mg / 1000,
-              
+                                       # Remove the prensa weight from the paper bag weight  
+                                       (empty_paper_bag_plus_sample_scale_grams - prensa_weight_g),
+
+              # Add word to number 
               string_number = stringr::str_c("string_", string_number), 
               
               .keep = "unused") %>%   
