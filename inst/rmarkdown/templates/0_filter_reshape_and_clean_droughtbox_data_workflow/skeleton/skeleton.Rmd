@@ -1885,7 +1885,8 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
 # 4. Export data
 
 ```{r, export_data_for_rwc, eval=FALSE}
-save([sp_name]_data_for_rwc, file = "./processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
+save([sp_name]_droughtbox_data_cleaned, 
+     file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
 ```
 
 
