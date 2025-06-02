@@ -165,53 +165,95 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ## Filter data below 85% RWC
 
 ```{r, filter_data_based_on_rwc, eval = FALSE}
-[sp_name]_rwc_data_filtered_data <- 
-    [sp_name]_rwc_data %>% 
-    filter(relative_water_content_perc >= 0.80 & relative_water_content_perc <= 0.90) 
-    
-    # Remove weird values
-    #filter(!(string_number == "string_7" & temperature_measured == 25 & time_seconds < 9000))  %>%
-
-    #filter(!(string_number == "string_7" & temperature_measured == 30 & time_seconds < 8000))  %>% 
-
-    #filter(!(string_number == "string_4" & temperature_measured == 25 & time_seconds > 19000))  
+#[sp_name]_rwc_data_filtered_data <-
+    [sp_name]_rwc_data %>%
+        filter(relative_water_content_perc < 0.86) 
 ```
 
 ### Plot filtered data
 
-```{r, plot_filtered_data, eval = FALSE}
-ggplot(data = [sp_name]_rwc_data_filtered_data,
-                aes(x = time_seconds, 
-                    y = string_weight_grams, 
-                    colour = string_number)) +
-    
-    geom_point() + 
+```{r, plot_filtered_data_below_85_no_vpd_control, eval = FALSE, echo = FALSE}
 
-    # Increase the number of y-axis tick marks
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+[sp_name]_rwc_data_filtered_data %>%
+  
+  filter(vpd_control == "no") %>% 
 
-    theme_bw() +
+  ggplot(data = ., aes(x = time_seconds, y = string_weight_grams,
+                       colour = string_number)) +
+      geom_point() + 
+  
+      # Increase the number of y-axis tick marks
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+  
+      theme_bw() +
+  
+      ggtitle("Data with no VPD control") +
+  
+      # Put legend at the bottom
+      theme(legend.position = "none") +
+  
+      # Break plot into panels
+      facet_grid(vars(set_temperature), vars(string_number)) +
+  
+      # Set colors  
+      scale_color_manual(values = string_colors) +
+      
+      # Show slope and R2
+      stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
+      stat_regline_equation(label.y = 40,  size = 3)+
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
+      scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
+```
 
-    # Put legend at the bottom
-    theme(legend.position = "none") +
+```{r, plot_filtered_data_below_85_vpd_controlled, eval = FALSE, echo = FALSE}
 
-    # Break plot into panels
-    facet_grid(vars(temperature_measured), vars(string_number)) +
+[sp_name]_rwc_data_filtered_data %>% 
+  
+  filter(vpd_control == "yes") %>% 
 
-    # Set colors  
-    scale_color_manual(values = string_colors) +
-    
-    # Show slope and R2
-    stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
-    stat_regline_equation(label.y = 40,  size = 3)+
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
-    scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
+  ggplot(data = ., aes(x = time_seconds,
+                       y = string_weight_grams,
+                       colour = string_number)) +
+      geom_point() + 
+  
+      # Increase the number of y-axis tick marks
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+  
+      theme_bw() +
+  
+      ggtitle("Data with VPD below 2kPa") +
+  
+      # Put legend at the bottom
+      theme(legend.position = "none") +
+  
+      # Break plot into panels
+      facet_grid(vars(set_temperature), vars(string_number)) +
+  
+      # Set colors  
+      scale_color_manual(values = string_colors) +
+      
+      # Show slope and R2
+      stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
+      stat_regline_equation(label.y = 40,  size = 3)+
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
+      scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
+```
+
+### Filter data based on previuos plots 
+
+```{r, data_for_gres, eval = FALSE}
+[sp_name]_data_for_gres <- 
+
+    [sp_name]_rwc_data_filtered_data  
+
+    # Remove data with poor R2
+    #filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
 ```
 
 ## Calculate the rate of change between water loss
 
 ```{r, eval = FALSE}
-slopes <- calculate_rate_of_change([sp_name]_rwc_data_filtered_data)
+slopes <- calculate_rate_of_change([sp_name]_data_for_gres)
 ```
 
 ```{r, eval = FALSE}
