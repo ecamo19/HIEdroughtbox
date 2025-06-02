@@ -470,7 +470,7 @@ glimpse([sp_name]_areas_data_cleaned)
 
 # 3. Areas boxplot
 
-```{r, boxplot_no_vpd_control, eval = FALSE, echo = FALSE}
+```{r, boxplot_leaf_area_no_vpd_control, eval = FALSE, echo = FALSE}
 [sp_name]_areas_data_cleaned %>%
     
         filter(vpd_control == "no") %>%
@@ -489,7 +489,7 @@ glimpse([sp_name]_areas_data_cleaned)
 
 ```
 
-```{r, boxplot_vpd_controlled, eval = FALSE, echo = FALSE}
+```{r, boxplot_leaf_area_vpd_controlled, eval = FALSE, echo = FALSE}
 [sp_name]_areas_data_cleaned %>% 
     
         filter(vpd_control == "yes") %>%
