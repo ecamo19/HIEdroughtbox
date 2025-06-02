@@ -1725,8 +1725,10 @@ glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
               ) %>%    
             
     reduce(rbind) %>%
-    arrange(string_number)
+    arrange(vpd_control, temperature_measured) %>%
 
+    # Reorganize columns  
+    select(date_time, string_number, temperature_measured, vpd_control, everything())
 ```
 
 ```{r, remove_all_raw_data, eval = FALSE}
