@@ -395,14 +395,12 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
 
 ```{r, eval=FALSE}
 #[sp_name]_areas_data <-
-    read.csv("./path/to/processed_data/areas_cm2.csv",
-                header = TRUE)  %>%
+
+    read.csv("./path/to/processed_data/areas_cm2.csv", header = TRUE)  %>%
 
     # Separate file name from file extension
-    separate_wider_delim(file_name,
-                         delim = ".",
+    separate_wider_delim(file_name, delim = ".", 
                          names = c("file_name", "file_extension")) %>%  
-
 
     # Create the vpd_control column based on whether "no-vpd-control" is present
     mutate(vpd_control = ifelse(grepl("no-vpd-control", file_name), 
@@ -416,14 +414,13 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
     mutate(file_name_clean = gsub("\\.jpg$", "", file_name_clean)) %>%
     
     # Separate the cleaned filename into components
-    separate(file_name_clean, 
-            into = c("image", "genera", "specie", "month", "tree_id", 
-                    "set_temperature", "organ", "image_number"),
-            sep = "_") %>%
+    separate(file_name_clean, into = c("image", "genera", "specie", "month", 
+                                       "tree_id", "set_temperature", "organ",
+                                       "image_number"), sep = "_") %>%
 
     # Select and reorder columns as desired
-    select(image, genera, specie, month, tree_id, vpd_control, 
-            set_temperature, organ, image_number, area) %>% 
+    select(image, genera, specie, month, tree_id, vpd_control, set_temperature, 
+           organ, image_number, area) %>% 
 
    # Unite Genera and specie columns
     unite("spcode", genera:month, sep = "_", remove = TRUE) %>%  
@@ -432,8 +429,7 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
     mutate(tree_id = as.numeric(str_remove(tree_id, "^0+")),
 
            # Remove the last character in set_temperature column
-           set_temperature = as.numeric(str_sub(set_temperature, end = -2))
-           ) %>%
+           set_temperature = as.numeric(str_sub(set_temperature, end = -2))) %>%
 
     # Rename column
     rename(areas_cm2 = area)  %>%
@@ -441,19 +437,31 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
     # Remove unused columns
     select(-c(image))  %>% 
 
-    group_by(spcode, tree_id, set_temperature, organ) %>% 
-    
+    group_by(spcode, tree_id, set_temperature, organ, vpd_control) %>% 
+
     summarise(areas_cm2 = sum(areas_cm2)) %>% 
     
     arrange(tree_id) %>% 
 
-    # Double sided leaf area
+    # Calculate Double sided leaf area
     mutate(double_sided_areas_cm2 = areas_cm2*2,
             
-            # create the string number column 
-            string_number = paste0("string_", tree_id %% 10)) %>%
-  
-    select(string_number,tree_id, everything()) 
+            # Create the string number column 
+            string_number = paste0("string_", tree_id %% 10),
+            
+            # Transfrom vpd_control column
+            vpd_control = factor(ifelse(vpd_control == "no-vpd-control", "no", 
+                                        "yes")),
+            
+            # Change data type of columns
+            spcode = factor(spcode),
+            string_number = factor(string_number),
+            organ = factor(organ),
+            tree_id = as.integer(tree_id)) %>%
+
+    # Organize columns
+    select(spcode, string_number, tree_id, vpd_control, everything()) %>% 
+    arrange(vpd_control, string_number, set_temperature)
 ```
 
 ```{r, eval=FALSE}
