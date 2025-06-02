@@ -1742,7 +1742,7 @@ glimpse([sp_name]_main_spread_sheet)
 ```
 
 ```{r, load_dry_weights_data, eval = FALSE}
-[sp_name]_dry_weights <-
+#[sp_name]_dry_weights <-
   
     [sp_name]_main_spread_sheet %>% 
 
@@ -1778,7 +1778,7 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
 ## Merge data sets
 
 ```{r, eval=FALSE}
-[sp_name]_droughtbox_data_cleaned <- 
+#[sp_name]_droughtbox_data_cleaned <- 
 
     [sp_name]_droughtbox_data_cleaned %>% 
 
