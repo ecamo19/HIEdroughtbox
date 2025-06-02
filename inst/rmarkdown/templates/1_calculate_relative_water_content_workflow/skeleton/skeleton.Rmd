@@ -84,53 +84,91 @@ string_colors <- c(string_1 = "#eec000",
 # 1. Load data 
 
 ```{r}
-
+load(file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
 ```
 
 # 2. Calculate the relative water content
 
-```{r,eval=FALSE}
-[sp_name]_rwc_data <- 
+```{r, eval = FALSE}
+#[sp_name]_rwc_data <- 
   
     [sp_name]_droughtbox_data_cleaned %>%
-  
-      select(-c(tc_avg_deg_c_avg, spcode, paper_bag_group, file)) %>%
-      rowwise() %>%
-      group_by(string_number,temperature_measured) %>%
-      
-      mutate(relative_water_content_perc = 
-               (string_weight_grams - sample_dry_weight_grams) / (max(string_weight_grams)-sample_dry_weight_grams))      
 
+        group_by(string_number, set_temperature, vpd_control) %>%
+        
+        # Calculate relative water content (%)
+        mutate(relative_water_content_perc = 
+                 (string_weight_grams - sample_dry_weight_grams) / 
+                 (max(string_weight_grams) - sample_dry_weight_grams))      
 ```
 
 ## Plot RWC
 
-```{r, plot_rwc, eval=FALSE}
-ggplot(data = [sp_name]_rwc_data,aes(x = time_seconds,
-                                     y = relative_water_content_perc, 
-                                     colour = string_number)) +
+```{r, plot_rwc_no_vpd_control, eval = FALSE, echo = FALSE}
+
+[sp_name]_rwc_data %>% 
     
-    geom_point() + 
-
-    # Increase the number of y-axis tick marks
-    scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
-
-    theme_bw() +
-
-    # Remove legend
-    theme(legend.position = "none") +
-
-    # Break plot into panels
-    facet_grid(vars(temperature_measured), vars(string_number)) +
+    filter(vpd_control == "no") %>% 
+    
+    ggplot(data = ., aes(x = time_seconds,
+                         y = relative_water_content_perc,
+                         colour = string_number)) +
+        
+        geom_point() + 
+    
+        # Increase the number of y-axis tick marks
+        scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+    
+        theme_bw() +
   
-    # Draw interval
-    geom_hline(yintercept = c(.70, .80))+
-
-    # Set colors  
-    scale_color_manual(values = string_colors)
+        ggtitle("Data with no VPD control") +
+    
+        # Remove legend
+        theme(legend.position = "none") +
+    
+        # Break plot into panels
+        facet_grid(vars(set_temperature), vars(string_number)) +
+      
+        # RWC at which Turgor loss point happens on average Bourne et al 2017
+        geom_hline(yintercept = 0.85) +
+    
+        # Set colors  
+        scale_color_manual(values = string_colors)
 ```
 
-# 5. Export data
+```{r, plot_rwc_vpd_controlled, eval = FALSE, echo = FALSE}
+
+[sp_name]_rwc_data %>% 
+    
+    filter(vpd_control == "yes") %>% 
+    
+    ggplot(data = ., aes(x = time_seconds,
+                         y = relative_water_content_perc,
+                         colour = string_number)) +
+        
+        geom_point() + 
+    
+        # Increase the number of y-axis tick marks
+        scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+    
+        theme_bw() +
+  
+        ggtitle("Data with VPD below 2kPa") +
+        
+        # Remove legend
+        theme(legend.position = "none") +
+    
+        # Break plot into panels
+        facet_grid(vars(set_temperature), vars(string_number)) +
+      
+        # RWC at which Turgor loss point happens on average Bourne et al 2017
+        geom_hline(yintercept = 0.85) +
+    
+        # Set colors  
+        scale_color_manual(values = string_colors)
+```
+
+# 3. Export data
 
 ```{r, export_data, eval=FALSE}
 save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_rwc_data.RData")
