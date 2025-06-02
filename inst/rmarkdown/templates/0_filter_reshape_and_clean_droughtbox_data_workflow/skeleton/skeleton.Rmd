@@ -1771,7 +1771,7 @@ glimpse([sp_name]_main_spread_sheet)
         # sample_weight_in_db =          sample + parafilm pieces + prensa + gancho_db   
         # weight_paper_bag_plus_sample = sample + parafilm pieces + prensa + paper_bag  
         # sample_dry_weight =           (weight_paper_bag_plus_sample - paper_bag_weight) + gancho_db      
-        mutate(sample_dry_weight_mg =  hook_weight_g + weight_paper_bag_plus_sample_scale_grams -
+        mutate(sample_dry_weight_g =  hook_weight_g + weight_paper_bag_plus_sample_scale_grams -
 
                                        # Remove the prensa weight from the paper bag weight  
                                        (empty_paper_bag_plus_sample_scale_grams - prensa_weight_g),
@@ -1801,46 +1801,91 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
         mutate(set_temperature = temperature_measured, .keep = "unused") %>% 
             
         inner_join(., [sp_name]_dry_weights, , 
-                by = join_by(string_number, set_temperature)) %>% 
+                by = join_by(string_number, set_temperature, vpd_control)) %>% 
         
-        select(-c(spcode, bag_group, time, tree_id))
+        select(-c(spcode, tree_id))
 ```
 
 ### Plot droughtbox data with dry weights
 
-```{r plot_raw_data_dry_weights, fig.width = 16, fig.height = 14, cache=TRUE, eval=FALSE}
-# ggplot(data = [sp_name]_droughtbox_data_cleaned , aes(x = time_seconds,
-#                                            y = string_weight_grams,
-#                                            colour = factor(string_number))) +
-#   
-#     geom_point()+
-#     
-#     theme_bw() +
-# 
-#     # Move legend at the bottom
-#     theme() +
-#   
-#     # Break plot into panels
-#     facet_grid(vars(temperature_measured), vars(string_number)) +
-# 
-#     # At lines showing range between 0-3600 sec (1 hour)
-#     geom_vline(xintercept = 0,  linetype = "dotted") +
-# 
-#     # Set colors  
-#     scale_color_manual(values = string_colors) +
-#     
-#     # Show dry-weights
-#     geom_hline(aes(yintercept = sample_dry_weight_grams)) +
-#
-#     # Rotate labels by 90 degrees
-#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-#         legend.position = "none")
+```{r plot_cleaned_data_with_dry_weights_no_vpd_control, eval=FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
+
+#plot_no_vpd_control <- 
+    [sp_name]_droughtbox_data_cleaned %>% 
+        
+        # Filter data
+        filter(vpd_control == "no") %>% 
+
+        ggplot(data = ., aes(x = time_seconds,
+                             y = string_weight_grams,
+                             colour = factor(string_number))) +
+            geom_point() +
+        
+            theme_bw() +
+            
+            ggtitle("Data with no VPD control") +
+        
+            # Move legend at the bottom
+            theme() +
+        
+            # Break plot into panels
+            facet_grid(vars(set_temperature), vars(string_number)) +
+        
+            # At lines showing range between 0-3600 sec (1 hour)
+            geom_vline(xintercept = 0,  linetype = "dotted") +
+        
+            # Set colors
+            scale_color_manual(values = string_colors) +
+        
+            # Show dry-weights
+            geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+        
+            # Rotate labels by 90 degrees
+            theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+                  legend.position = "none")
+```
+
+```{r plot_cleaned_data_with_dry_weights_vpd_controlled,eval=FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
+
+#plot_vpd_controlled <- 
+    [sp_name]_droughtbox_data_cleaned %>% 
+        
+        # Filter data
+        filter(vpd_control == "yes") %>% 
+
+        ggplot(data = ., aes(x = time_seconds,
+                             y = string_weight_grams,
+                             colour = factor(string_number))) +
+            geom_point() +
+        
+            theme_bw() +
+            
+            ggtitle("Data with VPD below 2kPa") +
+        
+            # Move legend at the bottom
+            theme() +
+        
+            # Break plot into panels
+            facet_grid(vars(set_temperature), vars(string_number)) +
+        
+            # At lines showing range between 0-3600 sec (1 hour)
+            geom_vline(xintercept = 0,  linetype = "dotted") +
+        
+            # Set colors
+            scale_color_manual(values = string_colors) +
+        
+            # Show dry-weights
+            geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+        
+            # Rotate labels by 90 degrees
+            theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+                  legend.position = "none")
 ```
 
 # 4. Export data
 
 ```{r, export_data, eval=FALSE}
-save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_droughtbox_weights_cleaned.RData")
+save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
 ```
 
 
