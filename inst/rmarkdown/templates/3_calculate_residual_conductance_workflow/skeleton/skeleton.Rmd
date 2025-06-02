@@ -37,7 +37,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # Path where figures are going to be store pdf single 
                       # figures
                       Edit path in line 44 and comment out this line   
-                      fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
+                      fig.path       = paste0("./figures_[sp_name]", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -90,7 +90,7 @@ string_colors <- c(string_1 = "#eec000",
 
 ## Load RWC data
 
-```{r, raw_data_list, eval = FALSE}
+```{r, load_droughtbox_data_with_rwc, eval = FALSE}
 load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 ```
 
@@ -101,14 +101,16 @@ glimpse([sp_name]_rwc_data)
 
 ## Load Areas data file
 
-```{r, eval=FALSE}
-load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
+```{r, load_areas_data, eval = FALSE}
+load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 
-```{r, clean_areas_data, eval=FALSE}
-[sp_name]_areas_data_cleaned <- 
-    [sp_name]_areas_data %>% 
-        group_by(spcode, tree_id, set_temperature, string_number) %>% 
+```{r, prepare_areas_data, eval=FALSE}
+#[sp_name]_areas_data <-
+  
+    [sp_name]_areas_data_cleaned %>%
+  
+        group_by(spcode, tree_id, set_temperature, string_number, vpd_control) %>% 
         
          # Convert cm2 to m2
         mutate(areas_m2 = areas_cm2/10000,
@@ -118,42 +120,49 @@ load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
         summarise(areas_m2 = sum(areas_m2),
                   double_sided_areas_m2 = sum(double_sided_areas_m2)) %>% 
         
-        mutate(temperature_measured = as.integer(set_temperature), 
+        mutate(set_temperature = as.integer(set_temperature), 
                .keep =  "unused") %>% 
-    
-        select(spcode, string_number, tree_id, temperature_measured, everything())
+        
+        # Reorganize columns
+        select(spcode, string_number, tree_id, set_temperature, everything()) %>% 
+        arrange(vpd_control)
 ```
 
 ```{r, eval=FALSE}
-glimpse([sp_name]_areas_data_cleaned)
+glimpse([sp_name]_areas_data)
 ```
 
-# 2. Plot climatic data
+# 2. Plot climatic conditions inside the droughtbox
 
 ## VPD
 
-```{r, plot_vpd, eval = FALSE}
+```{r, plot_vpd_conditions, eval = FALSE, echo = FALSE}
 
-ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
-                                           y = vpd_avg_kpa_avg)) +
-    geom_boxplot() +
-    theme_bw() +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 7))
+ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
+                                      y = vpd_avg_kpa_avg,
+                                      colour = vpd_control)) +
+        geom_boxplot() +
+        theme_bw() +
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
+        theme_bw() +
+        ggtitle("VPD conditions inside the Droughtbox") 
 ```
 
 ## Temperature
 
-```{r, plot_temperature, eval = FALSE}
-ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
-                                           y = tc_avg_deg_c_avg)) +
+```{r, plot_temperature_conditions, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
+                                      y = tc_avg_deg_c_avg,
+                                      colour = vpd_control)) +
     geom_boxplot() +
     theme_bw() +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 7))
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
+    ggtitle("Temperature conditions inside the Droughtbox")
 ```
 
 # 3. Calculate species residual conductance 
 
-## Filter data in the range 70-80% RWC
+## Filter data below 85% RWC
 
 ```{r, filter_data_based_on_rwc, eval = FALSE}
 [sp_name]_rwc_data_filtered_data <- 
