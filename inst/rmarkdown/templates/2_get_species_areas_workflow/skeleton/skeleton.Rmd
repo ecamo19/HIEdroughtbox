@@ -394,7 +394,7 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
 ## Load and clean areas CSV file
 
 ```{r, eval=FALSE}
-#[sp_name]_areas_data <-
+#[sp_name]_areas_data_cleaned <-
 
     read.csv("./path/to/processed_data/areas_cm2.csv", header = TRUE)  %>%
 
@@ -465,12 +465,54 @@ mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
 ```
 
 ```{r, eval=FALSE}
-glimpse([sp_name]_areas_data)
+glimpse([sp_name]_areas_data_cleaned)
 ```
 
-# 3. Export data as Rdata
+# 3. Areas boxplot
+
+```{r, boxplot_no_vpd_control, eval = FALSE, echo = FALSE}
+[sp_name]_areas_data_cleaned %>%
+    
+        filter(vpd_control == "no") %>%
+
+        group_by(spcode, tree_id,string_number, set_temperature, vpd_control) %>%
+        
+        # Sum leaves and stem areas
+        summarise(areas_cm2 = sum(areas_cm2),
+                    double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
+            
+        # Boxplot
+        ggplot(data = ., aes(x = as.factor(set_temperature) , y = double_sided_areas_cm2)) +
+            geom_boxplot() +
+            theme_bw() + 
+            ggtitle("Data with no VPD control")     
+
+```
+
+```{r, boxplot_vpd_controlled, eval = FALSE, echo = FALSE}
+[sp_name]_areas_data_cleaned %>% 
+    
+        filter(vpd_control == "yes") %>%
+
+        group_by(spcode, tree_id,string_number, set_temperature, vpd_control) %>%
+        
+        # Sum leaves and stem areas
+        summarise(areas_cm2 = sum(areas_cm2),
+                    double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
+            
+        # Boxplot
+        ggplot(data = ., aes(x = as.factor(set_temperature) , y = double_sided_areas_cm2)) +
+            geom_boxplot() +
+            theme_bw() + 
+            ggtitle("Data with VPD controlled") 
+
+
+```
+
+# 4. Export data as Rdata
 
 ```{r, export_data, eval=FALSE}
-save([sp_name]_areas_data, file = "./[sp_name]_processed_data/[sp_name]_areas_data.RData")
+save([sp_name]_areas_data_cleaned, 
+     file = "./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 
