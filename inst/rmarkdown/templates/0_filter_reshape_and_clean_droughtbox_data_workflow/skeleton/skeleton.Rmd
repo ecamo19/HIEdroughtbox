@@ -1718,7 +1718,7 @@ glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
 ## Merge datasets
 
 ```{r, merge_data, eval=FALSE }
-[sp_name]_droughtbox_data_cleaned <- 
+#[sp_name]_droughtbox_data_cleaned <- 
             list(
               [sp_name]_no_vpd_control_merged_cleaned_data,
               [sp_name]_vpd_controlled_merged_cleaned_data
