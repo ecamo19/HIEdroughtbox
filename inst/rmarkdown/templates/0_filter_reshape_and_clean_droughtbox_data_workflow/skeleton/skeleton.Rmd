@@ -1808,7 +1808,7 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
 
 ### Plot droughtbox data with dry weights
 
-```{r plot_cleaned_data_with_dry_weights_no_vpd_control, eval=FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
+```{r plot_cleaned_data_with_dry_weights_no_vpd_control,echo=FALSE, eval=FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
 
 #plot_no_vpd_control <- 
     [sp_name]_droughtbox_data_cleaned %>% 
@@ -1845,7 +1845,7 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
                   legend.position = "none")
 ```
 
-```{r plot_cleaned_data_with_dry_weights_vpd_controlled,eval=FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
+```{r plot_cleaned_data_with_dry_weights_vpd_controlled,echo=FALSE, eval=FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
 
 #plot_vpd_controlled <- 
     [sp_name]_droughtbox_data_cleaned %>% 
@@ -1884,8 +1884,8 @@ plot([sp_name]_dry_weights$sample_dry_weight_grams,
 
 # 4. Export data
 
-```{r, export_data, eval=FALSE}
-save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
+```{r, export_data_for_rwc, eval=FALSE}
+save([sp_name]_data_for_rwc, file = "./processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
 ```
 
 
