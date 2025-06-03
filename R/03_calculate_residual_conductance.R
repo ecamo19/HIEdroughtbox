@@ -32,6 +32,8 @@
 #' @export
 calculate_rate_of_change <- function(droughtbox_data_reshaped){
 
+    base::stopifnot("Missing vpd_control column" = "vpd_control" %in% base::colnames(droughtbox_data))
+
     rate_of_change <-
 
         # Data reshaped with the function reshape_droughtbox_data
