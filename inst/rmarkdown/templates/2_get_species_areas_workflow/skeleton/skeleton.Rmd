@@ -37,7 +37,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # Path where figures are going to be store pdf single 
                       # figures
                       Edit path in line 44 and comment out this line   
-                      fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
+                      fig.path       = paste0("./figures_[sp_name]", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -369,14 +369,14 @@ process_folder(input_path);
 
 ## Use python function to crop images
 
-```{python,run_python_function, eval=FALSE}
+```{python,run_python_function, echo = FALSE, eval = FALSE}
 path = "path/to/scanned_images"
 crop_images_for_imagej(path = path, blur = 15)
 ```
 
 # 2. Calculate areas using ImageJ macro in bash
 
-```{bash, bash_code_imagej, results = "hide", eval=FALSE}
+```{bash, bash_code_imagej, results = "hide", eval=FALSE, echo = FALSE}
 pwd
 # Enter the path where Fiji was installed
 
@@ -387,75 +387,132 @@ pwd
 # ~/path/to/fiji-linux64/ImageJ-linux64 --headless --console -macro path/to/leaf_area_300dpi.ijm 'path/to/cropped_images_for_imagej'
 ```
 
-```{bash, move_areas_file, results = "hide", eval=FALSE}
+```{bash, move_areas_file, results = "hide", echo = FALSE, eval=FALSE}
 mv areas_cm2.csv ./path/to/processed_data/areas_cm2.csv
 ```
 
-## Load areas CSV data file
+## Load and clean areas CSV file
 
 ```{r, eval=FALSE}
-[sp_name]_areas_data <-
-    read.csv("./path/to/processed_data/areas_cm2.csv",
-                header = TRUE)  %>%
+#[sp_name]_areas_data_cleaned <-
+
+    read.csv("./path/to/processed_data/areas_cm2.csv", header = TRUE)  %>%
 
     # Separate file name from file extension
-    separate_wider_delim(file_name,
-                         delim = ".",
-                         names = c("file_name", "file_extension")) %>%
+    separate_wider_delim(file_name, delim = ".", 
+                         names = c("file_name", "file_extension")) %>%  
 
-    # Separate column into 8 columns based on underscore separation
-    separate(., col = file_name,
-             into = c('image', 'genera', 'specie','place', 'tree_id',
-                      'set_temperature', 'organ', 'image_number' ),
-             sep = '_') 
+    # Create the vpd_control column based on whether "no-vpd-control" is present
+    mutate(vpd_control = ifelse(grepl("no-vpd-control", file_name), 
+                                "no-vpd-control", 
+                                "vpd_controlled")) %>%
+
+    # Remove "no-vpd-control_" from file_name to standardize the format
+    mutate(file_name_clean = gsub("no-vpd-control_", "", file_name)) %>% 
+    
+    # Remove the .jpg extension
+    mutate(file_name_clean = gsub("\\.jpg$", "", file_name_clean)) %>%
+    
+    # Separate the cleaned filename into components
+    separate(file_name_clean, into = c("image", "genera", "specie", "month", 
+                                       "tree_id", "set_temperature", "organ",
+                                       "image_number"), sep = "_") %>%
+
+    # Select and reorder columns as desired
+    select(image, genera, specie, month, tree_id, vpd_control, set_temperature, 
+           organ, image_number, area) %>% 
 
    # Unite Genera and specie columns
-    unite("spcode", genera:specie, sep = "_", remove = TRUE) %>%
+    unite("spcode", genera:month, sep = "_", remove = TRUE) %>%  
 
     # Remove leading zeros inside column
     mutate(tree_id = as.numeric(str_remove(tree_id, "^0+")),
 
            # Remove the last character in set_temperature column
-           set_temperature = as.numeric(str_sub(set_temperature, end = -2))
-           ) %>%
+           set_temperature = as.numeric(str_sub(set_temperature, end = -2))) %>%
 
     # Rename column
     rename(areas_cm2 = area)  %>%
 
     # Remove unused columns
-    select(-c(file_extension, image)) %>% 
+    select(-c(image))  %>% 
 
-    group_by(spcode, tree_id, set_temperature, organ) %>% 
+    group_by(spcode, tree_id, set_temperature, organ, vpd_control) %>% 
 
     summarise(areas_cm2 = sum(areas_cm2)) %>% 
     
     arrange(tree_id) %>% 
 
-    mutate(double_sided_areas_cm2 = areas_cm2*2) %>%
+    # Calculate Double sided leaf area
+    mutate(double_sided_areas_cm2 = areas_cm2*2,
+            
+            # Create the string number column 
+            string_number = paste0("string_", tree_id %% 10),
+            
+            # Transfrom vpd_control column
+            vpd_control = factor(ifelse(vpd_control == "no-vpd-control", "no", 
+                                        "yes")),
+            
+            # Change data type of columns
+            spcode = factor(spcode),
+            string_number = factor(string_number),
+            organ = factor(organ),
+            tree_id = as.integer(tree_id)) %>%
 
-    mutate(tree_id = as.character(tree_id), .keep = "unused") %>%  
-    
-    dplyr::mutate(string_number = dplyr::case_when(tree_id == "X1"  ~ "string_1",
-                                                   tree_id == "X2"  ~ "string_2",
-                                                   tree_id == "X3"  ~ "string_3",
-                                                   tree_id == "X4"  ~ "string_4",
-                                                   tree_id == "X5"  ~ "string_5",
-                                                   tree_id == "X6"  ~ "string_6",
-                                                   tree_id == "X7"  ~ "string_7",
-                                                   tree_id == "X8"  ~ "string_8",
-                                                   TRUE ~ tree_id)) %>% 
-
-    mutate(tree_id = as.integer(tree_id), .keep = "unused") %>%  
-    select(string_number, everything()) 
+    # Organize columns
+    select(spcode, string_number, tree_id, vpd_control, everything()) %>% 
+    arrange(vpd_control, string_number, set_temperature)
 ```
 
 ```{r, eval=FALSE}
-glimpse([sp_name]_areas_data)
+glimpse([sp_name]_areas_data_cleaned)
 ```
 
-# 3. Export data as Rdata
+# 3. Areas boxplot
+
+```{r, boxplot_leaf_area_no_vpd_control, eval = FALSE, echo = FALSE}
+[sp_name]_areas_data_cleaned %>%
+    
+        filter(vpd_control == "no") %>%
+
+        group_by(spcode, tree_id,string_number, set_temperature, vpd_control) %>%
+        
+        # Sum leaves and stem areas
+        summarise(areas_cm2 = sum(areas_cm2),
+                    double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
+            
+        # Boxplot
+        ggplot(data = ., aes(x = as.factor(set_temperature) , y = double_sided_areas_cm2)) +
+            geom_boxplot() +
+            theme_bw() + 
+            ggtitle("Data with no VPD control")     
+
+```
+
+```{r, boxplot_leaf_area_vpd_controlled, eval = FALSE, echo = FALSE}
+[sp_name]_areas_data_cleaned %>% 
+    
+        filter(vpd_control == "yes") %>%
+
+        group_by(spcode, tree_id,string_number, set_temperature, vpd_control) %>%
+        
+        # Sum leaves and stem areas
+        summarise(areas_cm2 = sum(areas_cm2),
+                    double_sided_areas_cm2 = sum(double_sided_areas_cm2)) %>% 
+            
+        # Boxplot
+        ggplot(data = ., aes(x = as.factor(set_temperature) , y = double_sided_areas_cm2)) +
+            geom_boxplot() +
+            theme_bw() + 
+            ggtitle("Data with VPD controlled") 
+
+
+```
+
+# 4. Export data as Rdata
 
 ```{r, export_data, eval=FALSE}
-save([sp_name]_areas_data, file = "./[sp_name]_processed_data/[sp_name]_areas_data.RData")
+save([sp_name]_areas_data_cleaned, 
+     file = "./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 

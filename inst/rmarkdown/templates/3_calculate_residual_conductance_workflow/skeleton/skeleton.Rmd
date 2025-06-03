@@ -37,7 +37,7 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # Path where figures are going to be store pdf single 
                       # figures
                       Edit path in line 44 and comment out this line   
-                      fig.path       = paste0("./droughtbox_data/figures_[sp_name]_gres", "/"),
+                      fig.path       = paste0("./figures_[sp_name]", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -90,7 +90,7 @@ string_colors <- c(string_1 = "#eec000",
 
 ## Load RWC data
 
-```{r, raw_data_list, eval = FALSE}
+```{r, load_droughtbox_data_with_rwc, eval = FALSE}
 load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 ```
 
@@ -101,14 +101,16 @@ glimpse([sp_name]_rwc_data)
 
 ## Load Areas data file
 
-```{r, eval=FALSE}
-load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
+```{r, load_areas_data, eval = FALSE}
+load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 
-```{r, clean_areas_data, eval=FALSE}
-[sp_name]_areas_data_cleaned <- 
-    [sp_name]_areas_data %>% 
-        group_by(spcode, tree_id, set_temperature, string_number) %>% 
+```{r, prepare_areas_data, eval=FALSE}
+#[sp_name]_areas_data <-
+  
+    [sp_name]_areas_data_cleaned %>%
+  
+        group_by(spcode, tree_id, set_temperature, string_number, vpd_control) %>% 
         
          # Convert cm2 to m2
         mutate(areas_m2 = areas_cm2/10000,
@@ -118,91 +120,140 @@ load("./[sp_name]_processed_data/[sp_name]_areas_data.RData")
         summarise(areas_m2 = sum(areas_m2),
                   double_sided_areas_m2 = sum(double_sided_areas_m2)) %>% 
         
-        mutate(temperature_measured = as.integer(set_temperature), 
+        mutate(set_temperature = as.integer(set_temperature), 
                .keep =  "unused") %>% 
-    
-        select(spcode, string_number, tree_id, temperature_measured, everything())
+        
+        # Reorganize columns
+        select(spcode, string_number, tree_id, set_temperature, everything()) %>% 
+        arrange(vpd_control)
 ```
 
 ```{r, eval=FALSE}
-glimpse([sp_name]_areas_data_cleaned)
+glimpse([sp_name]_areas_data)
 ```
 
-# 2. Plot climatic data
+# 2. Plot climatic conditions inside the droughtbox
 
 ## VPD
 
-```{r, plot_vpd, eval = FALSE}
+```{r, plot_vpd_conditions, eval = FALSE, echo = FALSE}
 
-ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
-                                           y = vpd_avg_kpa_avg)) +
-    geom_boxplot() +
-    theme_bw() +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 7))
+ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
+                                      y = vpd_avg_kpa_avg,
+                                      colour = vpd_control)) +
+        geom_boxplot() +
+        theme_bw() +
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
+        theme_bw() +
+        ggtitle("VPD conditions inside the Droughtbox") 
 ```
 
 ## Temperature
 
-```{r, plot_temperature, eval = FALSE}
-ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature), 
-                                           y = tc_avg_deg_c_avg)) +
+```{r, plot_temperature_conditions, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
+                                      y = tc_avg_deg_c_avg,
+                                      colour = vpd_control)) +
     geom_boxplot() +
     theme_bw() +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 7))
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
+    ggtitle("Temperature conditions inside the Droughtbox")
 ```
 
 # 3. Calculate species residual conductance 
 
-## Filter data in the range 70-80% RWC
+## Filter data below 85% RWC
 
 ```{r, filter_data_based_on_rwc, eval = FALSE}
-[sp_name]_rwc_data_filtered_data <- 
-    [sp_name]_rwc_data %>% 
-    filter(relative_water_content_perc >= 0.80 & relative_water_content_perc <= 0.90) 
-    
-    # Remove weird values
-    #filter(!(string_number == "string_7" & temperature_measured == 25 & time_seconds < 9000))  %>%
-
-    #filter(!(string_number == "string_7" & temperature_measured == 30 & time_seconds < 8000))  %>% 
-
-    #filter(!(string_number == "string_4" & temperature_measured == 25 & time_seconds > 19000))  
+#[sp_name]_rwc_data_filtered_data <-
+    [sp_name]_rwc_data %>%
+        filter(relative_water_content_perc < 0.86) 
 ```
 
 ### Plot filtered data
 
-```{r, plot_filtered_data, eval = FALSE}
-ggplot(data = [sp_name]_rwc_data_filtered_data,
-                aes(x = time_seconds, 
-                    y = string_weight_grams, 
-                    colour = string_number)) +
-    
-    geom_point() + 
+```{r, plot_filtered_data_below_85_no_vpd_control, eval = FALSE, echo = FALSE}
 
-    # Increase the number of y-axis tick marks
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+[sp_name]_rwc_data_filtered_data %>%
+  
+  filter(vpd_control == "no") %>% 
 
-    theme_bw() +
+  ggplot(data = ., aes(x = time_seconds, y = string_weight_grams,
+                       colour = string_number)) +
+      geom_point() + 
+  
+      # Increase the number of y-axis tick marks
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+  
+      theme_bw() +
+  
+      ggtitle("Data with no VPD control") +
+  
+      # Put legend at the bottom
+      theme(legend.position = "none") +
+  
+      # Break plot into panels
+      facet_grid(vars(set_temperature), vars(string_number)) +
+  
+      # Set colors  
+      scale_color_manual(values = string_colors) +
+      
+      # Show slope and R2
+      stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
+      stat_regline_equation(label.y = 40,  size = 3)+
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
+      scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
+```
 
-    # Put legend at the bottom
-    theme(legend.position = "none") +
+```{r, plot_filtered_data_below_85_vpd_controlled, eval = FALSE, echo = FALSE}
 
-    # Break plot into panels
-    facet_grid(vars(temperature_measured), vars(string_number)) +
+[sp_name]_rwc_data_filtered_data %>% 
+  
+  filter(vpd_control == "yes") %>% 
 
-    # Set colors  
-    scale_color_manual(values = string_colors) +
-    
-    # Show slope and R2
-    stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
-    stat_regline_equation(label.y = 40,  size = 3)+
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
-    scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
+  ggplot(data = ., aes(x = time_seconds,
+                       y = string_weight_grams,
+                       colour = string_number)) +
+      geom_point() + 
+  
+      # Increase the number of y-axis tick marks
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+  
+      theme_bw() +
+  
+      ggtitle("Data with VPD below 2kPa") +
+  
+      # Put legend at the bottom
+      theme(legend.position = "none") +
+  
+      # Break plot into panels
+      facet_grid(vars(set_temperature), vars(string_number)) +
+  
+      # Set colors  
+      scale_color_manual(values = string_colors) +
+      
+      # Show slope and R2
+      stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
+      stat_regline_equation(label.y = 40,  size = 3)+
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
+      scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
+```
+
+### Filter data based on previuos plots 
+
+```{r, data_for_gres, eval = FALSE}
+[sp_name]_data_for_gres <- 
+
+    [sp_name]_rwc_data_filtered_data  
+
+    # Remove data with poor R2
+    #filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
 ```
 
 ## Calculate the rate of change between water loss
 
 ```{r, eval = FALSE}
-slopes <- calculate_rate_of_change([sp_name]_rwc_data_filtered_data)
+slopes <- calculate_rate_of_change([sp_name]_data_for_gres)
 ```
 
 ```{r, eval = FALSE}
