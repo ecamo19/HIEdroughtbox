@@ -17,7 +17,7 @@
 #'  vpd_avg_kpa_avg
 #'  date_time
 #'
-#' @return A dataframe containing the strain_number, temperature_measured and the
+#' @return A dataframe containing the strain_number, set_temperature and the
 #' rate of change between weight and time.
 #'
 #' @examples
@@ -43,7 +43,7 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 
 
             # Get median climatic conditions ------------------------------------
-            dplyr::group_by(temperature_measured) %>%
+            dplyr::group_by(set_temperature) %>%
 
             dplyr::mutate(median_vdp  = stats::median(vpd_avg_kpa_avg),
                           median_rh   = stats::median(rh_avg_percent_avg),
@@ -51,11 +51,11 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 
             # Calculate the rate of change --------------------------------------
 
-            # Create a nested dataframes excluding temperature_measured,
+            # Create a nested dataframes excluding set_temperature,
             # strain_number.
             tidyr::nest(data = -c(median_vdp, median_rh, median_temp,
                                   string_number, set_temperature,
-                                  vpd_control)) %>%
+                                  )) %>%
 
             # Create column with the slopes by strain_number, set_temperature
             dplyr::mutate(slope_grams_per_second = purrr::map(data,
@@ -73,9 +73,9 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             dplyr::ungroup()
 
         # Print message if temperature measured and set temperature are different
-        #base::ifelse(all(rate_of_change$temperature_measured == rate_of_change$set_temperature),
+        #base::ifelse(all(rate_of_change$set_temperature == rate_of_change$set_temperature),
         #             "all TRUE This is ok",
-        #             print("temperature_measured and set_temperature might be diffrent. Check data"))
+        #             print("set_temperature and set_temperature might be diffrent. Check data"))
 
     return(rate_of_change)
 }
@@ -173,7 +173,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
         ## Merge leaf and branch areas data with slope data ---------------------
         dplyr::full_join(., leaf_and_branch_area_data,
-                     by = c("string_number", "set_temperature", "vpd_control")) %>%
+                     by = c("string_number", "set_temperature")) %>%
 
         # Calculate transpiration for single and double sided areas
         dplyr::mutate(transpiration_single_grams_per_sec_m2 =
@@ -191,7 +191,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
         # Arrange dataset
         dplyr::select(spcode, string_number, tree_id, dplyr::everything()) %>%
-        dplyr::group_by(temperature_measured, tree_id, string_number) %>%
+        dplyr::group_by(set_temperature, tree_id, string_number) %>%
         dplyr::arrange(tree_id)
 
     return(transpiration_rate)
@@ -303,7 +303,7 @@ calculate_residual_conductance <- function(droughtbox_data,
 
         # Change temperatures measured into discrete groups i.e if
         # tc_avg_deg_c_avg is between 53 and 56 code it as 55
-        #dplyr::mutate(temperature_measured = dplyr::case_when(
+        #dplyr::mutate(set_temperature = dplyr::case_when(
             #dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
             #dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
             #dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
@@ -320,7 +320,7 @@ calculate_residual_conductance <- function(droughtbox_data,
         #              .keep = "unused") %>%
 
         # Group by temperature
-        dplyr::group_by(temperature_measured) %>%
+        dplyr::group_by(set_temperature) %>%
 
         # Print message
         {print("Make sure VPD conditions were constant"); .} %>%
