@@ -84,6 +84,12 @@ string_colors <- c(string_1 = "#eec000",
                    string_6 =  "#008b28",
                    string_7 =  "#8600b6",
                    string_8 =  "#00a0ab")
+
+# Function for adding the number of observations on top of a boxplot
+give_n <- function(x){
+  return(c(y = median(x)*2, label = length(x))) 
+  # experiment with the multiplier to find the perfect position
+}
 ```
 
 # 1. Load data
@@ -105,8 +111,8 @@ glimpse([sp_name]_rwc_data)
 load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 
-```{r, prepare_areas_data, eval=FALSE}
-#[sp_name]_areas_data <-
+```{r, prepare_areas_data, eval = FALSE}
+#[sp_name]_areas_data_for_gres <-
   
     [sp_name]_areas_data_cleaned %>%
   
@@ -128,8 +134,8 @@ load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
         arrange(vpd_control)
 ```
 
-```{r, eval=FALSE}
-glimpse([sp_name]_areas_data)
+```{r, eval = FALSE}
+glimpse([sp_name]_areas_data_for_gres)
 ```
 
 # 2. Plot climatic conditions inside the droughtbox
@@ -145,7 +151,10 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
         theme_bw() +
         scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
         theme_bw() +
-        ggtitle("VPD conditions inside the Droughtbox") 
+        ggtitle("VPD conditions inside the Droughtbox") +
+        
+        # Set colors
+        scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
 ## Temperature
@@ -157,7 +166,10 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
     geom_boxplot() +
     theme_bw() +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
-    ggtitle("Temperature conditions inside the Droughtbox")
+    ggtitle("Temperature conditions inside the Droughtbox") +
+    
+    # Set colors
+    scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
 # 3. Calculate species residual conductance 
@@ -242,7 +254,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ### Filter data based on previuos plots 
 
 ```{r, data_for_gres, eval = FALSE}
-[sp_name]_data_for_gres <- 
+[sp_name]_db_data_for_gres <- 
 
     [sp_name]_rwc_data_filtered_data  
 
@@ -250,7 +262,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
     #filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
 ```
 
-## Calculate the rate of change between water loss
+## Calculate the water loss rate of change   
 
 ```{r, eval = FALSE}
 #[sp_name]_slopes <-
@@ -263,64 +275,101 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 nrow([sp_name]_slopes)
 ```
 
+```{r, eval = FALSE, echo = FALSE}
+# Compare the slopes with those calculated in the ggplot
+[sp_name]_slopes %>% 
+    select(string_number, set_temperature, vpd_control, 
+           slope_grams_per_second) %>% 
+    
+    reactable::reactable(.)
+```
+
 ```{r, plot_slopes, eval = FALSE, echo = FALSE}
-ggplot(data = slopes_no_vpd_control_data, aes(x = factor(set_temperature),
-                                              y = slope_grams_per_second)) +
+ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
+                                    y = slope_grams_per_second)) +
     geom_boxplot() +
     theme_bw() +
-    ggtitle("Data with no VPD control") 
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
 ```
-
-
-```{r, plot_slopes_vpd_controlled, eval = FALSE, echo = FALSE}
-ggplot(data = slopes_no_vpd_control_data, aes(x = factor(set_temperature),
-                                              y = slope_grams_per_second)) +
-    geom_boxplot() +
-    theme_bw() +
-    ggtitle("Data with VPD below 2kPa") 
-```
-
-
-
-
 
 ## Calculate transpiration rates
 
-```{r, eval=FALSE}
-transpiration_rates <- calculate_transpiration_rates(droughtbox_data = [sp_name]_rwc_data_filtered_data,
-                                                     leaf_and_branch_area_data = [sp_name]_areas_data_cleaned)
+```{r, eval = FALSE}
+#[sp_name]_transpiration_rates <- 
+  calculate_transpiration_rates(droughtbox_data = [sp_name]_db_data_for_gres,
+                                leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
-```{r, plot_transpiration_rates_single, eval=FALSE}
-ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
-                          y = transpiration_single_grams_per_sec_m2)) +
+```{r, plot_transpiration_rates_single, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
+                                                 y = transpiration_single_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw()
+    theme_bw() +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
 ```
 
-```{r, plot_transpiration_rates_double, eval=FALSE}
-ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
-                          y = transpiration_double_grams_per_sec_m2)) +
+```{r, plot_transpiration_rates_double, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
+                                                 y = transpiration_double_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw()
+    theme_bw() +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                  position = position_dodge(width = 0.75))
 ```
 
 ## Calculate Residual conductance
 
-```{r, eval=FALSE}
-[sp_name]_residual_conductance <- 
-    calculate_residual_conductance(droughtbox_data =  [sp_name]_rwc_data_filtered_data,
-                                   leaf_and_branch_area_data = [sp_name]_areas_data_cleaned)
+```{r, eval = FALSE}
+#[sp_name]_residual_conductance <- 
+    calculate_residual_conductance(droughtbox_data = [sp_name]_db_data_for_gres,
+                                   leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 glimpse([sp_name]_residual_conductance)
 ```
 
-```{r residual_conductance_plot, eval=FALSE}
-[sp_name]_residual_conductance %>%
+### Duplicate 25c data for rTCP modeling
+
+```{r, eval = FALSE}
+duplicated_25c_data <- 
     
-    group_by(temperature_measured) %>%
+    [sp_name]_residual_conductance %>% 
+
+    # Get 25 degrees data from vpd_control = "yes"
+    filter(set_temperature == 25 & vpd_control == "yes") %>% 
+    
+    # Override vpd_control from "yes" to "no" 
+    mutate(vpd_control = "no")
+```
+
+```{r, eval = FALSE}
+# Join data sets
+#[sp_name]_residual_conductance_data_for_rtpc <-
+        list(
+            [sp_name]_residual_conductance,
+            duplicated_25c_data
+            ) %>%
+    reduce(rbind) 
+```
+
+```{r echo = FALSE, eval = FALSE}
+[sp_name]_residual_conductance_data_for_rtpc %>%
+    mutate(across(where(is.numeric), round, 3)) %>%
+    reactable::reactable(.)
+```
+
+### Plot Residual conductance data
+
+```{r plot_residual_conductance, eval = FALSE, echo = FALSE}
+[sp_name]_residual_conductance_data_for_rtpc %>%
+    
+    group_by(set_temperature, vpd_control) %>%
     
     na.omit() %>% 
     
@@ -333,31 +382,34 @@ glimpse([sp_name]_residual_conductance)
         se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
     
         # Plot
-        ggplot(data = ., aes(x = temperature_measured,
-                            y = median_residual_conductance)) +
-
-        geom_point(size = 4) +
-
+        ggplot(data = ., aes(x = set_temperature, 
+                             y = median_residual_conductance,
+                             colour = vpd_control)) +
+        
+        theme_bw() +
+  
+        geom_point(size = 3.5) +
+  
+        # Increase the tickmarks of the axes
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + 
+        scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
+  
+        # Position label at the bottom
+        theme(legend.position = "bottom") +
+    
+        # Error bars 1 S.E
         geom_errorbar(aes(ymin =  median_residual_conductance - se_residual_conductance,
                          ymax  =  median_residual_conductance + se_residual_conductance),
                          width = 1.5,
                          position = position_dodge(0.05)) +
-
-        geom_point(aes(y = median_vpd, x = temperature_measured), 
-                        color = "#008b28", stroke = 2, shape = 8, size = 4)  +
-       
-        scale_y_continuous(breaks = scales::pretty_breaks(n = 5),
-                          sec.axis = sec_axis(~ ., name = "VPD")) +
         
-        scale_x_continuous(breaks = scales::pretty_breaks(n = 7))+
-        theme_bw() 
+        # Set colors
+        scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
-# 4. Export data
+# 5. Export data
 
-```{r, export_data, eval=FALSE}
-save([sp_name]_residual_conductance, file = "./processed_data/[sp_name]_residual_conductance.RData")
+```{r, export_data, eval = FALSE}
+save([sp_name]_residual_conductance_data_for_rtpc, 
+     file = "./[sp_name]_processed_data/[sp_name]_residual_conductance_data_for_rtpc.RData")
 ```
-
-
-
