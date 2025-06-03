@@ -265,7 +265,11 @@ nrow([sp_name]_slopes)
 
 ```{r, eval = FALSE, echo = FALSE}
 # Compare the slopes with those calculated in the ggplot
-reactable::reactable([sp_name]_slopes)
+[sp_name]_slopes %>% 
+    select(string_number, set_temperature, vpd_control, 
+           slope_grams_per_second) %>% 
+    
+    reactable::reactable(.)
 ```
 
 ```{r, plot_slopes, eval = FALSE, echo = FALSE}
