@@ -84,6 +84,12 @@ string_colors <- c(string_1 = "#eec000",
                    string_6 =  "#008b28",
                    string_7 =  "#8600b6",
                    string_8 =  "#00a0ab")
+
+# Function for adding the number of observations on top of a boxplot
+give_n <- function(x){
+  return(c(y = median(x)*2, label = length(x))) 
+  # experiment with the multiplier to find the perfect position
+}
 ```
 
 # 1. Load data
@@ -106,7 +112,7 @@ load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 
 ```{r, prepare_areas_data, eval=FALSE}
-#[sp_name]_areas_data <-
+#[sp_name]_areas_data_for_gres <-
   
     [sp_name]_areas_data_cleaned %>%
   
@@ -129,7 +135,7 @@ load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
 ```
 
 ```{r, eval=FALSE}
-glimpse([sp_name]_areas_data)
+glimpse([sp_name]_areas_data_for_gres)
 ```
 
 # 2. Plot climatic conditions inside the droughtbox
@@ -242,7 +248,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ### Filter data based on previuos plots 
 
 ```{r, data_for_gres, eval = FALSE}
-[sp_name]_data_for_gres <- 
+[sp_name]_db_data_for_gres <- 
 
     [sp_name]_rwc_data_filtered_data  
 
@@ -250,7 +256,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
     #filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
 ```
 
-## Calculate the rate of change between water loss
+## Calculate the water loss rate of change   
 
 ```{r, eval = FALSE}
 #[sp_name]_slopes <-
@@ -277,28 +283,37 @@ ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
                                     y = slope_grams_per_second)) +
     geom_boxplot() +
     theme_bw() +
-    facet_wrap(~vpd_control) 
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
 ```
 
 ## Calculate transpiration rates
 
-```{r, eval=FALSE}
-transpiration_rates <- calculate_transpiration_rates(droughtbox_data = [sp_name]_rwc_data_filtered_data,
-                                                     leaf_and_branch_area_data = [sp_name]_areas_data_cleaned)
+```{r, eval = FALSE}
+#[sp_name]_transpiration_rates <- 
+  calculate_transpiration_rates(droughtbox_data = [sp_name]_db_data_for_gres,
+                                leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
-```{r, plot_transpiration_rates_single, eval=FALSE}
-ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
-                          y = transpiration_single_grams_per_sec_m2)) +
+```{r, plot_transpiration_rates_single, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
+                                                 y = transpiration_single_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw()
+    theme_bw() +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
 ```
 
-```{r, plot_transpiration_rates_double, eval=FALSE}
-ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
-                          y = transpiration_double_grams_per_sec_m2)) +
+```{r, plot_transpiration_rates_double, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
+                                                 y = transpiration_double_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw()
+    theme_bw() +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                  position = position_dodge(width = 0.75))
 ```
 
 ## Calculate Residual conductance
@@ -313,7 +328,7 @@ ggplot(data = transpiration_rates, aes(x = factor(temperature_measured),
 glimpse([sp_name]_residual_conductance)
 ```
 
-```{r residual_conductance_plot, eval=FALSE}
+```{r residual_conductance_plot, eval = FALSE, echo = FALSE}
 [sp_name]_residual_conductance %>%
     
     group_by(temperature_measured) %>%
