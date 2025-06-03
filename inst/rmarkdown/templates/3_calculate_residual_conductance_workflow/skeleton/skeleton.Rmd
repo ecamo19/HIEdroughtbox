@@ -151,7 +151,10 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
         theme_bw() +
         scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
         theme_bw() +
-        ggtitle("VPD conditions inside the Droughtbox") 
+        ggtitle("VPD conditions inside the Droughtbox") +
+        
+        # Set colors
+        scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
 ## Temperature
@@ -163,7 +166,10 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
     geom_boxplot() +
     theme_bw() +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
-    ggtitle("Temperature conditions inside the Droughtbox")
+    ggtitle("Temperature conditions inside the Droughtbox") +
+    
+    # Set colors
+    scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
 # 3. Calculate species residual conductance 
@@ -318,20 +324,26 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 
 ## Calculate Residual conductance
 
-```{r, eval=FALSE}
-[sp_name]_residual_conductance <- 
-    calculate_residual_conductance(droughtbox_data =  [sp_name]_rwc_data_filtered_data,
-                                   leaf_and_branch_area_data = [sp_name]_areas_data_cleaned)
+```{r, eval = FALSE}
+#[sp_name]_residual_conductance <- 
+    calculate_residual_conductance(droughtbox_data = [sp_name]_db_data_for_gres,
+                                   leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
 ```{r, eval=FALSE}
 glimpse([sp_name]_residual_conductance)
 ```
 
-```{r residual_conductance_plot, eval = FALSE, echo = FALSE}
+```{r echo = FALSE, eval = FALSE}
+[sp_name]_residual_conductance %>%
+    mutate(across(where(is.numeric), round, 3)) %>%
+    reactable::reactable(.)
+```
+
+```{r plot_residual_conductance, eval = FALSE, echo = FALSE}
 [sp_name]_residual_conductance %>%
     
-    group_by(temperature_measured) %>%
+    group_by(set_temperature, vpd_control) %>%
     
     na.omit() %>% 
     
@@ -344,24 +356,29 @@ glimpse([sp_name]_residual_conductance)
         se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
     
         # Plot
-        ggplot(data = ., aes(x = temperature_measured,
-                            y = median_residual_conductance)) +
-
-        geom_point(size = 4) +
-
+        ggplot(data = ., aes(x = set_temperature, 
+                             y = median_residual_conductance,
+                             colour = vpd_control)) +
+        
+        theme_bw() +
+  
+        geom_point(size = 3.5) +
+  
+        # Increase the tickmarks of the axes
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + 
+        scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
+  
+        # Position label at the bottom
+        theme(legend.position = "bottom") +
+    
+        # Error bars 1 S.E
         geom_errorbar(aes(ymin =  median_residual_conductance - se_residual_conductance,
                          ymax  =  median_residual_conductance + se_residual_conductance),
                          width = 1.5,
                          position = position_dodge(0.05)) +
-
-        geom_point(aes(y = median_vpd, x = temperature_measured), 
-                        color = "#008b28", stroke = 2, shape = 8, size = 4)  +
-       
-        scale_y_continuous(breaks = scales::pretty_breaks(n = 5),
-                          sec.axis = sec_axis(~ ., name = "VPD")) +
         
-        scale_x_continuous(breaks = scales::pretty_breaks(n = 7))+
-        theme_bw() 
+        # Set colors
+        scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
 # 4. Export data
