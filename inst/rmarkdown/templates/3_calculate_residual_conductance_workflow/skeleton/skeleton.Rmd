@@ -263,26 +263,18 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 nrow([sp_name]_slopes)
 ```
 
+```{r, eval = FALSE, echo = FALSE}
+# Compare the slopes with those calculated in the ggplot
+reactable::reactable([sp_name]_slopes)
+```
+
 ```{r, plot_slopes, eval = FALSE, echo = FALSE}
-ggplot(data = slopes_no_vpd_control_data, aes(x = factor(set_temperature),
-                                              y = slope_grams_per_second)) +
+ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
+                                    y = slope_grams_per_second)) +
     geom_boxplot() +
     theme_bw() +
-    ggtitle("Data with no VPD control") 
+    facet_wrap(~vpd_control) 
 ```
-
-
-```{r, plot_slopes_vpd_controlled, eval = FALSE, echo = FALSE}
-ggplot(data = slopes_no_vpd_control_data, aes(x = factor(set_temperature),
-                                              y = slope_grams_per_second)) +
-    geom_boxplot() +
-    theme_bw() +
-    ggtitle("Data with VPD below 2kPa") 
-```
-
-
-
-
 
 ## Calculate transpiration rates
 
