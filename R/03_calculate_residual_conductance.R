@@ -54,7 +54,8 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             # Create a nested dataframes excluding temperature_measured,
             # strain_number.
             tidyr::nest(data = -c(median_vdp, median_rh, median_temp,
-                                  string_number, temperature_measured)) %>%
+                                  string_number, set_temperature,
+                                  vpd_control)) %>%
 
             # Create column with the slopes by strain_number, set_temperature
             dplyr::mutate(slope_grams_per_second = purrr::map(data,
@@ -132,7 +133,7 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 calculate_transpiration_rates <- function(droughtbox_data,
                                           leaf_and_branch_area_data){
 
-    # Validate input parameters ------------------------------------------------
+    # Validate input parameters -------------------------------------------------
 
     # Stop if droughtbox_data is not a data frame
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
@@ -162,17 +163,17 @@ calculate_transpiration_rates <- function(droughtbox_data,
                                                                             #"set_temperature",
                                                                             "tree_id") %in% base::colnames(leaf_and_branch_area_data))
 
-    # Calculate the rate of change between weight and time ---------------------
+    # Calculate the rate of change between weight and time ----------------------
     slope_grams_per_second <- calculate_rate_of_change(droughtbox_data)
 
-    # Estimate the transpiration rate ------------------------------------------
+    # Estimate the transpiration rate -------------------------------------------
     transpiration_rate <-
 
         slope_grams_per_second %>%
 
-        ## Merge leaf and branch areas data with slope data ----------------
+        ## Merge leaf and branch areas data with slope data ---------------------
         dplyr::full_join(., leaf_and_branch_area_data,
-                     by = c("string_number", "temperature_measured")) %>%
+                     by = c("string_number", "set_temperature", "vpd_control")) %>%
 
         # Calculate transpiration for single and double sided areas
         dplyr::mutate(transpiration_single_grams_per_sec_m2 =
@@ -338,7 +339,7 @@ calculate_residual_conductance <- function(droughtbox_data,
 
             # Add VPD parameter into the dataset
             dplyr::full_join(., vpd_parameter,
-                             by = dplyr::join_by(temperature_measured == temperature_measured)) %>%
+                             by = dplyr::join_by(set_temperature == set_temperature)) %>%
 
             # Print message residual conductance units
             {print("Residual conductance units: grams * s-1 * m-2 and mmols * s-1 * m-2"); .} %>%
