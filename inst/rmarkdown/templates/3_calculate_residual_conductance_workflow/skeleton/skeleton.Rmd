@@ -253,20 +253,49 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ## Calculate the rate of change between water loss
 
 ```{r, eval = FALSE}
-slopes <- calculate_rate_of_change([sp_name]_data_for_gres)
+#slopes_no_vpd_control_data <-
+    [sp_name]_data_for_gres %>% 
+    filter(vpd_control == "no") %>% 
+    calculate_rate_of_change(.)
+```
+
+```{r, eval = FALSE}
+#slopes_vpd_controlled_data <-
+    [sp_name]_data_for_gres %>% 
+    filter(vpd_control == "yes") %>% 
+    calculate_rate_of_change(.)
+```
+
+```{r, eval = FALSE}
+# Make sure the maximum row length of the data frame slopes is 8 (individuals)  * 6 (temperature treatments) = 48. Can be less but not more!!
+nrow(slopes_no_vpd_control_data)
 ```
 
 ```{r, eval = FALSE}
 # Make sure the maximum row length of the data frame slopes is 8 (individuals)  * 7 (temperature treatments) = 56. Can be less but not more!!
-nrow(slopes)
+nrow(slopes_vpd_controlled_data)
 ```
 
-```{r, eval = FALSE}
-ggplot(data = slopes, aes(x = factor(temperature_measured),
-                          y = slope_grams_per_second)) +
+```{r, plot_slopes_no_vpd_control, eval = FALSE, echo = FALSE}
+ggplot(data = slopes_no_vpd_control_data, aes(x = factor(set_temperature),
+                                              y = slope_grams_per_second)) +
     geom_boxplot() +
-    theme_bw()
+    theme_bw() +
+    ggtitle("Data with no VPD control") 
 ```
+
+
+```{r, plot_slopes_vpd_controlled, eval = FALSE, echo = FALSE}
+ggplot(data = slopes_no_vpd_control_data, aes(x = factor(set_temperature),
+                                              y = slope_grams_per_second)) +
+    geom_boxplot() +
+    theme_bw() +
+    ggtitle("Data with VPD below 2kPa") 
+```
+
+
+
+
 
 ## Calculate transpiration rates
 

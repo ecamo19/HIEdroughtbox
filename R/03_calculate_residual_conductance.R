@@ -41,21 +41,22 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             {print("Remember time units must be seconds and weights must be in grams"); .} %>%
             {print("Rate of change units: grams * s-1"); .} %>%
 
-
             # Get median climatic conditions ------------------------------------
+            # Done at each temperature step
             dplyr::group_by(set_temperature) %>%
 
             dplyr::mutate(median_vdp  = stats::median(vpd_avg_kpa_avg),
                           median_rh   = stats::median(rh_avg_percent_avg),
                           median_temp = stats::median(tc_avg_deg_c_avg)) %>%
 
+            dplyr::ungroup() %>%
+
             # Calculate the rate of change --------------------------------------
 
             # Create a nested dataframes excluding set_temperature,
             # strain_number.
             tidyr::nest(data = -c(median_vdp, median_rh, median_temp,
-                                  string_number, set_temperature,
-                                  )) %>%
+                                  string_number, set_temperature, vpd_control)) %>%
 
             # Create column with the slopes by strain_number, set_temperature
             dplyr::mutate(slope_grams_per_second = purrr::map(data,
@@ -173,7 +174,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 
         ## Merge leaf and branch areas data with slope data ---------------------
         dplyr::full_join(., leaf_and_branch_area_data,
-                     by = c("string_number", "set_temperature")) %>%
+                     by = c("string_number", "set_temperature", "vpd_control")) %>%
 
         # Calculate transpiration for single and double sided areas
         dplyr::mutate(transpiration_single_grams_per_sec_m2 =
@@ -190,8 +191,10 @@ calculate_transpiration_rates <- function(droughtbox_data,
                                        "leaf_dry_weight_mg"))) %>%
 
         # Arrange dataset
-        dplyr::select(spcode, string_number, tree_id, dplyr::everything()) %>%
-        dplyr::group_by(set_temperature, tree_id, string_number) %>%
+        dplyr::select(spcode, string_number, tree_id, vpd_control,
+                      dplyr::everything()) %>%
+
+        dplyr::group_by(set_temperature, tree_id, string_number, vpd_control) %>%
         dplyr::arrange(tree_id)
 
     return(transpiration_rate)
