@@ -381,7 +381,9 @@ glimpse([sp_name]_residual_conductance)
         scale_color_manual(values = c("#9e1523","#293352")) 
 ```
 
-# 4. Export data
+# 4. Duplicate 25c data for rTCP modeling
+
+# 5. Export data
 
 ```{r, export_data, eval=FALSE}
 save([sp_name]_residual_conductance, file = "./processed_data/[sp_name]_residual_conductance.RData")
