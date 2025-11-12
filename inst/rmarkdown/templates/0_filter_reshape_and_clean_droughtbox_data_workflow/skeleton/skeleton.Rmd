@@ -127,8 +127,8 @@ map([sp_name]_raw_data[!grepl("no-vpd-control", names([sp_name]_raw_data))], plo
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
   
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
+    
+         
     
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
@@ -174,7 +174,14 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
         #filter(!c(string_number == "string_5")) %>% 
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
         
@@ -243,9 +250,6 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
                            to_end_date =  "20YY-MM-DD",
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
-  
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
     
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
@@ -287,14 +291,17 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
         # Select Values measured at 30c
         #filter( temperature_measured <= 30c)  %>% 
         
-        # Filter strings if required
-        #filter(!c(string_number == "string_5")) %>%
-        #filter(!c(string_number == "string_6")) %>% 
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
         
-        # Filter observations if required
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-
+        
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
                
@@ -358,9 +365,6 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>%
   
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%   
-    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -405,7 +409,14 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
         #filter(!c(string_number == "string_5")) %>% 
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
 
@@ -473,9 +484,6 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>%
   
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
-    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -520,10 +528,17 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
 
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
- 
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -588,9 +603,6 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>%
   
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
-    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -635,10 +647,17 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -703,9 +722,6 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
   
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
-    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>%   
@@ -746,10 +762,16 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
         # Select Values measured at 50c
         #filter( temperature_measured <= 50)  %>%
         
-        # Filter strings if required
-    
-        #filter(!c(string_number == "string_5")) %>%
-        #filter(!c(string_number == "string_6")) %>% 
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
 
         # Filter observations if required
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
@@ -818,8 +840,6 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%   
     
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
@@ -865,10 +885,17 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-    
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -995,10 +1022,7 @@ map([sp_name]_raw_data[grepl("no-vpd-control", names([sp_name]_raw_data))], plot
                            to_end_date =  "20YY-MM-DD",
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
-  
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%     
-    
+
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -1043,10 +1067,17 @@ any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
         
-        # Filter observations if required
+        ## Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-
+        
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
                
@@ -1109,9 +1140,6 @@ any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>%
-  
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%   
     
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
@@ -1157,10 +1185,17 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
         #filter(!c(string_number == "string_5")) %>% 
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -1224,9 +1259,6 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>%
-  
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
     
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
@@ -1272,10 +1304,17 @@ any([sp_name]_no_vpd_control_40c_reshaped$temperature_measured < 40 |
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
 
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
- 
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -1340,9 +1379,6 @@ any([sp_name]_no_vpd_control_40c_reshaped$temperature_measured < 40 |
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>%
   
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%
-    
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -1387,10 +1423,17 @@ any([sp_name]_no_vpd_control_45c_reshaped$temperature_measured < 45 |
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -1454,9 +1497,6 @@ any([sp_name]_no_vpd_control_45c_reshaped$temperature_measured < 45 |
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
                            to_end_time = "HH:MM:SS") %>% 
-  
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>% 
     
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
@@ -1503,10 +1543,17 @@ any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50|
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
 
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
-        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
- 
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
@@ -1524,7 +1571,7 @@ any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50|
 ```
 
 ```{r, eval = FALSE, echo = FALSE}
-# ggplot(data = [sp_name]_vpd_controlled_50c_reshaped_cleaned, aes(x = time_seconds,
+# ggplot(data = [sp_name]_no_vpd_control_50c_reshaped_cleaned, aes(x = time_seconds,
 #                                                                 y = string_weight_grams,
 #                                                                 colour = factor(string_number))) +
 #   
@@ -1569,10 +1616,8 @@ any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50|
     # Choose a interval of time
     filter_droughtbox_data(.,
                            from_start_time = "HH:MM:SS",
-                           to_end_time = "HH:MM:SS") %>% 
-    # Filter Zeros
-    filter(if_all(strain_avg_1_microstrain_avg:strain_avg_8_microstrain_avg, ~ .x > 5)) %>%   
-    
+                           to_end_time = "HH:MM:SS") %>%
+  
     # Get tare groups with more than 1 observation
     group_by(tare_count_smp) %>% 
     filter(n() > 1) %>% 
@@ -1617,10 +1662,17 @@ any([sp_name]_no_vpd_control_55c_reshaped$temperature_measured < 55|
         #filter(!c(string_number == "string_5")) %>%
         #filter(!c(string_number == "string_6")) %>% 
     
-        # Filter observations if required
-        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        ## Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
-    
+        
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
         mutate(date_time = floor_date(date_time, "1 minute"),
