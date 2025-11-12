@@ -1813,34 +1813,21 @@ glimpse([sp_name]_main_spread_sheet)
   
     [sp_name]_main_spread_sheet %>% 
 
-        # Remove columns    
-        select(-c(stem_dry_weight_mg, leaf_dry_weight_mg)) %>%
+        
 
-        # Transform mg to grams
-        mutate(weight_paper_bag_plus_sample_scale_grams = weight_paper_bag_plus_sample_scale_mg /1000,
-              .keep = "unused") %>% 
-
-        # sample_weight_in_db =          sample + parafilm pieces + prensa + gancho_db   
-        # weight_paper_bag_plus_sample = sample + parafilm pieces + prensa + paper_bag  
-        # sample_dry_weight =           (weight_paper_bag_plus_sample - paper_bag_weight) + gancho_db      
-        mutate(sample_dry_weight_g =  hook_weight_g + weight_paper_bag_plus_sample_scale_grams -
-
-                                       # Remove the prensa weight from the paper bag weight  
-                                       (empty_paper_bag_plus_sample_scale_grams - prensa_weight_g),
-
+        
+       mutate(sample_dry_weight_g =  ((leaf_dry_weight_mg/1000) +
+                                         (stem_dry_weight_mg/1000) + 
+                                         hook_weight_g + 
+                                         prensa_weight_g), 
               # Add word to number 
-              string_number = stringr::str_c("string_", string_number), 
-              
-              .keep = "unused") %>%   
-
-         na.omit()
+              string_number = stringr::str_c("string_", string_number),
+              .keep = "unused") %>%  
+        select(-c(paper_bag_weight_g, weight_paper_bag_plus_sample_scale_mg)) %>%
+    
+    na.omit()
 ```
 
-```{r eval = FALSE}
-# Relationship between weight measured with scale and droughtbox
-plot([sp_name]_dry_weights$sample_dry_weight_grams, 
-    [sp_name]_dry_weights$total_dry_weight_scale_grams)
-```
 
 ## Merge dry weights data with droughtbox data
 
