@@ -174,17 +174,17 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 
 # 3. Calculate species residual conductance 
 
-## Filter data below 85% RWC
+## Filter data below 90% RWC
 
 ```{r, filter_data_based_on_rwc, eval = FALSE}
 #[sp_name]_rwc_data_filtered_data <-
     [sp_name]_rwc_data %>%
-        filter(relative_water_content_perc < 0.86) 
+        filter(relative_water_content_perc <= 0.90) 
 ```
 
 ### Plot filtered data
 
-```{r, plot_filtered_data_below_85_no_vpd_control, eval = FALSE, echo = FALSE}
+```{r, plot_filtered_data_below_90_no_vpd_control, eval = FALSE, echo = FALSE}
 
 [sp_name]_rwc_data_filtered_data %>%
   

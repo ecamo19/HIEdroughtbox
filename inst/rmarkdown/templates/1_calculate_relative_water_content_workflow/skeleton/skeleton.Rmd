@@ -130,7 +130,7 @@ load(file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData"
         facet_grid(vars(set_temperature), vars(string_number)) +
       
         # RWC at which Turgor loss point happens on average Bourne et al 2017
-        geom_hline(yintercept = 0.85) +
+        geom_hline(yintercept = 0.90) +
     
         # Set colors  
         scale_color_manual(values = string_colors)
@@ -162,7 +162,7 @@ load(file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData"
         facet_grid(vars(set_temperature), vars(string_number)) +
       
         # RWC at which Turgor loss point happens on average Bourne et al 2017
-        geom_hline(yintercept = 0.85) +
+        geom_hline(yintercept = 0.90) +
     
         # Set colors  
         scale_color_manual(values = string_colors)
@@ -171,7 +171,8 @@ load(file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData"
 # 3. Export data
 
 ```{r, export_data, eval=FALSE}
-save([sp_name]_rwc_data, file = "./processed_data/[sp_name]_rwc_data.RData")
+save([sp_name]_rwc_data, 
+     file = "./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 ```
 
 
