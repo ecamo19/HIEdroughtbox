@@ -1,5 +1,5 @@
 ---
-title: '[spcode]: Residual conductance TPC model selection'
+title: '[spcode]: Residual conductance rTPC modeling'
 author: 'ecamo19'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -36,8 +36,8 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       
                       # Path where figures are going to be store pdf single 
                       # figures
-                      #Edit path in the next line and comment out this line   
-                      fig.path       = paste0("./figures_temp_modeling", "/"),
+                      Edit path in the next line and comment out this line   
+                      fig.path       = paste0("./figures_[spcode]_temp_modeling", "/"),
                       fig.width      = 11,
                       fig.height     = 7,
                       message        = FALSE,
@@ -154,26 +154,34 @@ ls()
                           
 # 1. Model thermal response of Residual conductance on __single string__
 
+```{r, eval=FALSE}
+glimpse([spcode]_residual_conductance_data_for_rtpc)
+```
+
 ```{r eval=FALSE}
-#[spcode]_string_NUMBER_data <-
+#[spcode]_string_[NUMBER]_data <-
  
-    [spcode]_residual_conductance %>% 
+    [spcode]_residual_conductance_data_for_rtpc %>% 
 
     ungroup() %>% 
   
     filter(string_number == "string_#")  %>%
+    filter(vpd_control == "") %>% 
   
-    select(temperature_measured, 
+    select(set_temperature, 
            double_sided_residual_conductance_mmol_s_m2) %>% 
   
     rename(rate = "double_sided_residual_conductance_mmol_s_m2",
-           temp = "temperature_measured")  
+           temp = "set_temperature") %>% 
+    
+    # Make sure there are 7 observations 
+    arrange(temp)
 ```
 
 ### Plot string selected 
 
 ```{r, raw_data_string, eval=FALSE}
-ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
+ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
     geom_point() +
     theme_bw()
 ```
@@ -181,10 +189,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 ### Fit models for the string selected 
 
 ```{r, model_fitting_string, eval=FALSE, echo=FALSE}
-
-#models_fits_string_NUMBER <- 
+#[spcode]_models_fits_string_[NUMBER] <- 
  
-    nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
+    nest([spcode]_string_[NUMBER]_data, data = c(temp, rate)) %>%
     mutate(
     
     # delong = map(data, ~suppressWarnings(nls_multstart(rate~delong_2017(temp = temp, c, eb, ef, tm,ehc),
@@ -330,9 +337,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 ### Stack models
 
 ```{r eval=FALSE}
-#model_stack_string_NUMBER <- 
+#[spcode]_model_stack_string_[NUMBER] <- 
 
-    select(models_fits_string_NUMBER, -data) %>%
+    select(models_fits_string_[NUMBER], -data) %>%
 
     pivot_longer(., names_to = 'model_name', values_to = 'fit', beta:weibull)
 ```
@@ -340,9 +347,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 ### Get model parameters
 
 ```{r, eval=FALSE}
-#string_NUMBER_params <- 
+#[spcode]_string_[NUMBER]_params <- 
     
-    model_stack_string_NUMBER %>%
+    model_stack_string_[NUMBER] %>%
     
     mutate(., est = map(fit, tidy)) %>%
     
@@ -354,16 +361,16 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 ### Get predictions 
 
 ```{r eval=FALSE}
-#newdata <- 
-    tibble(temp = seq(min([spcode]_string_NUMBER_data$temp),
-                      max([spcode]_string_NUMBER_data$temp),
+#[spcode]_newdata <- 
+    tibble(temp = seq(min([spcode]_string_[NUMBER]_data$temp),
+                      max([spcode]_string_[NUMBER]_data$temp),
                       length.out = 100))
 ```
 
 ```{r, eval=FALSE}
-#string_NUMBER_preds <- 
+#[spcode]_string_[NUMBER]_preds <- 
     
-    model_stack_string_NUMBER %>%
+    model_stack_string_[NUMBER] %>%
     
     mutate(., preds = map(fit, augment, newdata = newdata)) %>%
     
@@ -375,7 +382,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 ```{r eval=FALSE}
 # take a random point from each model for labelling
 #d_labs <- 
-    filter(string_NUMBER_preds, temp <= 40) %>%
+    filter(string_[NUMBER]_preds, temp <= 40) %>%
         group_by(., model_name) %>%
         sample_n(., 1) %>%
         ungroup()
@@ -385,9 +392,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ```{r, plot_model_fits_all_models, eval=FALSE}
 
-ggplot(string_NUMBER_preds, aes(temp, rate)) +
+ggplot([spcode]_string_[NUMBER]_preds, aes(temp, rate)) +
   
-    geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
+    geom_point(aes(temp, rate), [spcode]_string_[NUMBER]_data) +
   
     geom_line(aes(temp, .fitted), col = 'blue') +
     
@@ -408,7 +415,7 @@ ggplot(string_NUMBER_preds, aes(temp, rate)) +
 ```
 
 ```{r, plot_join_model_fits, eval=FALSE, echo=FALSE}
-# ggplot(string_NUMBER_preds, aes(temp, .fitted)) +
+# ggplot([spcode]_string_[NUMBER]_preds, aes(temp, .fitted)) +
 #   
 #   geom_line(aes(col = model_name)) +
 #   
@@ -416,7 +423,7 @@ ggplot(string_NUMBER_preds, aes(temp, rate)) +
 #                    fill = 'white', nudge_y = 0.8, segment.size = 0.2,
 #                    segment.colour = 'grey50', d_labs) +
 # 
-#   geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
+#   geom_point(aes(temp, rate), [spcode]_string_[NUMBER]_data) +
 #   
 #   theme_bw(base_size = 12) +
 #   
@@ -435,9 +442,9 @@ ggplot(string_NUMBER_preds, aes(temp, rate)) +
 ### Get AIC values
 
 ```{r eval=FALSE}
-#string_NUMBER_ic_values <- 
+#[spcode]_string_[NUMBER]_ic_values <- 
 
-    model_stack_string_NUMBER %>%
+    [spcode]_model_stack_string_[NUMBER] %>%
 
         mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
         
@@ -451,9 +458,9 @@ ggplot(string_NUMBER_preds, aes(temp, rate)) +
         
         arrange(., desc(weight)) %>% 
         
-        add_column(string_number = "string_NUMBER")
+        add_column(string_number = "string_[NUMBER]")
 
-knitr::kable(string_NUMBER_ic_values)
+knitr::kable(string_[NUMBER]_ic_values)
 ```
 
 # 2. Model thermal response of residual conductance on __all strings__         
@@ -642,16 +649,23 @@ knitr::kable(string_NUMBER_ic_values)
 
 ### Get rmax param 
 
-```{r}
-rmax_no_vpd_control_model <- 
+```{r, eval=FALSE}
+#[spcode]_rmax_no_vpd_control_model <-
+ 
       no_vpd_control_model_fit %>% 
           pivot_longer(names_to = 'model_name', values_to = 'fit', c(lactin2)) %>%
+          
           mutate(params = map(fit, calc_params)) %>%
+          
           dplyr::select(tree_id, model_name, params) %>%
+          
           unnest(params) %>% 
+          
           dplyr::select(tree_id, model_name, rmax) %>%
+          
           mutate(vpd_control = factor("no")) %>% 
-          add_column(spcode = 'euc_saligna')
+          
+          add_column(spcode = [spcode])
 ```
 
 ## Get data with **VPD control**
@@ -659,7 +673,8 @@ rmax_no_vpd_control_model <-
 ```{r}
 #[spcode]_vpd_controlled <- 
   
-          [spcode]_residual_conductance_data_for_rtpc %>% 
+          [spcode]_residual_conductance_data_for_rtpc %>%
+              
               ungroup() %>% 
     
               filter(vpd_control == "yes")  %>% 
@@ -681,7 +696,7 @@ rmax_no_vpd_control_model <-
 
 ```{r, model_fitting_vpd_controlled, cache=TRUE}
 
-#vpd_controlled_model_fit <- 
+#[spcode]_vpd_controlled_model_fit <- 
  
     [spcode]_vpd_controlled %>% 
   
@@ -718,34 +733,47 @@ rmax_no_vpd_control_model <-
 
 ### Get rmax param 
 
-```{r}
-rmax_vpd_controlled_model <- 
-    vpd_controlled_model_fit %>% 
+```{r, eval = FALSE}
+
+#[spcode]_rmax_vpd_controlled_model <-
+      
+      [spcode]_vpd_controlled_model_fit %>% 
+          
           pivot_longer(names_to = 'model_name', values_to = 'fit', c(lactin2)) %>%
+          
           mutate(params = map(fit, calc_params)) %>%
+          
           dplyr::select(tree_id, model_name, params) %>%
+          
           unnest(params) %>% 
+          
           dplyr::select(tree_id, model_name, rmax) %>%
+          
           mutate(vpd_control = factor("yes"))  %>% 
-          add_column(spcode = 'euc_saligna')
+          
+          add_column(spcode = '[spcode]_')
 ```
 
 ## Export Rmax data
 
-```{r, export_rmax_data}
+```{r, export_rmax_data, eval=FALSE}
 
 #[spcode]_rmax_data <- 
         
       list(rmax_no_vpd_control_model,
+           
             rmax_vpd_controlled_model) %>% 
+           
             reduce(rbind) %>%  
 
             group_by(vpd_control, spcode) %>% 
       
             summarise(median_rmax = median(rmax),
                     se_rmax = sd(rmax) / sqrt(n())) %>%
+            
             mutate(vpd_control = if_else(vpd_control == "no", 
-                                        "Temperature  + VPD", "Temperature" )) 
+                                        "Temperature  + VPD", 
+                                        "Temperature" )) 
 ```
 
 # 4. Export data
