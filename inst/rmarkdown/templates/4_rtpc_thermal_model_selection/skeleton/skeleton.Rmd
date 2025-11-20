@@ -101,7 +101,7 @@ label_facets_num <- function(string){
 # 1. Load data
 
 ```{r}
-load("./[spcode]_processed_data/[spcode]_residual_conductance.RData")
+load("./[spcode]_processed_data/[spcode]_residual_conductance_data_for_rtpc.RData")
 ls()
 ```
 
@@ -152,13 +152,13 @@ ls()
 
 + skewess:                          
                           
-# 1. Model thermal response of Residual conductance
-
-## Select string   
+# 1. Model thermal response of Residual conductance on __single string__
 
 ```{r eval=FALSE}
-#[spcode]_string_NUMBER_data <- 
+#[spcode]_string_NUMBER_data <-
+ 
     [spcode]_residual_conductance %>% 
+
     ungroup() %>% 
   
     filter(string_number == "string_#")  %>%
@@ -180,27 +180,28 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ### Fit models for the string selected 
 
-```{r, model_fitting_string, eval=FALSE, cache=TRUE, echo=FALSE}
+```{r, model_fitting_string, eval=FALSE, echo=FALSE}
+
 #models_fits_string_NUMBER <- 
+ 
     nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
     mutate(
     
-    # Model 8
-    delong = map(data, ~suppressWarnings(nls_multstart(rate~delong_2017(temp = temp, c, eb, ef, tm,ehc),
-                            data = .x,
-                            
-                            iter = c(6,6,6,6,6),
-                            
-                            start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
-                            
-                            start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
-                            
-                            lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
-                            
-                            upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
-                            supp_errors = 'Y',
-                            lhstype = 'genetic',
-                            convergence_count = FALSE))),    
+    # delong = map(data, ~suppressWarnings(nls_multstart(rate~delong_2017(temp = temp, c, eb, ef, tm,ehc),
+    #                         data = .x,
+    #                         
+    #                         iter = c(6,6,6,6,6),
+    #                         
+    #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
+    #                         
+    #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+    #                         
+    #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+    #                         
+    #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+    #                         supp_errors = 'Y',
+    #                         lhstype = 'genetic',
+    #                         convergence_count = FALSE))),    
     
     # Model 8
     johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
@@ -330,7 +331,9 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ```{r eval=FALSE}
 #model_stack_string_NUMBER <- 
+
     select(models_fits_string_NUMBER, -data) %>%
+
     pivot_longer(., names_to = 'model_name', values_to = 'fit', beta:weibull)
 ```
 
@@ -338,9 +341,13 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ```{r, eval=FALSE}
 #string_NUMBER_params <- 
+    
     model_stack_string_NUMBER %>%
+    
     mutate(., est = map(fit, tidy)) %>%
+    
     select(-fit) %>%
+    
     unnest(est)
 ```
 
@@ -348,49 +355,56 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 
 ```{r eval=FALSE}
 #newdata <- 
-  tibble(temp = seq(min([spcode]_string_NUMBER_data$temp),
-                    max([spcode]_string_NUMBER_data$temp),
-                    length.out = 100))
+    tibble(temp = seq(min([spcode]_string_NUMBER_data$temp),
+                      max([spcode]_string_NUMBER_data$temp),
+                      length.out = 100))
 ```
 
 ```{r, eval=FALSE}
 #string_NUMBER_preds <- 
+    
     model_stack_string_NUMBER %>%
+    
     mutate(., preds = map(fit, augment, newdata = newdata)) %>%
+    
     select(-fit) %>%
+    
     unnest(preds)
 ```
 
 ```{r eval=FALSE}
 # take a random point from each model for labelling
-d_labs <- filter(string_NUMBER_preds, temp <= 40) %>%
-  group_by(., model_name) %>%
-  sample_n(., 1) %>%
-  ungroup()
+#d_labs <- 
+    filter(string_NUMBER_preds, temp <= 40) %>%
+        group_by(., model_name) %>%
+        sample_n(., 1) %>%
+        ungroup()
 ```
 
 #### Plot predictions
 
 ```{r, plot_model_fits_all_models, eval=FALSE}
+
 ggplot(string_NUMBER_preds, aes(temp, rate)) +
-  geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
   
-  geom_line(aes(temp, .fitted), col = 'blue') +
+    geom_point(aes(temp, rate), [spcode]_string_NUMBER_data) +
   
-  facet_wrap(~model_name, labeller = labeller(model_name = label_facets_num),
-             scales = 'free', ncol = 5) +
-  
-  theme_bw(base_size = 12) +
-  
-  theme(legend.position = 'none',
-        strip.text = element_text(hjust = 0),
-        strip.background = element_blank()) +
-  
-  labs(x = 'Temperature (ºC)',
-       y = 'Residual conductance',
-       title = 'Model fits') +
-  
-  geom_hline(aes(yintercept = 0), linetype = 2)
+    geom_line(aes(temp, .fitted), col = 'blue') +
+    
+    facet_wrap(~model_name, labeller = labeller(model_name = label_facets_num),
+               scales = 'free', ncol = 5) +
+    
+    theme_bw(base_size = 12) +
+    
+    theme(legend.position = 'none',
+          strip.text = element_text(hjust = 0),
+          strip.background = element_blank()) +
+    
+    labs(x = 'Temperature (ºC)',
+         y = 'Residual conductance',
+         title = 'Model fits') +
+    
+    geom_hline(aes(yintercept = 0), linetype = 2)
 ```
 
 ```{r, plot_join_model_fits, eval=FALSE, echo=FALSE}
@@ -422,77 +436,322 @@ ggplot(string_NUMBER_preds, aes(temp, rate)) +
 
 ```{r eval=FALSE}
 #string_NUMBER_ic_values <- 
+
     model_stack_string_NUMBER %>%
+
         mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
+        
         select(-fit) %>%
+        
         unnest(info) %>%
+        
         select(model_name, sigma, AIC, AICc, BIC, df.residual) %>%  
+        
         mutate(., weight = MuMIn::Weights(AICc)) %>% 
+        
         arrange(., desc(weight)) %>% 
+        
         add_column(string_number = "string_NUMBER")
 
 knitr::kable(string_NUMBER_ic_values)
 ```
 
-### Model averaging
+# 2. Model thermal response of residual conductance on __all strings__         
 
-For a model averaging approach, predictions and parameters from the models are 
-averaged. In ecology, this is usually done based on each model’s weighting. The 
-best supported model’s predictions are taken into account more than the least 
-supported. Often the number of models is reduced by setting a cut-off for the 
-difference in the information criterion metric being used. A common approach is 
-to only keep models within $\Delta2AIC$ of the best model.
+## Get data with **no VPD control**
 
-```{r, eval=FALSE, echo=FALSE}
-# model_average_string_1 <- 
-#     select(string_1_ic_values, model_name, weight) %>% 
-#     left_join(., string_1_preds) %>% 
-#     group_by(temp) %>%
-#     summarise(., .fitted = sum(.fitted*weight)) %>%
-#     ungroup() %>%
-#     mutate(model_name = 'model average')
+```{r}
+#[spcode]_no_vpd_control <-
+ 
+          [spcode]_residual_conductance_data_for_rtpc %>% 
+          
+          ungroup() %>% 
+
+          filter(vpd_control == "no")  %>% 
+          
+          group_by(set_temperature)  %>% 
+
+          # Replace NA with group temp median
+          mutate(across(where(is.numeric), ~replace_na(., median(., na.rm = TRUE)))) %>% 
+          
+          dplyr::select(tree_id, set_temperature, double_sided_residual_conductance_mmol_s_m2) %>% 
+
+          rename(rate = "double_sided_residual_conductance_mmol_s_m2",
+                 temp = "set_temperature") %>% 
+              
+          arrange(temp)
 ```
 
-```{r, eval=FALSE, echo=FALSE}
-# d_labs <- filter(model_average_string_1, temp < 30) %>% sample_n(., 1)
+### Fit model  
+
+```{r, model_fitting_no_vpd_control}
+
+#[spcode]_no_vpd_control_model_fit <- 
+    
+    [spcode]_no_vpd_control %>% 
+    
+    #dplyr::select(-tree_id) %>% 
+    nest(., data = c(temp, rate)) %>%   
+    
+    mutate(
+        #Model 8
+        delong = map(data, ~nls_multstart(rate ~ delong_2017(temp = temp, c, eb, ef, tm,ehc),
+                                data = .x,
+    
+                                iter = c(4, 4, 4 ,4, 4),
+    
+                                start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
+    
+                                start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+    
+                                lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+    
+                                upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+                                supp_errors = 'Y',
+                                lhstype = 'genetic',
+                                convergence_count = FALSE)),
+        # 
+        # Model 8
+        johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
+                                data = .x,
+                                
+                                iter = c(6, 6, 6, 6),
+                                
+                                start_lower = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')-1,
+                                
+                                start_upper = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')+1,
+                                
+                                lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+                                
+                                upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+                                supp_errors = 'Y',
+                                lhstype = 'genetic',
+                                convergence_count = FALSE))),
+        
+          {print("8) Johnson/Lewin model done"); .},
+    
+            
+    
+          # Model 11
+          pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
+                                           data = .x,
+                                           
+                                           iter = c(6, 6, 6, 6),
+                                           
+                                           start_lower = get_start_vals(.x$temp, 
+                                                                        .x$rate, 
+                                                                        model_name = 'pawar_2018') - 1,
+                                           
+                                           start_upper = get_start_vals(.x$temp, 
+                                                                        .x$rate, 
+                                                                        model_name = 'pawar_2018') + 1,
+                                           
+                                           lower = get_lower_lims(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'pawar_2018'),
+                                           
+                                           upper = get_upper_lims(.x$temp, 
+                                                                  .x$rate, 
+                                                                  model_name = 'pawar_2018'),
+                                           supp_errors = 'Y',
+                                           lhstype = 'genetic',
+                                           convergence_count = FALSE)),
+        
+          {print("11) Pawar model done"); .},
+        
+          # Model 15
+          sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
+                                                                                 e,el,tl,eh,th, 
+                                                                                 tref = 25),
+                                                      data = .x,
+                                                      
+                                                      iter = c(6, 6, 6, 6, 6, 6),
+                                
+                                                      start_lower = get_start_vals(.x$temp,.x$rate,
+                                                                        model_name = 'sharpeschoolfull_1981')-1,
+                                                      
+                                                      start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                        model_name = 'sharpeschoolfull_1981')+1,
+                                                      
+                                                      lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                          model_name = 'sharpeschoolfull_1981'),
+                                                      
+                                                      upper = get_upper_lims(.x$temp, 
+                                                                             .x$rate, 
+                                                                             model_name ='sharpeschoolfull_1981'),
+                                                      supp_errors = 'Y',
+                                                      lhstype = 'genetic',
+                                                      convergence_count = FALSE)),
+        
+          {print("15) Sharpeshoolfull model done"); .},
+    
+          # Model 16 
+          sharpeschoolhigh = map(data, 
+                                 ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
+                                            
+                                            data = .x,
+                                            iter = c(6, 6, 6, 6),
+                                                
+                                            start_lower = get_start_vals(.x$temp,.x$rate, 
+                                                                         model_name = 'sharpeschoolhigh_1981')-1,
+                                            
+                                            start_upper = get_start_vals(.x$temp, .x$rate, 
+                                                                         model_name = 'sharpeschoolhigh_1981')+1,
+                                            
+                                            lower = get_lower_lims(.x$temp,
+                                                                   .x$rate,
+                                                                   model_name = 'sharpeschoolhigh_1981'),
+                                            
+                                            upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                   model_name = 'sharpeschoolhigh_1981'),
+                                            supp_errors = 'Y',
+                                            lhstype = 'genetic',
+                                            convergence_count = FALSE)),
+        
+          {print("16) Sharpeshoolhigh model done"); .},
+    
+          # Model 17
+          sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, r_tref,e,el,tl, 
+                                                                               tref = 25),
+                                              data = .x,
+                                              
+                                              iter = c(6, 6, 6, 6),
+                                                      
+                                              start_lower=get_start_vals(.x$temp,.x$rate,
+                                                                         model_name='sharpeschoollow_1981')-1,
+                                
+                                              start_upper=get_start_vals(.x$temp,.x$rate,
+                                                                         model_name = 'sharpeschoollow_1981')+1,
+                                              
+                                              lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoollow_1981'),
+                                              
+                                              upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoollow_1981'),
+                                              supp_errors = 'Y',
+                                              lhstype = 'genetic',
+                                              convergence_count = FALSE)),         
+          
+        # create new temperature data
+        new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
+         
+        # predict over that data,
+        preds =  map2(lactin2, new_data, ~augment(.x, newdata = .y)))
+                                                                                    
 ```
 
-```{r, plot_model_average, echo=FALSE}
-# ggplot(string_1_preds, aes(temp, .fitted)) +
-#   geom_line(aes(col = model_name), alpha = 0.3) +
-#   geom_line(data = model_average_string_1, col = 'blue') + 
-# 
-#   geom_label_repel(aes(label = model_name), fill = 'white', nudge_y = 0.8, 
-#                       segment.size = 0.2, segment.colour = 'grey50',
-#                        data = d_labs, col = 'blue') +
-#   
-#   geom_point(aes(temp, rate),euc_tere_eucface_string_1) +
-#   theme_bw() +
-#   theme(legend.position = 'none') +
-#   geom_hline(aes(yintercept = 0), linetype = 2) +
-#   scale_color_brewer(type = 'qual', palette = 2)
+### Get rmax param 
+
+```{r}
+rmax_no_vpd_control_model <- 
+      no_vpd_control_model_fit %>% 
+          pivot_longer(names_to = 'model_name', values_to = 'fit', c(lactin2)) %>%
+          mutate(params = map(fit, calc_params)) %>%
+          dplyr::select(tree_id, model_name, params) %>%
+          unnest(params) %>% 
+          dplyr::select(tree_id, model_name, rmax) %>%
+          mutate(vpd_control = factor("no")) %>% 
+          add_column(spcode = 'euc_saligna')
 ```
 
+## Get data with **VPD control**
 
-```{r, eval=FALSE, echo=FALSE}
-# get averaged parameters based on model weights
-#thermal_parameters_string_1_model_average <- 
-#    select(d_ic, model_name, weight) %>% 
-#
-#    left_join(.,params) %>%
-#    summarise(., across(rmax:skewness, function(x){sum(x*.$weight)})) %>%  
-#    mutate(model_name = 'model average')
+```{r}
+#[spcode]_vpd_controlled <- 
+  
+          [spcode]_residual_conductance_data_for_rtpc %>% 
+              ungroup() %>% 
+    
+              filter(vpd_control == "yes")  %>% 
+  
+              group_by(set_temperature)  %>% 
+    
+              # Replace NA with group temp median
+              mutate(across(where(is.numeric), ~replace_na(., median(., na.rm = TRUE)))) %>% 
+              
+              dplyr::select(tree_id, set_temperature, double_sided_residual_conductance_mmol_s_m2) %>% 
+    
+              rename(rate = "double_sided_residual_conductance_mmol_s_m2",
+                     temp = "set_temperature") %>% 
+                  
+              arrange(temp)
 ```
 
-```{r, eval=FALSE, echo=FALSE}
-#bind_rows(select(params, model_name, rmax:skewness), ave_params) %>%
-#  mutate_if(is.numeric, round, 2)
+### Fit model  
+
+```{r, model_fitting_vpd_controlled, cache=TRUE}
+
+#vpd_controlled_model_fit <- 
+ 
+    [spcode]_vpd_controlled %>% 
+  
+    nest(., data = c(temp, rate)) %>%     
+  
+    mutate(
+          lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
+                                              data = .x,
+                                              iter = c(10,10,10,10),
+                                              
+                                              start_lower = get_start_vals(.x$temp, 
+                                                                           .x$rate, 
+                                                                           model_name = 'lactin2_1995') - 1,
+                                              
+                                              start_upper = get_start_vals(.x$temp, 
+                                                                           .x$rate, 
+                                                                           model_name = 'lactin2_1995') + 1,
+                                              lower = get_lower_lims(.x$temp, 
+                                                                     .x$rate, 
+                                                                     model_name = 'lactin2_1995'),
+                                              
+                                              upper = get_upper_lims(.x$temp, 
+                                                                     .x$rate, 
+                                                                     model_name = 'lactin2_1995'),
+                                              lhstype = 'genetic',
+                                              supp_errors = 'Y',
+                                              convergence_count = FALSE)),
+        # create new temperature data
+        new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
+         
+         # predict over that data,
+         preds =  map2(lactin2, new_data, ~augment(.x, newdata = .y)))   
 ```
 
-# 2. Export data
+### Get rmax param 
+
+```{r}
+rmax_vpd_controlled_model <- 
+    vpd_controlled_model_fit %>% 
+          pivot_longer(names_to = 'model_name', values_to = 'fit', c(lactin2)) %>%
+          mutate(params = map(fit, calc_params)) %>%
+          dplyr::select(tree_id, model_name, params) %>%
+          unnest(params) %>% 
+          dplyr::select(tree_id, model_name, rmax) %>%
+          mutate(vpd_control = factor("yes"))  %>% 
+          add_column(spcode = 'euc_saligna')
+```
+
+## Export Rmax data
+
+```{r, export_rmax_data}
+
+#[spcode]_rmax_data <- 
+        
+      list(rmax_no_vpd_control_model,
+            rmax_vpd_controlled_model) %>% 
+            reduce(rbind) %>%  
+
+            group_by(vpd_control, spcode) %>% 
+      
+            summarise(median_rmax = median(rmax),
+                    se_rmax = sd(rmax) / sqrt(n())) %>%
+            mutate(vpd_control = if_else(vpd_control == "no", 
+                                        "Temperature  + VPD", "Temperature" )) 
+```
+
+# 4. Export data
 
 ```{r, export_aic_values, eval=FALSE}
-save(string_NUMBER_ic_values, 
-    file = "./[spcode]_processed_data/[spcode]_string_NUMBER_rtpc_aic_models_values.RData")
+save("R_object", 
+    file = "./[spcode]_processed_data/.RData")
 ```
 
