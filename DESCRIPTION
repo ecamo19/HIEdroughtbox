@@ -1,7 +1,7 @@
 Package: HIEdroughtbox
 Type: Package
 Title: HIEdroughtbox
-Version: 0.6.0.9002
+Version: 0.6.0.9003
 Author: Erick Calderon-Morales
 Maintainer: Erick Calderon-Morales <erickcamo19@gmail.com>
 Description: This package clean, read and analize the data coming from the droughtbox located at the Hawkesbury Institude for the Environment 
