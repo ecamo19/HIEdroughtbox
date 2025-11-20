@@ -188,7 +188,7 @@ ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
 
 ### Fit models for the string selected 
 
-```{r}
+```{r, eval=FALSE}
 # Check if start values can be found
 get_start_vals(
       [spcode]_string_[NUMBER]_data$temp,
@@ -352,10 +352,10 @@ model_func_no_vpd_control <- function(temp){
   sharpeschoollow_1981(temp = temp, 
                        
                   tref = 25,
-                  r_tref = params_no_vpd_control_model_fit["r_tref"], 
-                  e = params_no_vpd_control_model_fit["e"], 
-                  el = params_no_vpd_control_model_fit["el"], 
-                  tl = params_no_vpd_control_model_fit["tl"])
+                  r_tref = param_model_fit["r_tref"], 
+                  e = param_model_fit["e"], 
+                  el = param_model_fit["el"], 
+                  tl = param_model_fit["tl"])
 
 }
 
@@ -466,7 +466,7 @@ knitr::kable(string_[NUMBER]_ic_values)
 
 ## Get data with **no VPD control**
 
-```{r}
+```{r, eval=FALSE}
 #[spcode]_no_vpd_control <-
  
           [spcode]_residual_conductance_data_for_rtpc %>% 
@@ -489,7 +489,7 @@ knitr::kable(string_[NUMBER]_ic_values)
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 # Check if start values can be found
 get_start_vals(
       [spcode]_no_vpd_control$temp,
@@ -512,7 +512,7 @@ ggplot(data = [spcode]_no_vpd_control, aes(x = temp, y = rate)) +
 
 ### Fit model  
 
-```{r, model_fitting_no_vpd_control}
+```{r, model_fitting_no_vpd_control, eval=FALSE}
 
 #[spcode]_no_vpd_control_model_fit <- 
     
@@ -744,7 +744,7 @@ ggplot(data = [spcode]_no_vpd_control, aes(x = temp, y = rate)) +
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 # Check if start values can be found
 get_start_vals(
       [spcode]_vpd_controlled$temp,
