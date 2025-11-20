@@ -109,6 +109,9 @@ ls()
 
 ![Thermal Performance Curve](https://www.researchgate.net/profile/Luis-Miguel-Gutierrez-Pesquera/publication/303825084/figure/fig16/AS:669082739290125@1536533164346/A-typical-thermal-performance-curve-in-ectotherms-CTmax-critical-thermal-maxima-CTmin.ppm)
 
+
++ Activation energy:
+
 + rmax:
 
 + topt: Estimate optimum temperature of a thermal performance curve
@@ -181,184 +184,24 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
 #models_fits_string_NUMBER <- 
     nest([spcode]_string_NUMBER_data, data = c(temp, rate)) %>%
     mutate(
-      
-      # Model 1 
-      beta = map(data, ~nls_multstart(rate~beta_2012(temp = temp, a, b, c, d, e),
-                                      data = .x,
-                                      iter = c(6, 6, 6, 6, 6),
-                                      start_lower = get_start_vals(.x$temp, 
-                                                                   .x$rate,
-                                                                   model_name = 'beta_2012') - 1,
-                                      
-                                      start_upper = get_start_vals(.x$temp,
-                                                                   .x$rate,
-                                                                   model_name = 'beta_2012') + 1,
-                                      
-                                      lower = get_lower_lims(.x$temp,
-                                                             .x$rate,
-                                                             model_name = 'beta_2012'),
-                                      
-                                      upper = get_upper_lims(.x$temp,
-                                                             .x$rate,
-                                                             model_name = 'beta_2012'),
-                                      lhstype = 'genetic',
-                                      supp_errors = 'Y',
-                                      convergence_count = FALSE)),
-      
-      {print("1) Beta model done"); .},
-
-      # Model 2
-      boatman = map(data, ~nls_multstart(rate~boatman_2017(temp = temp, rmax, tmin, tmax, a,b),
-                                         data = .x,
-                                         iter = c(6, 6, 6, 6, 6),
-                                         start_lower = get_start_vals(.x$temp,
-                                                                      .x$rate,
-                                                                      model_name = 'boatman_2017') - 1,
-                                         
-                                         start_upper = get_start_vals(.x$temp,
-                                                                      .x$rate,
-                                                                      model_name = 'boatman_2017') + 1,
-                                         
-                                         lower = get_lower_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'boatman_2017'),
-                                         
-                                         upper = get_upper_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'boatman_2017'),
-                                         lhstype = 'genetic',
-                                         supp_errors = 'Y',
-                                         convergence_count = FALSE)),
-      
-      {print("2) Boatman model done"); .},
-
-      # Model 3
-      briere2 = map(data, ~nls_multstart(rate~briere2_1999(temp = temp, tmin, tmax, a,b),
+    
+    # Model 8
+    delong = map(data, ~suppressWarnings(nls_multstart(rate~delong_2017(temp = temp, c, eb, ef, tm,ehc),
                             data = .x,
-                            iter = c(6, 6, 6, 6),
-                            start_lower = get_start_vals(.x$temp, 
-                                                         .x$rate, 
-                                                         model_name = 'briere2_1999') - 1,
                             
-                            start_upper = get_start_vals(.x$temp, 
-                                                         .x$rate, 
-                                                         model_name = 'briere2_1999') + 1,
+                            iter = c(6,6,6,6,6),
                             
-                            lower = get_lower_lims(.x$temp, 
-                                                   .x$rate, 
-                                                   model_name = 'briere2_1999'),
+                            start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
                             
-                            upper = get_upper_lims(.x$temp, 
-                                                   .x$rate, 
-                                                   model_name = 'briere2_1999'),
-                            lhstype = 'genetic',
+                            start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+                            
+                            lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+                            
+                            upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
                             supp_errors = 'Y',
-                            convergence_count = FALSE)),
-      
-      {print("3) Briere model done"); .},
-
-      # Model 4
-      flinn = map(data, ~nls_multstart(rate~flinn_1991(temp = temp, a, b, c),
-                                       data = .x,
-                                       iter = c(6, 6, 6),
-                                       
-                                       start_lower = get_start_vals(.x$temp, 
-                                                                    .x$rate, 
-                                                                    model_name = 'flinn_1991') - 1,
-                                       
-                                       start_upper = get_start_vals(.x$temp, 
-                                                                    .x$rate, 
-                                                                    model_name = 'flinn_1991') + 1,
-                                       
-                                       lower = get_lower_lims(.x$temp, 
-                                                              .x$rate, 
-                                                              model_name = 'flinn_1991'),
-                                       
-                                       upper = get_upper_lims(.x$temp, 
-                                                              .x$rate, 
-                                                              model_name = 'flinn_1991'),
-                                       lhstype = 'genetic',
-                                       supp_errors = 'Y',
-                                       convergence_count = FALSE)),
-      
-      {print("4) Flinn model done"); .},
-      
-      # Model 5
-      gaussian = map(data, ~nls_multstart(rate~gaussian_1987(temp = temp, rmax, topt, a),
-                                          data = .x,
-                                          iter = c(6, 6, 6),
-                                          
-                                          start_lower = get_start_vals(.x$temp, 
-                                                                       .x$rate, 
-                                                                       model_name = 'gaussian_1987') - 1,
-                                          
-                                          start_upper = get_start_vals(.x$temp, 
-                                                                       .x$rate, 
-                                                                       model_name = 'gaussian_1987') + 1,
-                                          lower = get_lower_lims(.x$temp, 
-                                                                 .x$rate, 
-                                                                 model_name = 'gaussian_1987'),
-                                          
-                                          upper = get_upper_lims(.x$temp, 
-                                                                 .x$rate, 
-                                                                 model_name = 'gaussian_1987'),
-                                          lhstype = 'genetic',
-                                          supp_errors = 'Y',
-                                          convergence_count = FALSE)),
-      
-      {print("5) Gaussian model done"); .},
-
-      # Model 6
-      hinshelwood = map(data, ~nls_multstart(rate~hinshelwood_1947(temp = temp, a, e, b, eh),
-                                             data = .x,
-                                             iter = c(6, 6, 6, 6),
-                                             
-                                             start_lower = get_start_vals(.x$temp, 
-                                                                          .x$rate, 
-                                                                          model_name = 'hinshelwood_1947')-1,
-                                             
-                                             start_upper = get_start_vals(.x$temp, 
-                                                                          .x$rate, 
-                                                                          model_name = 'hinshelwood_1947')+1,
-                                             
-                                             lower = get_lower_lims(.x$temp, 
-                                                                    .x$rate, 
-                                                                    model_name = 'hinshelwood_1947'),
-                                             
-                                             upper = get_upper_lims(.x$temp, 
-                                                                    .x$rate, 
-                                                                    model_name = 'hinshelwood_1947'),
-                                             supp_errors = 'Y',
-                                             lhstype = 'genetic',
-                                             convergence_count = FALSE)),
-      
-      {print("6) Hinshelwood model done"); .},
-
-      # Model 7
-      joehnk = map(data, ~nls_multstart(rate~joehnk_2008(temp = temp, rmax, topt, a, b, c),
-                                        data = .x,
-                                        iter = c(6, 6, 6, 6, 6),
-                                        start_lower = get_start_vals(.x$temp, 
-                                                                     .x$rate, 
-                                                                     model_name = 'joehnk_2008') - 1,
-                                        
-                                        start_upper = get_start_vals(.x$temp, 
-                                                                     .x$rate, 
-                                                                     model_name = 'joehnk_2008') + 1,
-                                        
-                                        lower = get_lower_lims(.x$temp, 
-                                                               .x$rate, 
-                                                               model_name = 'joehnk_2008'),
-                                        
-                                        upper = get_upper_lims(.x$temp, 
-                                                               .x$rate, 
-                                                               model_name = 'joehnk_2008'),
-                                        supp_errors = 'Y',
-                                        lhstype = 'genetic',
-                                        convergence_count = FALSE)),
-
-    {print("7) Joehnk model done"); .},
-
+                            lhstype = 'genetic',
+                            convergence_count = FALSE))),    
+    
     # Model 8
     johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
                             data = .x,
@@ -378,57 +221,8 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
     
       {print("8) Johnson/Lewin model done"); .},
 
-      # Model 9
-      lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
-                                         data = .x,
-                                         
-                                         iter = c(6, 6, 6, 6),
-                                         
-                                         start_lower = get_start_vals(.x$temp, 
-                                                                      .x$rate, 
-                                                                      model_name = 'lactin2_1995') - 1,
-                                         
-                                         start_upper = get_start_vals(.x$temp, 
-                                                                      .x$rate, 
-                                                                      model_name = 'lactin2_1995') + 1,
-                                         
-                                         lower = get_lower_lims(.x$temp, 
-                                                                .x$rate,
-                                                                model_name = 'lactin2_1995'),
-                                         
-                                         upper = get_upper_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'lactin2_1995'),
-                                         supp_errors = 'Y',
-                                         lhstype = 'genetic',
-                                         convergence_count = FALSE)),
-    
-      {print("9) Lactin model done"); .},  
-    
-      # Model 10
-      # lrf = map(data, ~nls_multstart(rate~lrf_1991(temp = temp, rmax, topt, tmin, tmax),
-      #                                data = .x,
-      #                                iter = c(4,4,4,4),
-      #                                
-      #                                start_lower = get_start_vals(.x$temp, 
-      #                                                             .x$rate, 
-      #                                                             model_name = 'lrf_1991') - 1,
-      #                                
-      #                                start_upper = get_start_vals(.x$temp, 
-      #                                                             .x$rate, 
-      #                                                             model_name = 'lrf_1991') + 1,
-      #                                
-      #                                lower = get_lower_lims(.x$temp, 
-      #                                                       .x$rate, 
-      #                                                       model_name = 'lrf_1991'),
-      #                                
-      #                                upper = get_upper_lims(.x$temp, 
-      #                                                       .x$rate, 
-      #                                                       model_name = 'lrf_1991'),
-      #                                supp_errors = 'Y',
-      #                                lhstype = 'genetic',
-      #                                convergence_count = FALSE)),
-      # 
+        
+
       # Model 11
       pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
                                        data = .x,
@@ -455,86 +249,6 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                        convergence_count = FALSE)),
     
       {print("11) Pawar model done"); .},
-    
-      # Model 12
-      quadratic = map(data, ~nls_multstart(rate~quadratic_2008(temp = temp, a, b, c),
-                                           data = .x,
-                                           
-                                           iter = c(6, 6, 6),
-                                           
-                                           start_lower = get_start_vals(.x$temp, 
-                                                                        .x$rate, 
-                                                                        model_name = 'quadratic_2008') - 0.5,
-                                           
-                                           start_upper = get_start_vals(.x$temp, 
-                                                                        .x$rate, 
-                                                                        model_name = 'quadratic_2008') + 0.5,
-                                           
-                                           lower = get_lower_lims(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'quadratic_2008'),
-                                           
-                                           upper = get_upper_lims(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'quadratic_2008'),
-                                           supp_errors = 'Y',
-                                           lhstype = 'genetic',
-                                           convergence_count = FALSE)),
-      
-      {print("12) Quadratic model done"); .},
-
-      # Model 13
-      ratkowsky = map(data, ~nls_multstart(rate~ratkowsky_1983(temp = temp, tmin, tmax, a, b),
-                                           data = .x,
-                                           
-                                           iter = c(6, 6, 6, 6),
-                                           
-                                           start_lower = get_start_vals(.x$temp, 
-                                                                        .x$rate, 
-                                                                        model_name = 'ratkowsky_1983') - 1,
-                                           
-                                           start_upper = get_start_vals(.x$temp, 
-                                                                        .x$rate, 
-                                                                        model_name = 'ratkowsky_1983') + 1,
-                                           
-                                           lower = get_lower_lims(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'ratkowsky_1983'),
-                                           
-                                           upper = get_upper_lims(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'ratkowsky_1983'),
-                                           lhstype = 'genetic',
-                                           supp_errors = 'Y',
-                                           convergence_count = FALSE)),
-    
-      {print("13) Ratkowsky model done"); .},
-
-      # Model 14
-      rezende = map(data, ~nls_multstart(rate~rezende_2019(temp = temp, q10, a,b,c),
-                                         data = .x,
-                                         
-                                         iter = c(6, 6, 6, 6),
-                                         
-                                         start_lower = get_start_vals(.x$temp, 
-                                                                      .x$rate, 
-                                                                      model_name = 'rezende_2019') - 1,
-                                         
-                                         start_upper = get_start_vals(.x$temp, 
-                                                                      .x$rate, 
-                                                                      model_name = 'rezende_2019') + 1,
-                                         
-                                         lower = get_lower_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'rezende_2019'),
-                                         lhstype = 'genetic',
-                                         upper = get_upper_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'rezende_2019'),
-                                         supp_errors = 'Y',
-                                         convergence_count = FALSE)),
-      
-      {print("14) Rezende model done"); .},
     
       # Model 15
       sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
@@ -609,105 +323,7 @@ ggplot(data = [spcode]_string_NUMBER_data, aes(x = temp, y = rate)) +
                                           lhstype = 'genetic',
                                           convergence_count = FALSE)),
     
-      {print("17) Sharpeshoolhollow model done"); .},
-
-      # Model 18
-      spain = map(data, ~nls_multstart(rate~spain_1982(temp = temp, a,b,c,r0),
-                                       
-                                       data = .x,
-                                       
-                                       iter = c(6, 6, 6, 6),
-                                       
-                                       start_lower = get_start_vals(.x$temp, .x$rate, 
-                                                                    model_name = 'spain_1982') - 1,
-                                       
-                                       start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                    model_name = 'spain_1982') + 1,
-                                       
-                                       lower = get_lower_lims(.x$temp, .x$rate, 
-                                                              model_name = 'spain_1982'),
-                                       
-                                       upper = get_upper_lims(.x$temp, .x$rate, 
-                                                              model_name = 'spain_1982'),
-                                       supp_errors = 'Y',
-                                       lhstype = 'genetic',
-                                       convergence_count = FALSE)),
-    
-      {print("18) Spain model done"); .},  
-    
-      # Model 19
-      thomas_1 = map(data, ~nls_multstart(rate~thomas_2012(temp = temp, a, b, c, tref),
-                                          
-                                          data = .x,
-                                          
-                                          iter = c(6, 6, 6, 6),
-                                          
-                                          start_lower = get_start_vals(.x$temp, .x$rate, 
-                                                                       model_name = 'thomas_2012') - 1,
-                                          
-                                          start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                       model_name = 'thomas_2012') + 2,
-                                          
-                                          lower = get_lower_lims(.x$temp, .x$rate, 
-                                                                 model_name = 'thomas_2012'),
-                                          
-                                          upper = get_upper_lims(.x$temp, .x$rate, 
-                                                                 model_name = 'thomas_2012'),
-                                          supp_errors = 'Y',
-                                          lhstype = 'genetic',
-                                          convergence_count = FALSE)),
-    
-      {print("19) Thomas 1 model done"); .},  
-    
-      # Model 20
-      thomas_2 = map(data, ~nls_multstart(rate~thomas_2017(temp = temp, a,b,c,d,e),
-                                          
-                                          data = .x,
-                                          
-                                          iter = c(6, 6, 6, 6, 6),
-                                          
-                                          start_lower = get_start_vals(.x$temp, .x$rate, 
-                                                                       model_name = 'thomas_2017')- 1,
-                                          
-                                          start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                       model_name = 'thomas_2017')+ 1,
-                                          
-                                          lower = get_lower_lims(.x$temp, .x$rate, 
-                                                                 model_name = 'thomas_2017'),
-                                          
-                                          upper = get_upper_lims(.x$temp, .x$rate, 
-                                                                 model_name = 'thomas_2017'),
-                                          supp_errors = 'Y',
-                                          lhstype = 'genetic',
-                                          convergence_count = FALSE)),
-    
-      {print("20) Thomas 2 model done"); .},  
-    
-      # Model 21
-      weibull = map(data, ~nls_multstart(rate~weibull_1995(temp = temp, a,topt,b,c),
-                                         data = .x,
-                                         
-                                         iter = c(6, 6, 6, 6),
-                                         
-                                         start_lower = get_start_vals(.x$temp,
-                                                                      .x$rate, 
-                                                                      model_name = 'weibull_1995')- 1,
-                                         
-                                         start_upper = get_start_vals(.x$temp, 
-                                                                      .x$rate, 
-                                                                      model_name = 'weibull_1995')+ 1,
-                                         
-                                         lower = get_lower_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'weibull_1995'),
-                                         
-                                         upper = get_upper_lims(.x$temp, 
-                                                                .x$rate, 
-                                                                model_name = 'weibull_1995'),
-                                         supp_errors = 'Y',
-                                         lhstype = 'genetic',
-                                         convergence_count = FALSE)),
-    {print("21) Thomas 2 model done"); .})
+      {print("17) Sharpeshoolhollow model done"); .})
 ```
 
 ### Stack models
@@ -879,5 +495,4 @@ to only keep models within $\Delta2AIC$ of the best model.
 save(string_NUMBER_ic_values, 
     file = "./[spcode]_processed_data/[spcode]_string_NUMBER_rtpc_aic_models_values.RData")
 ```
-
 
