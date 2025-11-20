@@ -188,6 +188,14 @@ ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
 
 ### Fit models for the string selected 
 
+```{r}
+# Check if start values can be found
+get_start_vals(
+      [spcode]_string_[NUMBER]_data$temp,
+      [spcode]_string_[NUMBER]_data$rate,
+      model_name = '')
+```
+
 ```{r, model_fitting_string, eval=FALSE, echo=FALSE}
 #[spcode]_models_fits_string_[NUMBER] <- 
  
@@ -334,14 +342,37 @@ ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
       {print("17) Sharpeshoolhollow model done"); .})
 ```
 
+### Get the area under the curve for a single string 
+
+```{r eval=FALSE}
+
+param_model_fit <- coef([spcode]_models_fits_string_[NUMBER]$sharpeschoollow[[1]])  
+
+model_func_no_vpd_control <- function(temp){
+  sharpeschoollow_1981(temp = temp, 
+                       
+                  tref = 25,
+                  r_tref = params_no_vpd_control_model_fit["r_tref"], 
+                  e = params_no_vpd_control_model_fit["e"], 
+                  el = params_no_vpd_control_model_fit["el"], 
+                  tl = params_no_vpd_control_model_fit["tl"])
+
+}
+
+(auc_no_vpd_control <- integrate(model_func_no_vpd_control,lower = 25, 
+                                 upper = 55))
+```
+
 ### Stack models
 
 ```{r eval=FALSE}
 #[spcode]_model_stack_string_[NUMBER] <- 
 
-    select(models_fits_string_[NUMBER], -data) %>%
+    select([spcode]_models_fits_string_[NUMBER], -data) %>%
 
-    pivot_longer(., names_to = 'model_name', values_to = 'fit', beta:weibull)
+    pivot_longer(., names_to = 'model_name', 
+                 values_to = 'fit', 
+                 johnson_lewin:sharpeschoollow)
 ```
 
 ### Get model parameters
@@ -349,7 +380,7 @@ ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
 ```{r, eval=FALSE}
 #[spcode]_string_[NUMBER]_params <- 
     
-    model_stack_string_[NUMBER] %>%
+    [spcode]_model_stack_string_[NUMBER] %>%
     
     mutate(., est = map(fit, tidy)) %>%
     
@@ -372,20 +403,13 @@ ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
     
     model_stack_string_[NUMBER] %>%
     
-    mutate(., preds = map(fit, augment, newdata = newdata)) %>%
+    mutate(., preds = map(fit, 
+                          augment, 
+                          newdata = [spcode]_newdata)) %>%
     
     select(-fit) %>%
     
     unnest(preds)
-```
-
-```{r eval=FALSE}
-# take a random point from each model for labelling
-#d_labs <- 
-    filter(string_[NUMBER]_preds, temp <= 40) %>%
-        group_by(., model_name) %>%
-        sample_n(., 1) %>%
-        ungroup()
 ```
 
 #### Plot predictions
@@ -412,31 +436,6 @@ ggplot([spcode]_string_[NUMBER]_preds, aes(temp, rate)) +
          title = 'Model fits') +
     
     geom_hline(aes(yintercept = 0), linetype = 2)
-```
-
-```{r, plot_join_model_fits, eval=FALSE, echo=FALSE}
-# ggplot([spcode]_string_[NUMBER]_preds, aes(temp, .fitted)) +
-#   
-#   geom_line(aes(col = model_name)) +
-#   
-#   geom_label_repel(aes(temp, .fitted, label = model_name, col = model_name),
-#                    fill = 'white', nudge_y = 0.8, segment.size = 0.2,
-#                    segment.colour = 'grey50', d_labs) +
-# 
-#   geom_point(aes(temp, rate), [spcode]_string_[NUMBER]_data) +
-#   
-#   theme_bw(base_size = 12) +
-#   
-#   theme(legend.position = 'none') +
-#   
-#   labs(x = 'Temperature (ºC)',
-#        y = 'Residual conductance') +
-# 
-#   ylim(c(-40000, 40000)) +
-#   
-#   geom_hline(aes(yintercept = 0), linetype = 2) +
-#   
-#   scale_color_brewer(type = 'qual', palette = 2)
 ```
 
 ### Get AIC values
@@ -489,6 +488,28 @@ knitr::kable(string_[NUMBER]_ic_values)
           arrange(temp)
 ```
 
+
+```{r}
+# Check if start values can be found
+get_start_vals(
+      [spcode]_no_vpd_control$temp,
+      [spcode]_no_vpd_control$rate,
+      model_name = '')
+```
+
+```{r, eval = FALSE}
+# Check you have complete curves, otherwise assign median value
+# 7 * 8 = 56
+nrow([spcode]_no_vpd_control)
+```
+
+```{r, eval=FALSE}
+# Make sure to count 7 dots add each tree id
+ggplot(data = [spcode]_no_vpd_control, aes(x = temp, y = rate)) +
+    geom_point() +
+    facet_wrap(~tree_id)
+```
+
 ### Fit model  
 
 ```{r, model_fitting_no_vpd_control}
@@ -501,121 +522,121 @@ knitr::kable(string_[NUMBER]_ic_values)
     nest(., data = c(temp, rate)) %>%   
     
     mutate(
-        #Model 8
-        delong = map(data, ~nls_multstart(rate ~ delong_2017(temp = temp, c, eb, ef, tm,ehc),
-                                data = .x,
-    
-                                iter = c(4, 4, 4 ,4, 4),
-    
-                                start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
-    
-                                start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
-    
-                                lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
-    
-                                upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
-                                supp_errors = 'Y',
-                                lhstype = 'genetic',
-                                convergence_count = FALSE)),
+        #Model 4
+        # delong = map(data, ~nls_multstart(rate ~ delong_2017(temp = temp, c, eb, ef, tm,ehc),
+        #                         data = .x,
         # 
-        # Model 8
-        johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
-                                data = .x,
-                                
-                                iter = c(6, 6, 6, 6),
-                                
-                                start_lower = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')-1,
-                                
-                                start_upper = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')+1,
-                                
-                                lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
-                                
-                                upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
-                                supp_errors = 'Y',
-                                lhstype = 'genetic',
-                                convergence_count = FALSE))),
-        
-          {print("8) Johnson/Lewin model done"); .},
-    
-            
-    
-          # Model 11
-          pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
-                                           data = .x,
-                                           
-                                           iter = c(6, 6, 6, 6),
-                                           
-                                           start_lower = get_start_vals(.x$temp, 
-                                                                        .x$rate, 
-                                                                        model_name = 'pawar_2018') - 1,
-                                           
-                                           start_upper = get_start_vals(.x$temp, 
-                                                                        .x$rate, 
-                                                                        model_name = 'pawar_2018') + 1,
-                                           
-                                           lower = get_lower_lims(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'pawar_2018'),
-                                           
-                                           upper = get_upper_lims(.x$temp, 
-                                                                  .x$rate, 
-                                                                  model_name = 'pawar_2018'),
-                                           supp_errors = 'Y',
-                                           lhstype = 'genetic',
-                                           convergence_count = FALSE)),
-        
-          {print("11) Pawar model done"); .},
-        
-          # Model 15
-          sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
-                                                                                 e,el,tl,eh,th, 
-                                                                                 tref = 25),
-                                                      data = .x,
-                                                      
-                                                      iter = c(6, 6, 6, 6, 6, 6),
-                                
-                                                      start_lower = get_start_vals(.x$temp,.x$rate,
-                                                                        model_name = 'sharpeschoolfull_1981')-1,
-                                                      
-                                                      start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                        model_name = 'sharpeschoolfull_1981')+1,
-                                                      
-                                                      lower = get_lower_lims(.x$temp, .x$rate, 
-                                                                          model_name = 'sharpeschoolfull_1981'),
-                                                      
-                                                      upper = get_upper_lims(.x$temp, 
-                                                                             .x$rate, 
-                                                                             model_name ='sharpeschoolfull_1981'),
-                                                      supp_errors = 'Y',
-                                                      lhstype = 'genetic',
-                                                      convergence_count = FALSE)),
-        
-          {print("15) Sharpeshoolfull model done"); .},
-    
-          # Model 16 
-          sharpeschoolhigh = map(data, 
-                                 ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
-                                            
-                                            data = .x,
-                                            iter = c(6, 6, 6, 6),
-                                                
-                                            start_lower = get_start_vals(.x$temp,.x$rate, 
-                                                                         model_name = 'sharpeschoolhigh_1981')-1,
-                                            
-                                            start_upper = get_start_vals(.x$temp, .x$rate, 
-                                                                         model_name = 'sharpeschoolhigh_1981')+1,
-                                            
-                                            lower = get_lower_lims(.x$temp,
-                                                                   .x$rate,
-                                                                   model_name = 'sharpeschoolhigh_1981'),
-                                            
-                                            upper = get_upper_lims(.x$temp, .x$rate, 
-                                                                   model_name = 'sharpeschoolhigh_1981'),
-                                            supp_errors = 'Y',
-                                            lhstype = 'genetic',
-                                            convergence_count = FALSE)),
-        
-          {print("16) Sharpeshoolhigh model done"); .},
+        #                         iter = c(4, 4, 4 ,4, 4),
+        # 
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
+        # 
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+        # 
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        # 
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE)),
+        # # 
+        # # Model 8
+        # johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
+        #                         data = .x,
+        #                         
+        #                         iter = c(6, 6, 6, 6),
+        #                         
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')-1,
+        #                         
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')+1,
+        #                         
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+        #                         
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE))),
+        # 
+        #   {print("8) Johnson/Lewin model done"); .},
+        # 
+        #     
+        # 
+        #   # Model 11
+        #   pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
+        #                                    data = .x,
+        #                                    
+        #                                    iter = c(6, 6, 6, 6),
+        #                                    
+        #                                    start_lower = get_start_vals(.x$temp, 
+        #                                                                 .x$rate, 
+        #                                                                 model_name = 'pawar_2018') - 1,
+        #                                    
+        #                                    start_upper = get_start_vals(.x$temp, 
+        #                                                                 .x$rate, 
+        #                                                                 model_name = 'pawar_2018') + 1,
+        #                                    
+        #                                    lower = get_lower_lims(.x$temp, 
+        #                                                           .x$rate, 
+        #                                                           model_name = 'pawar_2018'),
+        #                                    
+        #                                    upper = get_upper_lims(.x$temp, 
+        #                                                           .x$rate, 
+        #                                                           model_name = 'pawar_2018'),
+        #                                    supp_errors = 'Y',
+        #                                    lhstype = 'genetic',
+        #                                    convergence_count = FALSE)),
+        # 
+        #   {print("11) Pawar model done"); .},
+        # 
+        #   # Model 15
+        #   sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
+        #                                                                          e,el,tl,eh,th, 
+        #                                                                          tref = 25),
+        #                                               data = .x,
+        #                                               
+        #                                               iter = c(6, 6, 6, 6, 6, 6),
+        #                         
+        #                                               start_lower = get_start_vals(.x$temp,.x$rate,
+        #                                                                 model_name = 'sharpeschoolfull_1981')-1,
+        #                                               
+        #                                               start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                 model_name = 'sharpeschoolfull_1981')+1,
+        #                                               
+        #                                               lower = get_lower_lims(.x$temp, .x$rate, 
+        #                                                                   model_name = 'sharpeschoolfull_1981'),
+        #                                               
+        #                                               upper = get_upper_lims(.x$temp, 
+        #                                                                      .x$rate, 
+        #                                                                      model_name ='sharpeschoolfull_1981'),
+        #                                               supp_errors = 'Y',
+        #                                               lhstype = 'genetic',
+        #                                               convergence_count = FALSE)),
+        # 
+        #   {print("15) Sharpeshoolfull model done"); .},
+        # 
+        #   # Model 16 
+        #   sharpeschoolhigh = map(data, 
+        #                          ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
+        #                                     
+        #                                     data = .x,
+        #                                     iter = c(6, 6, 6, 6),
+        #                                         
+        #                                     start_lower = get_start_vals(.x$temp,.x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')-1,
+        #                                     
+        #                                     start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')+1,
+        #                                     
+        #                                     lower = get_lower_lims(.x$temp,
+        #                                                            .x$rate,
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     
+        #                                     upper = get_upper_lims(.x$temp, .x$rate, 
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     supp_errors = 'Y',
+        #                                     lhstype = 'genetic',
+        #                                     convergence_count = FALSE)),
+        # 
+        #   {print("16) Sharpeshoolhigh model done"); .},
     
           # Model 17
           sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, r_tref,e,el,tl, 
@@ -643,17 +664,47 @@ knitr::kable(string_[NUMBER]_ic_values)
         new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
          
         # predict over that data,
-        preds =  map2(lactin2, new_data, ~augment(.x, newdata = .y)))
+        preds =  map2(sharpeschoollow, new_data, ~augment(.x, newdata = .y)))
                                                                                     
+```
+
+### Get the area under the curve
+
+```{r, eval = FALSE}
+# Compare with the values obtained when integration is done in a single string 
+
+([spcode]_auc_data_no_vpd_control <-  
+  
+  [spcode]_no_vpd_control_model_fit %>%
+    
+    mutate(
+      auc = map2_dbl(sharpeschoollow, data, function(model, dat) {
+        
+        # Get temperature range from data
+        temp_range <- range([spcode]_no_vpd_control$temp, na.rm = TRUE)
+        
+        # Create prediction function
+        pred_fn <- function(temp) {
+          predict(model, newdata = data.frame(temp = temp))
+        }
+        
+        # Integrate
+        result <- integrate(pred_fn, lower = temp_range[1], upper = temp_range[2])
+        return(result$value)
+      })
+    ) %>%  
+    select(tree_id, auc) %>% 
+    add_column("vpd_control" = as.factor("no"))
+)
 ```
 
 ### Get rmax param 
 
 ```{r, eval=FALSE}
-#[spcode]_rmax_no_vpd_control_model <-
+#[spcode]_rmax_no_vpd_control <-
  
-      no_vpd_control_model_fit %>% 
-          pivot_longer(names_to = 'model_name', values_to = 'fit', c(lactin2)) %>%
+      [spcode]_no_vpd_control_model_fit %>% 
+          pivot_longer(names_to = 'model_name', values_to = 'fit', c(sharpeschoollow)) %>%
           
           mutate(params = map(fit, calc_params)) %>%
           
@@ -670,7 +721,7 @@ knitr::kable(string_[NUMBER]_ic_values)
 
 ## Get data with **VPD control**
 
-```{r}
+```{r, eval = FALSE}
 #[spcode]_vpd_controlled <- 
   
           [spcode]_residual_conductance_data_for_rtpc %>%
@@ -692,9 +743,18 @@ knitr::kable(string_[NUMBER]_ic_values)
               arrange(temp)
 ```
 
+
+```{r}
+# Check if start values can be found
+get_start_vals(
+      [spcode]_vpd_controlled$temp,
+      [spcode]_vpd_controlled$rate,
+      model_name = '')
+```
+
 ### Fit model  
 
-```{r, model_fitting_vpd_controlled, cache=TRUE}
+```{r, model_fitting_vpd_controlled, cache=TRUE, eval = FALSE}
 
 #[spcode]_vpd_controlled_model_fit <- 
  
@@ -703,43 +763,195 @@ knitr::kable(string_[NUMBER]_ic_values)
     nest(., data = c(temp, rate)) %>%     
   
     mutate(
-          lactin2 = map(data, ~nls_multstart(rate~lactin2_1995(temp = temp, a, b, tmax, delta_t),
+        #Model 4
+        # delong = map(data, ~nls_multstart(rate ~ delong_2017(temp = temp, c, eb, ef, tm,ehc),
+        #                         data = .x,
+        # 
+        #                         iter = c(4, 4, 4 ,4, 4),
+        # 
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
+        # 
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+        # 
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        # 
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE)),
+        # # 
+        # # Model 8
+        # johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
+        #                         data = .x,
+        #                         
+        #                         iter = c(6, 6, 6, 6),
+        #                         
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')-1,
+        #                         
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')+1,
+        #                         
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+        #                         
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE))),
+        # 
+        #   {print("8) Johnson/Lewin model done"); .},
+        # 
+        #     
+        # 
+        #   # Model 11
+        #   pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
+        #                                    data = .x,
+        #                                    
+        #                                    iter = c(6, 6, 6, 6),
+        #                                    
+        #                                    start_lower = get_start_vals(.x$temp, 
+        #                                                                 .x$rate, 
+        #                                                                 model_name = 'pawar_2018') - 1,
+        #                                    
+        #                                    start_upper = get_start_vals(.x$temp, 
+        #                                                                 .x$rate, 
+        #                                                                 model_name = 'pawar_2018') + 1,
+        #                                    
+        #                                    lower = get_lower_lims(.x$temp, 
+        #                                                           .x$rate, 
+        #                                                           model_name = 'pawar_2018'),
+        #                                    
+        #                                    upper = get_upper_lims(.x$temp, 
+        #                                                           .x$rate, 
+        #                                                           model_name = 'pawar_2018'),
+        #                                    supp_errors = 'Y',
+        #                                    lhstype = 'genetic',
+        #                                    convergence_count = FALSE)),
+        # 
+        #   {print("11) Pawar model done"); .},
+        # 
+        #   # Model 15
+        #   sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
+        #                                                                          e,el,tl,eh,th, 
+        #                                                                          tref = 25),
+        #                                               data = .x,
+        #                                               
+        #                                               iter = c(6, 6, 6, 6, 6, 6),
+        #                         
+        #                                               start_lower = get_start_vals(.x$temp,.x$rate,
+        #                                                                 model_name = 'sharpeschoolfull_1981')-1,
+        #                                               
+        #                                               start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                 model_name = 'sharpeschoolfull_1981')+1,
+        #                                               
+        #                                               lower = get_lower_lims(.x$temp, .x$rate, 
+        #                                                                   model_name = 'sharpeschoolfull_1981'),
+        #                                               
+        #                                               upper = get_upper_lims(.x$temp, 
+        #                                                                      .x$rate, 
+        #                                                                      model_name ='sharpeschoolfull_1981'),
+        #                                               supp_errors = 'Y',
+        #                                               lhstype = 'genetic',
+        #                                               convergence_count = FALSE)),
+        # 
+        #   {print("15) Sharpeshoolfull model done"); .},
+        # 
+        #   # Model 16 
+        #   sharpeschoolhigh = map(data, 
+        #                          ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
+        #                                     
+        #                                     data = .x,
+        #                                     iter = c(6, 6, 6, 6),
+        #                                         
+        #                                     start_lower = get_start_vals(.x$temp,.x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')-1,
+        #                                     
+        #                                     start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')+1,
+        #                                     
+        #                                     lower = get_lower_lims(.x$temp,
+        #                                                            .x$rate,
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     
+        #                                     upper = get_upper_lims(.x$temp, .x$rate, 
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     supp_errors = 'Y',
+        #                                     lhstype = 'genetic',
+        #                                     convergence_count = FALSE)),
+        # 
+        #   {print("16) Sharpeshoolhigh model done"); .},
+    
+        # Model 17
+        sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, 
+                                                                             r_tref,
+                                                                             e,
+                                                                             el,
+                                                                             tl, 
+                                                                             tref = 25),
                                               data = .x,
-                                              iter = c(10,10,10,10),
                                               
-                                              start_lower = get_start_vals(.x$temp, 
-                                                                           .x$rate, 
-                                                                           model_name = 'lactin2_1995') - 1,
+                                              iter = c(6, 6, 6, 6),
+                                                      
+                                              start_lower=get_start_vals(.x$temp,.x$rate,
+                                                                         model_name='sharpeschoollow_1981')-1,
+                                
+                                              start_upper=get_start_vals(.x$temp,.x$rate,
+                                                                         model_name = 'sharpeschoollow_1981')+1,
                                               
-                                              start_upper = get_start_vals(.x$temp, 
-                                                                           .x$rate, 
-                                                                           model_name = 'lactin2_1995') + 1,
-                                              lower = get_lower_lims(.x$temp, 
-                                                                     .x$rate, 
-                                                                     model_name = 'lactin2_1995'),
+                                              lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoollow_1981'),
                                               
-                                              upper = get_upper_lims(.x$temp, 
-                                                                     .x$rate, 
-                                                                     model_name = 'lactin2_1995'),
-                                              lhstype = 'genetic',
+                                              upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoollow_1981'),
                                               supp_errors = 'Y',
-                                              convergence_count = FALSE)),
+                                              lhstype = 'genetic',
+                                              convergence_count = FALSE)),         
+          
         # create new temperature data
         new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
          
-         # predict over that data,
-         preds =  map2(lactin2, new_data, ~augment(.x, newdata = .y)))   
+        # predict over that data,
+        preds =  map2(sharpeschoollow, new_data, ~augment(.x, newdata = .y)))  
+```
+
+### Get the area under the curve
+
+```{r, eval = FALSE}
+# Compare with the values obtained when integration is done in a single string 
+
+([spcode]_auc_data_vpd_controlled <- 
+  
+  [spcode]_vpd_controlled_model_fit %>%
+    
+    mutate(
+      auc = map2_dbl(sharpeschoollow, data, function(model, dat) {
+        
+        # Get temperature range from data
+        temp_range <- range([spcode]_vpd_controlled $temp, na.rm = TRUE)
+        
+        # Create prediction function
+        pred_fn <- function(temp) {
+          predict(model, newdata = data.frame(temp = temp))
+        }
+        
+        # Integrate
+        result <- integrate(pred_fn, lower = temp_range[1], upper = temp_range[2])
+        return(result$value)
+      })
+    ) %>% 
+    select(tree_id, auc) %>% 
+    add_column("vpd_control" = as.factor("yes"))
+)
+    
 ```
 
 ### Get rmax param 
 
 ```{r, eval = FALSE}
 
-#[spcode]_rmax_vpd_controlled_model <-
+(#[spcode]_rmax_vpd_controlled <-
       
       [spcode]_vpd_controlled_model_fit %>% 
           
-          pivot_longer(names_to = 'model_name', values_to = 'fit', c(lactin2)) %>%
+          pivot_longer(names_to = 'model_name', values_to = 'fit', c(sharpeschoollow)) %>%
           
           mutate(params = map(fit, calc_params)) %>%
           
@@ -751,35 +963,53 @@ knitr::kable(string_[NUMBER]_ic_values)
           
           mutate(vpd_control = factor("yes"))  %>% 
           
-          add_column(spcode = '[spcode]_')
+          add_column(spcode = '[spcode]_'))
 ```
+
+## Join Rmax and auc data
+
+```{r, eval = FALSE}
+
+([spcode]_rmax_data <- 
+        
+      list([spcode]_rmax_no_vpd_control,
+           
+            [spcode]_rmax_vpd_controlled_model) %>%
+      
+      reduce(rbind))
+
+```
+
+
+```{r, eval = FALSE}
+#([spcode]_auc_data <- 
+   
+    list([spcode]_auc_data_vpd_controlled,
+         
+         [spcode]_auc_data_no_vpd_control) %>%
+   
+    reduce(rbind))
+
+```
+
 
 ## Export Rmax data
 
-```{r, export_rmax_data, eval=FALSE}
-
-#[spcode]_rmax_data <- 
-        
-      list(rmax_no_vpd_control_model,
-           
-            rmax_vpd_controlled_model) %>% 
-           
-            reduce(rbind) %>%  
-
-            group_by(vpd_control, spcode) %>% 
-      
-            summarise(median_rmax = median(rmax),
-                    se_rmax = sd(rmax) / sqrt(n())) %>%
-            
-            mutate(vpd_control = if_else(vpd_control == "no", 
-                                        "Temperature  + VPD", 
-                                        "Temperature" )) 
+```{r, eval=FALSE}
+#([spcode]_rmax_auc_data <-
+   
+    inner_join([spcode]_auc_data,
+               [spcode]_rmax_data,
+               by = c("tree_id", "vpd_control")) %>%
+    
+    select(tree_id, spcode, vpd_control,model_name, everything()))
+  
 ```
 
 # 4. Export data
 
 ```{r, export_aic_values, eval=FALSE}
-save("R_object", 
-    file = "./[spcode]_processed_data/.RData")
+save([spcode]_rmax_auc_data,
+     file = "./[spcode]_processed_data/[spcode]_rmax_auc_data.RData")
 ```
 
