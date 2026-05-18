@@ -179,7 +179,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ```{r, filter_data_based_on_rwc, eval = FALSE}
 #[sp_name]_rwc_data_filtered_data <-
     [sp_name]_rwc_data %>%
-        filter(relative_water_content_perc <= 0.90 && relative_water_content_perc >= 0.50) 
+        filter(relative_water_content_perc <= 0.90 & relative_water_content_perc >= 0.50) 
 ```
 
 ### Plot filtered data
