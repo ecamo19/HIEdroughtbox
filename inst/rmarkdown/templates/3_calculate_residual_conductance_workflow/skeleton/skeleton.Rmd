@@ -38,8 +38,8 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # figures
                       Edit path in line 44 and comment out this line   
                       fig.path       = paste0("./figures_[sp_name]", "/"),
-                      fig.width      = 11,
-                      fig.height     = 7,
+                      fig.width      = 15,
+                      fig.height     = 13,
                       message        = FALSE,
                       warning        = FALSE)
 ```
@@ -148,7 +148,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
                                       y = vpd_avg_kpa_avg,
                                       colour = vpd_control)) +
         geom_boxplot() +
-        theme_bw() +
+        theme_bw(base_size = 14) +
         scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
         theme_bw() +
         ggtitle("VPD conditions inside the Droughtbox") +
@@ -164,7 +164,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
                                       y = tc_avg_deg_c_avg,
                                       colour = vpd_control)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
     ggtitle("Temperature conditions inside the Droughtbox") +
     
@@ -184,7 +184,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 
 ### Plot filtered data
 
-```{r, plot_filtered_data_below_90_no_vpd_control, eval = FALSE, echo = FALSE}
+```{r, plot_filtered_data_within_range_no_vpd_control, eval = FALSE, echo = FALSE}
 
 [sp_name]_rwc_data_filtered_data %>%
   
@@ -197,7 +197,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       # Increase the number of y-axis tick marks
       scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
   
-      theme_bw() +
+      theme_bw(base_size = 14) +
   
       ggtitle("Data with no VPD control") +
   
@@ -217,7 +217,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
-```{r, plot_filtered_data_below_85_vpd_controlled, eval = FALSE, echo = FALSE}
+```{r, plot_filtered_data_within_range_vpd_controlled, eval = FALSE, echo = FALSE}
 
 [sp_name]_rwc_data_filtered_data %>% 
   
@@ -231,7 +231,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       # Increase the number of y-axis tick marks
       scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
   
-      theme_bw() +
+      theme_bw(base_size = 14) +
   
       ggtitle("Data with VPD below 2kPa") +
   
@@ -288,7 +288,7 @@ nrow([sp_name]_slopes)
 ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
                                     y = slope_grams_per_second)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     facet_wrap(~vpd_control) +
     stat_summary(fun.data = give_n, geom = "text", fun.y = median,
                  position = position_dodge(width = 0.75))
@@ -306,7 +306,7 @@ ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
 ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
                                                  y = transpiration_single_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     facet_wrap(~vpd_control) +
     stat_summary(fun.data = give_n, geom = "text", fun.y = median,
                  position = position_dodge(width = 0.75))
@@ -316,7 +316,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
                                                  y = transpiration_double_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     facet_wrap(~vpd_control) +
     stat_summary(fun.data = give_n, geom = "text", fun.y = median,
                   position = position_dodge(width = 0.75))
@@ -386,7 +386,7 @@ duplicated_25c_data <-
                              y = median_residual_conductance,
                              colour = vpd_control)) +
         
-        theme_bw() +
+        theme_bw(base_size = 14) +
   
         geom_point(size = 3.5) +
   
