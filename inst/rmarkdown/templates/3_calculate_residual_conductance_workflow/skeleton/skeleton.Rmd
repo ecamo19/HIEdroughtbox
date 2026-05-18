@@ -255,12 +255,15 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ### Filter data with R2 lower than 0.80
 
 ```{r, data_for_gres, eval = FALSE}
-[sp_name]_db_data_for_gres <- 
+#[sp_name]_data_for_gres <- 
 
     [sp_name]_rwc_data_filtered_data  
 
     # Remove data with poor R2
-    #filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
+    # filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
+    
+    # filter(!(vpd_control == "no" & string_number == "string_8" & set_temperature == 55)) 
+  
 ```
 
 ## Calculate the water loss rate of change   
@@ -272,7 +275,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 
 ```{r, eval = FALSE}
 # Make sure the maximum row length of the data frame slopes is:
-# 8 (individuals)  * 6 (temperatures) + 8 (individuals)  * 7 (temperatures) = 48 + 56
+# 8 (individuals)  * 6 (temperatures) + 8 (individuals)  * 7 (temperatures) = 48 + 56 = 104
 nrow([sp_name]_slopes)
 ```
 
@@ -299,7 +302,7 @@ ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
 
 ```{r, eval = FALSE}
 #[sp_name]_transpiration_rates <- 
-  calculate_transpiration_rates(droughtbox_data = [sp_name]_db_data_for_gres,
+  calculate_transpiration_rates(droughtbox_data = [sp_name]_data_for_gres,
                                 leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
@@ -327,7 +330,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 
 ```{r, eval = FALSE}
 #[sp_name]_residual_conductance <- 
-    calculate_residual_conductance(droughtbox_data = [sp_name]_db_data_for_gres,
+    calculate_residual_conductance(droughtbox_data = [sp_name]_data_for_gres,
                                    leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
@@ -336,6 +339,8 @@ glimpse([sp_name]_residual_conductance)
 ```
 
 ### Duplicate 25c data for rTCP modeling
+
+rTCP need a minimum of 7 points to run
 
 ```{r, eval = FALSE}
 duplicated_25c_data <- 
@@ -376,8 +381,8 @@ duplicated_25c_data <-
     
     # Summarize data
     summarise(
-        median_residual_conductance = median(double_sided_residual_conductance_mmol_s_m2),
-        sd_residual_conductance = sd(double_sided_residual_conductance_mmol_s_m2),
+        median_residual_conductance = median(double_sided_residual_conductance_mol_s_m2),
+        sd_residual_conductance = sd(double_sided_residual_conductance_mol_s_m2),
         median_vpd = median(median_vpd),
         n_residual_conductance = n(),
         se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
