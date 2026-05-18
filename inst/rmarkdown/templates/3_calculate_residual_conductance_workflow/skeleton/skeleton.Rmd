@@ -252,7 +252,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
-### Filter data based on previuos plots 
+### Filter data with R2 lower than 0.80
 
 ```{r, data_for_gres, eval = FALSE}
 [sp_name]_db_data_for_gres <- 
