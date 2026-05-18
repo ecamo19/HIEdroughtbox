@@ -1,0 +1,1923 @@
+---
+title: '[Species Name] data cleaning'
+author: 'Your Name'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r, setup_wd, include=FALSE}
+# Set knit directory
+setwd(here::here())
+knitr::opts_knit$set(root.dir = setwd(here::here()))
+getwd()
+```
+
+```{r setup, include = FALSE}
+options(scipen = 999)
+
+# Save figures in specific place
+knitr::opts_chunk$set(autodep        = TRUE,
+                      #cache.comments = TRUE,
+                      comment = "",
+                      # Save figures as pdf ?
+                      #dev = c( "png", "pdf"),
+                  
+                      # Include code?
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path where figures are going to be store pdf single 
+                      # figures
+                      Edit path in line 40 and comment out this line   
+                      fig.path       = paste0("./figures_[sp_name]", "/"),
+                      fig.width      = 16,
+                      fig.height     = 10,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r cleanup-docs, cache = FALSE,echo = FALSE}
+# save a html copy file in a specific place
+# doc.files <- c(list.files(pattern = "pdf"),
+#                list.files(pattern = "html"),
+#                list.files(pattern = "docx"))
+# 
+# for (file in doc.files) {   
+#     file.rename(file, file.path("../../[insert_folder_name]/", file))
+# }
+```
+
+```{r, libaries, message = FALSE, warning = FALSE, cache = FALSE}
+library(HIEdroughtbox)
+library(ggplot2)
+library(scales)
+
+# For data manipulation
+library(dplyr)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(lubridate)
+library(here)
+library(tibble)
+```
+
+```{r echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
+```
+
+# 1. Load Droughtbox data
+
+```{r, load_droughtbox_data}
+[spcode]_raw_data <- read_hie_droughtbox_data_folder("./[spcode]/[spcode]_droughtbox_data")
+```
+
+```{r}
+names([spcode]_raw_data)
+```
+
+# 2. Clean Droughtbox data
+
+Remember to remove the `eval = FALSE` from each chunk
+
+## Plot raw droughtbox data
+
+```{r, plot_raw_data_vpd_controlled, cache = TRUE}
+map([sp_name]_raw_data[!grepl("no-vpd-control", names([sp_name]_raw_data))], plot_strains_weights)
+```
+
+## __Data with VPD controlled__ 
+
+### File 1: 25c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_25c_filtered <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_25c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+    
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+  
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_date = "20YY-MM-DD",
+                           to_end_date =  "20YY-MM-DD",
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_25c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_25c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_25c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_25c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
+    [sp_name]_vpd_controlled_25c_reshaped$temperature_measured > 25)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_25c_reshaped_cleaned <- 
+  
+  [sp_name]_vpd_controlled_25c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 25c
+        #filter( temperature_measured <= 25)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>% 
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Visualize data before summarizing
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_25c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour = factor(string_number))) +
+#   
+#     geom_point()+
+#
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 2: 30c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_30c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_30c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+  
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_date = "20YY-MM-DD",
+                           to_end_date =  "20YY-MM-DD",
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_30c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_30c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_30c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_30c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
+    [sp_name]_vpd_controlled_30c_reshaped$temperature_measured > 30)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_30c_reshaped_cleaned  <- 
+  
+    [sp_name]_vpd_controlled_30c_reshaped %>%   
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 30c
+        #filter( temperature_measured <= 30c)  %>% 
+        
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Visualize data before summarizing 
+        # summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                  \(x) median(x, na.rm = TRUE))) %>% 
+         
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_30c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour =factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 3: 35c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_35c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_35c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+  
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+    
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_35c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_35c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_35c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_35c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
+    [sp_name]_vpd_controlled_35c_reshaped$temperature_measured > 35)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_35c_reshaped_cleaned <- 
+  
+    [sp_name]_vpd_controlled_35c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 35c
+        #filter( temperature_measured <= 35)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>% 
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, , echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_35c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 4: 40c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_40c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_40c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+  
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_40c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_40c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_40c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_40c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
+    [sp_name]_vpd_controlled_40c_reshaped$temperature_measured >  40)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_40c_reshaped_cleaned <- 
+  
+    [sp_name]_vpd_controlled_40c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 40c
+        #filter( temperature_measured <= 40) %>%
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_40c_reshaped_cleaned, aes(x = time_seconds,
+#                                                               y = string_weight_grams,
+#                                                               colour = factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 5: 45c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_45c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_45c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+  
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+    
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_45c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_45c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_45c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_45c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
+    [sp_name]_vpd_controlled_45c_reshaped$temperature_measured > 45)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_45c_reshaped_cleaned <- 
+  
+    [sp_name]_vpd_controlled_45c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 45c
+        #filter( temperature_measured <= 45)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_45c_reshaped_cleaned, aes(x = time_seconds,
+#                                                               y = string_weight_grams,
+#                                                               colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 6: 50c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_50c_filtered <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_50c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+  
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>%   
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_50c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_50c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_50c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_50c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50| 
+    [sp_name]_vpd_controlled_50c_reshaped$temperature_measured > 50)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_50c_reshaped_cleaned <- 
+  
+    [sp_name]_vpd_controlled_50c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 50c
+        #filter( temperature_measured <= 50)  %>%
+        
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+
+        # Filter observations if required
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>%
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16))
+ 
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_50c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 7: 55c
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_55c_filtered <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_55c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_55c_vpd_controlled, eval = FALSE}
+plot_strains_weights([sp_name]_vpd_controlled_55c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_vpd_controlled_55c_reshaped <- reshape_droughtbox_data([sp_name]_vpd_controlled_55c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55| 
+    [sp_name]_vpd_controlled_55c_reshaped$temperature_measured > 55)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_vpd_controlled_55c_reshaped_cleaned <- 
+  
+    [sp_name]_vpd_controlled_55c_reshaped %>%  
+      
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 55c
+        #filter(temperature_measured >= 55)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                            unit = "second")) %>% 
+  
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+          
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_vpd_controlled_55c_reshaped_cleaned, aes(x = time_seconds,
+#                                                               y = string_weight_grams,
+#                                                               colour = factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### Merge cleaned dataframes
+
+```{r, eval = FALSE}
+
+#[sp_name]_vpd_controlled_merged_cleaned_data <-
+ 
+        list(
+            [sp_name]_vpd_controlled_25c_reshaped_cleaned,
+            [sp_name]_vpd_controlled_30c_reshaped_cleaned,
+            [sp_name]_vpd_controlled_35c_reshaped_cleaned,
+            [sp_name]_vpd_controlled_40c_reshaped_cleaned,
+            [sp_name]_vpd_controlled_45c_reshaped_cleaned,
+            [sp_name]_vpd_controlled_50c_reshaped_cleaned,
+            [sp_name]_vpd_controlled_55c_reshaped_cleaned) %>%    
+            
+    reduce(rbind) %>% 
+    add_column(vpd_control = factor("yes")) %>%
+    arrange(string_number)
+```
+
+#### Plot Merged data
+
+__Make sure that values start at 0__
+
+```{r, plot_vpd_controlled_merged_data, fig.width=16, fig.height=8, eval = FALSE}
+ggplot(data = [sp_name]_vpd_controlled_merged_cleaned_data, aes(x = time_seconds,
+                                                                y = string_weight_grams,
+                                                                colour = factor(string_number))) +
+  
+    geom_point() +
+    
+    theme_bw() +
+
+    # Break plot into panels
+    facet_grid(~temperature_measured, scales = "free") +
+
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
+
+    # Set colors  
+    scale_color_manual(values = string_colors) +
+    
+    # Rotate labels by 90 degrees and move legend at the bottom
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+          legend.position = "bottom") +
+    
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+```
+
+```{r, eval = FALSE}
+glimpse([sp_name]_vpd_controlled_merged_cleaned_data)
+```
+
+## __Data with VPD _not_ controlled__ 
+
+### Plot raw data
+
+```{r, plot_raw_data_no_vpd_control, cache = TRUE, eval = FALSE}
+map([sp_name]_raw_data[grepl("no-vpd-control", names([sp_name]_raw_data))], plot_strains_weights)
+```
+
+### File 2: 30c
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_30c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_no-vpd-control_30c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+  
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_date = "20YY-MM-DD",
+                           to_end_date =  "20YY-MM-DD",
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+
+    # Step done to avoid breaking the time sequence
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_30c_no_vpd_control, eval = FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_30c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_no_vpd_control_30c_reshaped  <- reshape_droughtbox_data([sp_name]_no_vpd_control_30c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
+    [sp_name]_no_vpd_control_30c_reshaped$temperature_measured > 30)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_30c_reshaped_cleaned  <- 
+  
+    [sp_name]_no_vpd_control_30c_reshaped %>%   
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 30c
+        #filter( temperature_measured <= 30c)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+        
+        ## Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Visualize data before summarizing 
+        # summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                  \(x) median(x, na.rm = TRUE))) %>% 
+         
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_no_vpd_control_30c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour =factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20)) +
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 3: 35c
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_35c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_no-vpd-control_35c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+    
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_35c_no_vpd_control, eval = FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_35c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_no_vpd_control_35c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_35c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
+    [sp_name]_vpd_controlled_35c_reshaped$temperature_measured > 35)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_35c_reshaped_cleaned <- 
+  
+    [sp_name]_no_vpd_control_35c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 35c
+        #filter( temperature_measured <= 35)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>% 
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_no_vpd_control_35c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour = factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 4: 40c
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_40c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_no-vpd-control_40c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_40c_no_vpd_control, eval = FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_40c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_no_vpd_control_40c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_40c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_no_vpd_control_40c_reshaped$temperature_measured < 40 |
+    [sp_name]_no_vpd_control_40c_reshaped$temperature_measured > 40)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_40c_reshaped_cleaned <- 
+  
+    [sp_name]_no_vpd_control_40c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 40c
+        #filter( temperature_measured <= 40) %>%
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_no_vpd_control_40c_reshaped_cleaned, aes(x = time_seconds,
+#                                                               y = string_weight_grams,
+#                                                               colour = factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 5: 45c
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_45c_filtered <-
+
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_no-vpd-control_45c.dat"] %>%
+
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+  
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+    
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_45c_no_vpd_control, eval = FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_45c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_no_vpd_control_45c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_45c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_no_vpd_control_45c_reshaped$temperature_measured < 45 |
+    [sp_name]_no_vpd_control_45c_reshaped$temperature_measured > 45)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_45c_reshaped_cleaned <- 
+  
+    [sp_name]_no_vpd_control_45c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 45c
+        #filter( temperature_measured <= 45) %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_no_vpd_control_45c_reshaped_cleaned, aes(x = time_seconds,
+#                                                               y = string_weight_grams,
+#                                                               colour = factor(string_number))) +
+#   
+#     geom_point()+
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 6: 50c
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_50c_filtered <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_no-vpd-control_50c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>% 
+    
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>%   
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_50c_no_vpd_control, eval = FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_50c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_no_vpd_control_50c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_50c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50| 
+    [sp_name]_no_vpd_control_50c_reshaped$temperature_measured > 50)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_50c_reshaped_cleaned  <- 
+  
+    [sp_name]_no_vpd_control_50c_reshaped %>% 
+        
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 50c
+        #filter( temperature_measured <= 50)  %>%
+        
+        # Filter strings if required
+    
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+
+        # Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                          unit = "second")) %>% 
+
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+        
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_no_vpd_control_50c_reshaped_cleaned, aes(x = time_seconds,
+#                                                                 y = string_weight_grams,
+#                                                                 colour = factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20))+
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### File 7: 55c
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_55c_filtered <- 
+    
+    # Select the data to be clean
+    [sp_name]_raw_data["file_name_no-vpd-control_55c.dat"] %>% 
+    
+    # Transform list element to dataframe type
+    as.data.frame(.) %>%
+
+    # clean colnames
+    `colnames<-`(str_extract(colnames(.), '\\b\\w+$')) %>%
+  
+    # Choose columns to be used
+    select(tare_count_smp:strain_avg_8_microstrain_avg) %>%
+
+    # Choose a interval of time
+    filter_droughtbox_data(.,
+                           from_start_time = "HH:MM:SS",
+                           to_end_time = "HH:MM:SS") %>%
+  
+    # Get tare groups with more than 1 observation
+    group_by(tare_count_smp) %>% 
+    filter(n() > 1) %>% 
+  
+    # Step done to avoid breaking the time sequence 
+    arrange(date_time)
+```
+
+#### Plot filtered data
+
+```{r, plot_filtered_data_55c_no_vpd_control, eval = FALSE}
+plot_strains_weights([sp_name]_no_vpd_control_55c_filtered, show_tare_group = FALSE)
+```
+
+#### Reshape data
+
+```{r, eval = FALSE}
+[sp_name]_no_vpd_control_55c_reshaped <- reshape_droughtbox_data([sp_name]_no_vpd_control_55c_filtered)
+```
+
+```{r, eval = FALSE}
+# Check data
+any([sp_name]_no_vpd_control_55c_reshaped$temperature_measured < 55| 
+    [sp_name]_no_vpd_control_55c_reshaped$temperature_measured > 55)
+```
+
+#### Clean reshaped data
+
+```{r, eval = FALSE}
+#[sp_name]_no_vpd_control_55c_reshaped_cleaned <- 
+  
+    [sp_name]_no_vpd_control_55c_reshaped %>%  
+      
+        # Remove tare_count_smp column
+        ungroup() %>%     
+        select(-tare_count_smp) %>% 
+
+        # Select Values measured at 55c
+        #filter(temperature_measured >= 55)  %>% 
+        
+        # Filter strings if required
+        #filter(!c(string_number == "string_5")) %>%
+        #filter(!c(string_number == "string_6")) %>% 
+    
+        ## Filter zeros
+        #filter(!c(string_number == "string_1" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_2" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_3" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_4" & string_weight_grams < 16)) %>% 
+        
+        #filter(!c(string_number == "string_5" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_6" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_7" & string_weight_grams < 16)) %>% 
+        #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
+        
+        # Average over a 1 minute
+        # Remember data is collected every 10 seconds
+        mutate(date_time = floor_date(date_time, "1 minute"),
+               
+               time_seconds = time_length(interval(first(date_time), date_time),
+                                            unit = "second")) %>% 
+  
+        group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
+        
+        # Filter data before summarize
+        #summarise(across(tc_avg_deg_c_avg:string_weight_grams, 
+        #                 \(x) median(x, na.rm = TRUE))) %>% 
+          
+        arrange(date_time)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# ggplot(data = [sp_name]_no_vpd_control_55c_reshaped_cleaned, aes(x = time_seconds,
+#                                                               y = string_weight_grams,
+#                                                               colour = factor(string_number))) +
+#   
+#     geom_point() +
+#     
+#     theme_bw() +
+# 
+#     # Break plot into panels
+#     facet_grid(~temperature_measured, scales = "free") +
+# 
+#     # At lines showing range between 0-3600 sec (1 hour)
+#     geom_vline(xintercept = 0,  linetype = "dotted") +
+# 
+#     # Set colors  
+#     scale_color_manual(values = string_colors) +
+#     
+#     # Rotate labels by 90 degrees and move legend at the bottom
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+#           legend.position = "bottom") +
+#     
+#     scale_y_continuous(breaks = scales::pretty_breaks(n = 20)) +
+#     scale_x_continuous(breaks = scales::pretty_breaks(n = 20))
+```
+
+### Merge cleaned dataframes
+
+```{r, eval = FALSE}
+
+#[sp_name]_no_vpd_control_merged_cleaned_data <-
+ 
+        list(
+            [sp_name]_no_vpd_control_30c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_35c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_40c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_45c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_50c_reshaped_cleaned,
+            [sp_name]_no_vpd_control_55c_reshaped_cleaned) %>%    
+            
+    reduce(rbind) %>% 
+    add_column(vpd_control = factor("no")) %>%
+    arrange(string_number)
+```
+
+#### Plot Merged data
+
+__Make sure that values start at 0__
+
+```{r, plot_merged_data_no_vpd_control, fig.width=16, fig.height=8, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_no_vpd_control_merged_cleaned_data, aes(x = time_seconds,
+                                                                y = string_weight_grams,
+                                                                colour = factor(string_number))) +
+  
+    geom_point()+
+    
+    theme_bw() +
+
+    # Break plot into panels
+    facet_grid(~temperature_measured, scales = "free") +
+
+    # At lines showing range between 0-3600 sec (1 hour)
+    geom_vline(xintercept = 0,  linetype = "dotted") +
+
+    # Set colors  
+    scale_color_manual(values = string_colors) +
+    
+    # Rotate labels by 90 degrees and move legend at the bottom
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+          legend.position = "bottom") +
+    
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+```
+
+```{r, eval = FALSE}
+glimpse([sp_name]_no_vpd_control_merged_cleaned_data)
+```
+
+## Merge datasets
+
+```{r, merge_data, eval = FALSE }
+#[sp_name]_droughtbox_data_cleaned <- 
+            list(
+              [sp_name]_no_vpd_control_merged_cleaned_data,
+              [sp_name]_vpd_controlled_merged_cleaned_data
+              ) %>%    
+            
+    reduce(rbind) %>%
+    arrange(vpd_control, temperature_measured) %>%
+
+    # Reorganize columns  
+    select(date_time, string_number, temperature_measured, vpd_control, everything())
+```
+
+```{r, remove_all_raw_data, eval = FALSE}
+
+# Remove all raw_data
+rm(list = setdiff(ls(), c("[sp_name]_droughtbox_data_cleaned",
+                          "string_colors"))
+```
+
+# 3. Add dry weights to cleaned dataframe
+
+## Load dry weights data  
+
+```{r, eval = FALSE, load_dry_weights}
+[sp_name]_main_spread_sheet <- 
+    
+    # Read file
+    readxl::read_xlsx("./[sp_name]_droughtbox_main_spreadsheet.xlsx") %>%
+    
+    # Remove columns
+    select(!c(notes, number_of_parafilm_pieces, date, started_at))
+```
+
+```{r, eval = FALSE}
+glimpse([sp_name]_main_spread_sheet)
+```
+
+```{r, load_dry_weights_data, eval = FALSE}
+#[sp_name]_dry_weights <-
+  
+    [sp_name]_main_spread_sheet %>% 
+        
+       mutate(sample_dry_weight_g =  ((leaf_dry_weight_mg/1000) +
+                                         (stem_dry_weight_mg/1000) + 
+                                         hook_weight_g + 
+                                         prensa_weight_g), 
+              # Add word to number 
+              string_number = stringr::str_c("string_", string_number),
+              .keep = "unused") %>%  
+        select(-c(paper_bag_weight_g, weight_paper_bag_plus_sample_scale_mg)) %>%
+    
+    na.omit()
+```
+
+
+## Merge dry weights data with droughtbox data
+
+```{r, eval = FALSE}
+#[sp_name]_droughtbox_data_cleaned <- 
+
+    [sp_name]_droughtbox_data_cleaned %>% 
+
+        # Remove the word string inside the column string_number 
+        mutate(set_temperature = temperature_measured, .keep = "unused") %>% 
+            
+        inner_join(., [sp_name]_dry_weights, , 
+                by = join_by(string_number, set_temperature, vpd_control)) %>% 
+        
+        select(-c(spcode, tree_id))
+```
+
+### Plot droughtbox data with dry weights
+
+```{r plot_cleaned_data_with_dry_weights_no_vpd_control, echo=FALSE, eval = FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
+
+#plot_no_vpd_control <- 
+    [sp_name]_droughtbox_data_cleaned %>% 
+        
+        # Filter data
+        filter(vpd_control == "no") %>% 
+
+        ggplot(data = ., aes(x = time_seconds,
+                             y = string_weight_grams,
+                             colour = factor(string_number))) +
+            geom_point() +
+        
+            theme_bw() +
+            
+            ggtitle("Data with no VPD control") +
+        
+            # Move legend at the bottom
+            theme() +
+        
+            # Break plot into panels
+            facet_grid(vars(set_temperature), vars(string_number)) +
+        
+            # At lines showing range between 0-3600 sec (1 hour)
+            geom_vline(xintercept = 0,  linetype = "dotted") +
+        
+            # Set colors
+            scale_color_manual(values = string_colors) +
+        
+            # Show dry-weights
+            geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+        
+            # Rotate labels by 90 degrees
+            theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+                  legend.position = "none")
+```
+
+```{r plot_cleaned_data_with_dry_weights_vpd_controlled, echo = FALSE, eval = FALSE, fig.width = 16, fig.height = 14, cache=TRUE}
+
+#plot_vpd_controlled <- 
+    [sp_name]_droughtbox_data_cleaned %>% 
+        
+        # Filter data
+        filter(vpd_control == "yes") %>% 
+
+        ggplot(data = ., aes(x = time_seconds,
+                             y = string_weight_grams,
+                             colour = factor(string_number))) +
+            geom_point() +
+        
+            theme_bw() +
+            
+            ggtitle("Data with VPD below 2kPa") +
+        
+            # Move legend at the bottom
+            theme() +
+        
+            # Break plot into panels
+            facet_grid(vars(set_temperature), vars(string_number)) +
+        
+            # At lines showing range between 0-3600 sec (1 hour)
+            geom_vline(xintercept = 0,  linetype = "dotted") +
+        
+            # Set colors
+            scale_color_manual(values = string_colors) +
+        
+            # Show dry-weights
+            geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+        
+            # Rotate labels by 90 degrees
+            theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+                  legend.position = "none")
+```
+
+# 4. Export data
+
+```{r, export_data_for_rwc, eval = FALSE}
+save([sp_name]_droughtbox_data_cleaned, 
+     file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
+```

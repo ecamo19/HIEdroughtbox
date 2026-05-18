@@ -1,0 +1,9 @@
+^renv$
+^renv\.lock$
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+
+# Ignoring file that I use for checking if a function works
+666_garbage_script.R

@@ -1,0 +1,711 @@
+---
+title: '[spcode]: Residual conductance rTPC modeling'
+author: 'ecamo19'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r, setup_wd, include=FALSE}
+# Set knit directory
+setwd(here::here())
+knitr::opts_knit$set(root.dir = setwd(here::here()))
+getwd()
+```
+
+```{r setup, include = FALSE}
+options(scipen = 999)
+
+# Save figures in specific place
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = FALSE,
+                      cache.comments = TRUE,
+                      comment = "",
+                      # Save figures as pdf ?
+                      #dev = c( "png", "pdf"),
+                  
+                      # Include code?
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path where figures are going to be store pdf single 
+                      # figures
+                      Edit path in the next line and comment out this line   
+                      fig.path       = paste0("./figures_[spcode]_temp_modeling", "/"),
+                      fig.width      = 11,
+                      fig.height     = 7,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r cleanup-docs, cache = FALSE,echo = FALSE}
+# save a html copy file in a specific place
+# doc.files <- c(list.files(pattern = "pdf"),
+#                list.files(pattern = "html"),
+#                list.files(pattern = "docx"))
+# 
+# for (file in doc.files) {   
+#     file.rename(file, file.path("../../[insert_folder_name]/", file))
+# }
+```
+
+```{r libaries, message = FALSE, warning = FALSE, cache = FALSE}
+library(HIEdroughtbox)
+library(ggplot2)
+
+# For data manipulation
+library(dplyr)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(here)
+library(broom)
+library(tibble)
+
+# For facets_2
+library(ggh4x)
+
+# For modeling temperature
+library(nls.multstart)
+library(rTPC)
+library(ggrepel)
+```
+
+```{r, echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
+```
+
+```{r, echo=FALSE}
+# write function to label ggplot2 panels
+label_facets_num <- function(string){
+  len <- length(string)
+  string = paste('(', 1:len, ') ', string, sep = '')
+  return(string)
+}
+```
+
+# 1. Load data
+
+```{r}
+load("./[spcode]_processed_data/[spcode]_residual_conductance_data_for_rtpc.RData")
+ls()
+```
+
+# Thermal Performance Curve parameters definitions
+
+![Thermal Performance Curve](https://www.researchgate.net/profile/Luis-Miguel-Gutierrez-Pesquera/publication/303825084/figure/fig16/AS:669082739290125@1536533164346/A-typical-thermal-performance-curve-in-ectotherms-CTmax-critical-thermal-maxima-CTmin.ppm)
+
+
++ Activation energy:
+
++ Q10: The Q10 temperature coefficient is a measure of temperature sensitivity 
+       based on the chemical reactions. (Source Wiki)
+       
+
+# 1. Model thermal response of Residual conductance on __single string__
+
+```{r, eval=FALSE}
+glimpse([spcode]_residual_conductance_data_for_rtpc)
+```
+
+```{r eval=FALSE}
+#[spcode]_string_[NUMBER]_data <-
+ 
+    [spcode]_residual_conductance_data_for_rtpc %>% 
+
+    ungroup() %>% 
+  
+    filter(string_number == "string_#")  %>%
+    filter(vpd_control == "") %>% 
+  
+    select(set_temperature, 
+           double_sided_residual_conductance_mmol_s_m2) %>% 
+  
+    rename(rate = "double_sided_residual_conductance_mmol_s_m2",
+           temp = "set_temperature") %>% 
+    
+    # Make sure there are 7 observations 
+    arrange(temp)
+```
+
+### Plot string selected 
+
+```{r, raw_data_string, eval=FALSE}
+ggplot(data = [spcode]_string_[NUMBER]_data, aes(x = temp, y = rate)) +
+    geom_point() +
+    theme_bw()
+```
+
+### Fit models for the string selected 
+
+```{r, eval=FALSE}
+# Check if start values can be found
+get_start_vals(
+      [spcode]_string_[NUMBER]_data$temp,
+      [spcode]_string_[NUMBER]_data$rate,
+      model_name = '')
+```
+
+```{r, model_fitting_string, eval=FALSE, echo=FALSE}
+#[spcode]_models_fits_string_[NUMBER] <- 
+ 
+    nest([spcode]_string_[NUMBER]_data, data = c(temp, rate)) %>%
+    mutate(
+    
+    delong = map(data, ~suppressWarnings(nls_multstart(rate~delong_2017(temp = temp, c, eb, ef, tm,ehc),
+                            data = .x,
+
+                            iter = c(6,6,6,6,6),
+
+                            start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017') - 1,
+
+                            start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017') + s1,
+
+                            lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+
+                            upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+                            supp_errors = 'Y',
+                            lhstype = 'genetic',
+                            convergence_count = FALSE))),
+    )
+```
+
+### Stack models
+
+```{r eval=FALSE}
+#[spcode]_model_stack_string_[NUMBER] <- 
+
+    select([spcode]_models_fits_string_[NUMBER], -data) %>%
+
+    pivot_longer(., names_to = 'model_name', 
+                 values_to = 'fit', 
+                 johnson_lewin:sharpeschoollow)
+```
+
+### Get model parameters
+
+```{r, eval=FALSE}
+#[spcode]_string_[NUMBER]_params <- 
+    
+    [spcode]_model_stack_string_[NUMBER] %>%
+    
+    mutate(., est = map(fit, tidy)) %>%
+    
+    select(-fit) %>%
+    
+    unnest(est)
+```
+
+### Get predictions 
+
+```{r eval=FALSE}
+#[spcode]_newdata <- 
+    tibble(temp = seq(min([spcode]_string_[NUMBER]_data$temp),
+                      max([spcode]_string_[NUMBER]_data$temp),
+                      length.out = 100))
+```
+
+```{r, eval=FALSE}
+#[spcode]_string_[NUMBER]_preds <- 
+    
+    model_stack_string_[NUMBER] %>%
+    
+    mutate(., preds = map(fit, 
+                          augment, 
+                          newdata = [spcode]_newdata)) %>%
+    
+    select(-fit) %>%
+    
+    unnest(preds)
+```
+
+#### Plot predictions
+
+```{r, plot_model_fits_all_models, eval=FALSE}
+
+ggplot([spcode]_string_[NUMBER]_preds, aes(temp, rate)) +
+  
+    geom_point(aes(temp, rate), [spcode]_string_[NUMBER]_data) +
+  
+    geom_line(aes(temp, .fitted), col = 'blue') +
+    
+    facet_wrap(~model_name, labeller = labeller(model_name = label_facets_num),
+               scales = 'free', ncol = 5) +
+    
+    theme_bw(base_size = 12) +
+    
+    theme(legend.position = 'none',
+          strip.text = element_text(hjust = 0),
+          strip.background = element_blank()) +
+    
+    labs(x = 'Temperature (ºC)',
+         y = 'Residual conductance',
+         title = 'Model fits') +
+    
+    geom_hline(aes(yintercept = 0), linetype = 2)
+```
+
+### Get AIC values
+
+```{r eval=FALSE}
+#[spcode]_string_[NUMBER]_ic_values <- 
+
+    [spcode]_model_stack_string_[NUMBER] %>%
+
+        mutate(., info = map(fit, glance), AICc =  map_dbl(fit, MuMIn::AICc)) %>%
+        
+        select(-fit) %>%
+        
+        unnest(info) %>%
+        
+        select(model_name, sigma, AIC, AICc, BIC, df.residual) %>%  
+        
+        mutate(., weight = MuMIn::Weights(AICc)) %>% 
+        
+        arrange(., desc(weight)) %>% 
+        
+        add_column(string_number = "string_[NUMBER]")
+
+knitr::kable(string_[NUMBER]_ic_values)
+```
+
+# 2. Model thermal response of residual conductance on __all strings__         
+
+## Get data with **no VPD control**
+
+```{r, eval=FALSE}
+#[spcode]_no_vpd_control <-
+ 
+          [spcode]_residual_conductance_data_for_rtpc %>% 
+          
+          ungroup() %>% 
+
+          filter(vpd_control == "no")  %>% 
+          
+          group_by(set_temperature)  %>% 
+
+          # Replace NA with group temp median
+          mutate(across(where(is.numeric), ~replace_na(., median(., na.rm = TRUE)))) %>% 
+          
+          dplyr::select(tree_id, set_temperature, double_sided_residual_conductance_mmol_s_m2) %>% 
+
+          rename(rate = "double_sided_residual_conductance_mmol_s_m2",
+                 temp = "set_temperature") %>% 
+              
+          arrange(temp)
+```
+
+
+```{r, eval=FALSE}
+# Check if start values can be found
+get_start_vals(
+      [spcode]_no_vpd_control$temp,
+      [spcode]_no_vpd_control$rate,
+      model_name = '')
+```
+
+```{r, eval = FALSE}
+# Check you have complete curves, otherwise assign median value
+# 7 * 8 = 56
+nrow([spcode]_no_vpd_control)
+```
+
+```{r, eval=FALSE}
+# Make sure to count 7 dots add each tree id
+ggplot(data = [spcode]_no_vpd_control, aes(x = temp, y = rate)) +
+    geom_point() +
+    facet_wrap(~tree_id)
+```
+
+### Fit model  
+
+```{r, model_fitting_no_vpd_control, eval=FALSE}
+
+#[spcode]_no_vpd_control_model_fit <- 
+    
+    [spcode]_no_vpd_control %>% 
+    
+    #dplyr::select(-tree_id) %>% 
+    nest(., data = c(temp, rate)) %>%   
+    
+    mutate(
+        # Model 4
+        # delong = map(data, ~nls_multstart(rate ~ delong_2017(temp = temp, c, eb, ef, tm,ehc),
+        #                         data = .x,
+        # 
+        #                         iter = c(4, 4, 4 ,4, 4),
+        # 
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
+        # 
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+        # 
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        # 
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE)),
+        # # 
+         
+        #   sharpeschoolhigh = map(data, 
+        #                          ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
+        #                                     
+        #                                     data = .x,
+        #                                     iter = c(6, 6, 6, 6),
+        #                                         
+        #                                     start_lower = get_start_vals(.x$temp,.x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')-1,
+        #                                     
+        #                                     start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')+1,
+        #                                     
+        #                                     lower = get_lower_lims(.x$temp,
+        #                                                            .x$rate,
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     
+        #                                     upper = get_upper_lims(.x$temp, .x$rate, 
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     supp_errors = 'Y',
+        #                                     lhstype = 'genetic',
+        #                                     convergence_count = FALSE)),
+        # 
+        #   {print("16) Sharpeshoolhigh model done"); .},
+      
+        # create new temperature data
+        new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
+         
+        # predict over that data,
+        preds =  map2(sharpeschoollow, new_data, ~augment(.x, newdata = .y)))
+                                                                                    
+```
+
+
+### Get rmax param 
+
+```{r, eval=FALSE}
+#[spcode]_rmax_no_vpd_control <-
+ 
+      [spcode]_no_vpd_control_model_fit %>% 
+          pivot_longer(names_to = 'model_name', values_to = 'fit', c(sharpeschoollow)) %>%
+          
+          mutate(params = map(fit, calc_params)) %>%
+          
+          dplyr::select(tree_id, model_name, params) %>%
+          
+          unnest(params) %>% 
+          
+          dplyr::select(tree_id, model_name, rmax) %>%
+          
+          mutate(vpd_control = factor("no")) %>% 
+          
+          add_column(spcode = [spcode])
+```
+
+## Get data with **VPD control**
+
+```{r, eval = FALSE}
+#[spcode]_vpd_controlled <- 
+  
+          [spcode]_residual_conductance_data_for_rtpc %>%
+              
+              ungroup() %>% 
+    
+              filter(vpd_control == "yes")  %>% 
+  
+              group_by(set_temperature)  %>% 
+    
+              # Replace NA with group temp median
+              mutate(across(where(is.numeric), ~replace_na(., median(., na.rm = TRUE)))) %>% 
+              
+              dplyr::select(tree_id, set_temperature, double_sided_residual_conductance_mmol_s_m2) %>% 
+    
+              rename(rate = "double_sided_residual_conductance_mmol_s_m2",
+                     temp = "set_temperature") %>% 
+                  
+              arrange(temp)
+```
+
+
+```{r, eval=FALSE}
+# Check if start values can be found
+get_start_vals(
+      [spcode]_vpd_controlled$temp,
+      [spcode]_vpd_controlled$rate,
+      model_name = '')
+```
+
+### Fit model  
+
+```{r, model_fitting_vpd_controlled, cache=TRUE, eval = FALSE}
+
+#[spcode]_vpd_controlled_model_fit <- 
+ 
+    [spcode]_vpd_controlled %>% 
+  
+    nest(., data = c(temp, rate)) %>%     
+  
+    mutate(
+        #Model 4
+        # delong = map(data, ~nls_multstart(rate ~ delong_2017(temp = temp, c, eb, ef, tm,ehc),
+        #                         data = .x,
+        # 
+        #                         iter = c(4, 4, 4 ,4, 4),
+        # 
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')-1,
+        # 
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='delong_2017')+1,
+        # 
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        # 
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'delong_2017'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE)),
+        # # 
+        # # Model 8
+        # johnson_lewin = map(data, ~suppressWarnings(nls_multstart(rate~johnsonlewin_1946(temp =temp,r0,e,eh,topt),
+        #                         data = .x,
+        #                         
+        #                         iter = c(6, 6, 6, 6),
+        #                         
+        #                         start_lower = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')-1,
+        #                         
+        #                         start_upper = get_start_vals(.x$temp, .x$rate, model_name='johnsonlewin_1946')+1,
+        #                         
+        #                         lower = get_lower_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+        #                         
+        #                         upper = get_upper_lims(.x$temp, .x$rate, model_name = 'johnsonlewin_1946'),
+        #                         supp_errors = 'Y',
+        #                         lhstype = 'genetic',
+        #                         convergence_count = FALSE))),
+        # 
+        #   {print("8) Johnson/Lewin model done"); .},
+        # 
+        #     
+        # 
+        #   # Model 11
+        #   pawar = map(data, ~nls_multstart(rate~pawar_2018(temp = temp, r_tref, e, eh, topt, tref = 15),
+        #                                    data = .x,
+        #                                    
+        #                                    iter = c(6, 6, 6, 6),
+        #                                    
+        #                                    start_lower = get_start_vals(.x$temp, 
+        #                                                                 .x$rate, 
+        #                                                                 model_name = 'pawar_2018') - 1,
+        #                                    
+        #                                    start_upper = get_start_vals(.x$temp, 
+        #                                                                 .x$rate, 
+        #                                                                 model_name = 'pawar_2018') + 1,
+        #                                    
+        #                                    lower = get_lower_lims(.x$temp, 
+        #                                                           .x$rate, 
+        #                                                           model_name = 'pawar_2018'),
+        #                                    
+        #                                    upper = get_upper_lims(.x$temp, 
+        #                                                           .x$rate, 
+        #                                                           model_name = 'pawar_2018'),
+        #                                    supp_errors = 'Y',
+        #                                    lhstype = 'genetic',
+        #                                    convergence_count = FALSE)),
+        # 
+        #   {print("11) Pawar model done"); .},
+        # 
+        #   # Model 15
+        #   sharpeschoolfull = map(data, ~nls_multstart(rate~sharpeschoolfull_1981(temp = temp,r_tref,
+        #                                                                          e,el,tl,eh,th, 
+        #                                                                          tref = 25),
+        #                                               data = .x,
+        #                                               
+        #                                               iter = c(6, 6, 6, 6, 6, 6),
+        #                         
+        #                                               start_lower = get_start_vals(.x$temp,.x$rate,
+        #                                                                 model_name = 'sharpeschoolfull_1981')-1,
+        #                                               
+        #                                               start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                 model_name = 'sharpeschoolfull_1981')+1,
+        #                                               
+        #                                               lower = get_lower_lims(.x$temp, .x$rate, 
+        #                                                                   model_name = 'sharpeschoolfull_1981'),
+        #                                               
+        #                                               upper = get_upper_lims(.x$temp, 
+        #                                                                      .x$rate, 
+        #                                                                      model_name ='sharpeschoolfull_1981'),
+        #                                               supp_errors = 'Y',
+        #                                               lhstype = 'genetic',
+        #                                               convergence_count = FALSE)),
+        # 
+        #   {print("15) Sharpeshoolfull model done"); .},
+        # 
+        #   # Model 16 
+        #   sharpeschoolhigh = map(data, 
+        #                          ~nls_multstart(rate~sharpeschoolhigh_1981(temp = temp, r_tref,e,eh,th, tref=25),
+        #                                     
+        #                                     data = .x,
+        #                                     iter = c(6, 6, 6, 6),
+        #                                         
+        #                                     start_lower = get_start_vals(.x$temp,.x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')-1,
+        #                                     
+        #                                     start_upper = get_start_vals(.x$temp, .x$rate, 
+        #                                                                  model_name = 'sharpeschoolhigh_1981')+1,
+        #                                     
+        #                                     lower = get_lower_lims(.x$temp,
+        #                                                            .x$rate,
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     
+        #                                     upper = get_upper_lims(.x$temp, .x$rate, 
+        #                                                            model_name = 'sharpeschoolhigh_1981'),
+        #                                     supp_errors = 'Y',
+        #                                     lhstype = 'genetic',
+        #                                     convergence_count = FALSE)),
+        # 
+        #   {print("16) Sharpeshoolhigh model done"); .},
+    
+        # Model 17
+        sharpeschoollow = map(data, ~nls_multstart(rate~sharpeschoollow_1981(temp = temp, 
+                                                                             r_tref,
+                                                                             e,
+                                                                             el,
+                                                                             tl, 
+                                                                             tref = 25),
+                                              data = .x,
+                                              
+                                              iter = c(6, 6, 6, 6),
+                                                      
+                                              start_lower=get_start_vals(.x$temp,.x$rate,
+                                                                         model_name='sharpeschoollow_1981')-1,
+                                
+                                              start_upper=get_start_vals(.x$temp,.x$rate,
+                                                                         model_name = 'sharpeschoollow_1981')+1,
+                                              
+                                              lower = get_lower_lims(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoollow_1981'),
+                                              
+                                              upper = get_upper_lims(.x$temp, .x$rate, 
+                                                                     model_name = 'sharpeschoollow_1981'),
+                                              supp_errors = 'Y',
+                                              lhstype = 'genetic',
+                                              convergence_count = FALSE)),         
+          
+        # create new temperature data
+        new_data = map(data, ~tibble(temp = seq(min(.x$temp), max(.x$temp), length.out = 100))),
+         
+        # predict over that data,
+        preds =  map2(sharpeschoollow, new_data, ~augment(.x, newdata = .y)))  
+```
+
+### Get the area under the curve
+
+```{r, eval = FALSE}
+# Compare with the values obtained when integration is done in a single string 
+
+([spcode]_auc_data_vpd_controlled <- 
+  
+  [spcode]_vpd_controlled_model_fit %>%
+    
+    mutate(
+      auc = map2_dbl(sharpeschoollow, data, function(model, dat) {
+        
+        # Get temperature range from data
+        temp_range <- range([spcode]_vpd_controlled $temp, na.rm = TRUE)
+        
+        # Create prediction function
+        pred_fn <- function(temp) {
+          predict(model, newdata = data.frame(temp = temp))
+        }
+        
+        # Integrate
+        result <- integrate(pred_fn, lower = temp_range[1], upper = temp_range[2])
+        return(result$value)
+      })
+    ) %>% 
+    select(tree_id, auc) %>% 
+    add_column("vpd_control" = as.factor("yes"))
+)
+    
+```
+
+### Get rmax param 
+
+```{r, eval = FALSE}
+
+(#[spcode]_rmax_vpd_controlled <-
+      
+      [spcode]_vpd_controlled_model_fit %>% 
+          
+          pivot_longer(names_to = 'model_name', values_to = 'fit', c(sharpeschoollow)) %>%
+          
+          mutate(params = map(fit, calc_params)) %>%
+          
+          dplyr::select(tree_id, model_name, params) %>%
+          
+          unnest(params) %>% 
+          
+          dplyr::select(tree_id, model_name, rmax) %>%
+          
+          mutate(vpd_control = factor("yes"))  %>% 
+          
+          add_column(spcode = '[spcode]_'))
+```
+
+## Join Rmax and auc data
+
+```{r, eval = FALSE}
+
+([spcode]_rmax_data <- 
+        
+      list([spcode]_rmax_no_vpd_control,
+           
+            [spcode]_rmax_vpd_controlled_model) %>%
+      
+      reduce(rbind))
+
+```
+
+
+```{r, eval = FALSE}
+#([spcode]_auc_data <- 
+   
+    list([spcode]_auc_data_vpd_controlled,
+         
+         [spcode]_auc_data_no_vpd_control) %>%
+   
+    reduce(rbind))
+
+```
+
+
+## Export Rmax data
+
+```{r, eval=FALSE}
+#([spcode]_rmax_auc_data <-
+   
+    inner_join([spcode]_auc_data,
+               [spcode]_rmax_data,
+               by = c("tree_id", "vpd_control")) %>%
+    
+    select(tree_id, spcode, vpd_control,model_name, everything()))
+  
+```
+
+# 4. Export data
+
+```{r, export_aic_values, eval=FALSE}
+save([spcode]_rmax_auc_data,
+     file = "./[spcode]_processed_data/[spcode]_rmax_auc_data.RData")
+```
+

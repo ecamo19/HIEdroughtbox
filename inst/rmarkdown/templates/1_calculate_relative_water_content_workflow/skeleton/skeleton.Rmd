@@ -1,0 +1,178 @@
+---
+title: 'Relative Water Content: Species Name'
+author: 'Your Name'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r, setup_wd, include=FALSE}
+# Set knit directory
+setwd(here::here())
+knitr::opts_knit$set(root.dir = setwd(here::here()))
+getwd()
+```
+
+```{r setup, include = FALSE}
+options(scipen = 999)
+
+# Save figures in specific place
+knitr::opts_chunk$set(autodep        = TRUE,
+                      #cache.comments = TRUE,
+                      comment = "",
+                      # Save figures as pdf ?
+                      #dev = c( "png", "pdf"),
+                  
+                      # Include code?
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path where figures are going to be store pdf single 
+                      # figures
+                      Edit path in line 40 and comment out this line   
+                      fig.path       = paste0("./figures_[sp_name]", "/"),
+                      fig.width      = 16,
+                      fig.height     = 10,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r cleanup-docs, cache = FALSE,echo = FALSE}
+# save a html copy file in a specific place
+# doc.files <- c(list.files(pattern = "pdf"),
+#                list.files(pattern = "html"),
+#                list.files(pattern = "docx"))
+# 
+# for (file in doc.files) {   
+#     file.rename(file, file.path("../../[insert_folder_name]/", file))
+# }
+```
+
+```{r, libaries, message = FALSE, warning = FALSE, cache = FALSE}
+library(HIEdroughtbox)
+library(ggplot2)
+library(scales)
+
+# For data manipulation
+library(dplyr)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(lubridate)
+library(here)
+library(tibble)
+```
+
+```{r echo=FALSE}
+string_colors <- c(string_1 = "#eec000",
+                   string_2 = "#cf544c",
+                   string_3 = "#0175c3",
+                   string_4 = "#878687",
+                   
+                   string_5 =  "#000000",
+                   string_6 =  "#008b28",
+                   string_7 =  "#8600b6",
+                   string_8 =  "#00a0ab")
+```
+
+# 1. Load data 
+
+```{r}
+load(file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData")
+```
+
+# 2. Calculate the relative water content
+
+```{r, eval = FALSE}
+#[sp_name]_rwc_data <- 
+  
+    [sp_name]_droughtbox_data_cleaned %>%
+
+        group_by(string_number, set_temperature, vpd_control) %>%
+        
+        # Calculate relative water content (%)
+        mutate(relative_water_content_perc = 
+                 (string_weight_grams - sample_dry_weight_grams) / 
+                 (max(string_weight_grams) - sample_dry_weight_grams))      
+```
+
+## Plot RWC
+
+```{r, plot_rwc_no_vpd_control, eval = FALSE, echo = FALSE}
+
+[sp_name]_rwc_data %>% 
+    
+    filter(vpd_control == "no") %>% 
+    
+    ggplot(data = ., aes(x = time_seconds,
+                         y = relative_water_content_perc,
+                         colour = string_number)) +
+        
+        geom_point() + 
+    
+        # Increase the number of y-axis tick marks
+        scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+    
+        theme_bw() +
+  
+        ggtitle("Data with no VPD control") +
+    
+        # Remove legend
+        theme(legend.position = "none") +
+    
+        # Break plot into panels
+        facet_grid(vars(set_temperature), vars(string_number)) +
+      
+        # RWC at which Turgor loss point happens on average Bourne et al 2017
+        geom_hline(yintercept = 0.90) +
+    
+        # Set colors  
+        scale_color_manual(values = string_colors)
+```
+
+```{r, plot_rwc_vpd_controlled, eval = FALSE, echo = FALSE}
+
+[sp_name]_rwc_data %>% 
+    
+    filter(vpd_control == "yes") %>% 
+    
+    ggplot(data = ., aes(x = time_seconds,
+                         y = relative_water_content_perc,
+                         colour = string_number)) +
+        
+        geom_point() + 
+    
+        # Increase the number of y-axis tick marks
+        scale_y_continuous(breaks = pretty_breaks(n = 10)) + 
+    
+        theme_bw() +
+  
+        ggtitle("Data with VPD below 2kPa") +
+        
+        # Remove legend
+        theme(legend.position = "none") +
+    
+        # Break plot into panels
+        facet_grid(vars(set_temperature), vars(string_number)) +
+      
+        # RWC at which Turgor loss point happens on average Bourne et al 2017
+        geom_hline(yintercept = 0.90) +
+    
+        # Set colors  
+        scale_color_manual(values = string_colors)
+```
+
+# 3. Export data
+
+```{r, export_data, eval=FALSE}
+save([sp_name]_rwc_data, 
+     file = "./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
+```
+
+

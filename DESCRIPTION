@@ -1,0 +1,27 @@
+Package: HIEdroughtbox
+Type: Package
+Title: HIEdroughtbox
+Version: 0.7.0
+Author: Erick Calderon-Morales
+Maintainer: Erick Calderon-Morales <erickcamo19@gmail.com>
+Description: This package clean, read and analize the data coming from the droughtbox located at the Hawkesbury Institude for the Environment 
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+Imports: 
+    checkmate (>= 2.3.1),
+    cowplot,
+    dplyr (>= 1.1.4),
+    ggplot2,
+    janitor (>= 2.2.0),
+    magrittr,
+    mgsub (>= 1.7.3),
+    readxl (>= 1.4.3),
+    stringr (>= 1.5.1),
+    tidyr (>= 1.3.1)
