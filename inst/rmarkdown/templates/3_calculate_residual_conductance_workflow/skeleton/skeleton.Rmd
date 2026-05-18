@@ -149,8 +149,9 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
                                       colour = vpd_control)) +
         geom_boxplot() +
         theme_bw(base_size = 14) +
+  
         scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
-        theme_bw() +
+  
         ggtitle("VPD conditions inside the Droughtbox") +
         
         # Set colors
