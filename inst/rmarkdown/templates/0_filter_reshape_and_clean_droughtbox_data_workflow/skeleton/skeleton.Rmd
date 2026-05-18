@@ -184,10 +184,14 @@ any([sp_name]_vpd_controlled_25c_reshaped$temperature_measured < 25 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+        
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -300,11 +304,15 @@ any([sp_name]_vpd_controlled_30c_reshaped$temperature_measured < 30 |
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
         
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
-
+        
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
+      
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
         # Visualize data before summarizing 
@@ -419,10 +427,14 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
 
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+        
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -538,10 +550,14 @@ any([sp_name]_vpd_controlled_40c_reshaped$temperature_measured < 40 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
-                                          unit = "second")) %>% 
+                                          unit = "second")) %>%
+  
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -657,10 +673,14 @@ any([sp_name]_vpd_controlled_45c_reshaped$temperature_measured < 45 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+        
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -780,7 +800,11 @@ any([sp_name]_vpd_controlled_50c_reshaped$temperature_measured < 50|
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
-
+        
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
+      
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
         # Filter data before summarize
@@ -900,6 +924,10 @@ any([sp_name]_vpd_controlled_55c_reshaped$temperature_measured < 55|
                time_seconds = time_length(interval(first(date_time), date_time),
                                             unit = "second")) %>% 
   
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
+
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
         # Filter data before summarize
@@ -1076,10 +1104,14 @@ any([sp_name]_no_vpd_control_30c_reshaped$temperature_measured < 30 |
         #filter(!c(string_number == "string_8" & string_weight_grams < 16)) %>% 
         
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+  
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -1195,11 +1227,16 @@ any([sp_name]_vpd_controlled_35c_reshaped$temperature_measured < 35 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+        
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
+  
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
         # Filter data before summarize
@@ -1314,10 +1351,14 @@ any([sp_name]_no_vpd_control_40c_reshaped$temperature_measured < 40 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+  
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -1433,10 +1474,14 @@ any([sp_name]_no_vpd_control_45c_reshaped$temperature_measured < 45 |
         
         # Average over a 1 minute
         # Remember data is collected every 10 seconds
-        mutate(date_time = floor_date(date_time, "1 minute"),
+        mutate(date_time = floor_date(date_time, "5 minutes"),
                
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
+  
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
 
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
@@ -1558,6 +1603,11 @@ any([sp_name]_no_vpd_control_50c_reshaped$temperature_measured < 50|
                time_seconds = time_length(interval(first(date_time), date_time),
                                           unit = "second")) %>% 
 
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
+
+        
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
         # Filter data before summarize
@@ -1677,6 +1727,10 @@ any([sp_name]_no_vpd_control_55c_reshaped$temperature_measured < 55|
                time_seconds = time_length(interval(first(date_time), date_time),
                                             unit = "second")) %>% 
   
+        # Filter observations
+        # filter(!c(string_number == "string_3" & string_weight_grams < 18.5 & time_seconds < 4000)) %>%
+        # filter(!c(string_number == "string_4" & string_weight_grams < 18.5 & time_seconds < 14000)) %>%
+
         group_by(string_number, time_seconds, date_time, temperature_measured) %>%     
         
         # Filter data before summarize
