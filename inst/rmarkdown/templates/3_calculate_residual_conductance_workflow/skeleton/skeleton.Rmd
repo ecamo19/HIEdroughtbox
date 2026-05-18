@@ -13,8 +13,8 @@ output:
 
 ```{r, setup_wd, include=FALSE}
 # Set knit directory
-setwd(here::here())
-knitr::opts_knit$set(root.dir = setwd(here::here()))
+setwd(here::here(EDITME))
+knitr::opts_knit$set(root.dir = setwd(here::here(EDITME)))
 getwd()
 ```
 
@@ -410,8 +410,9 @@ duplicated_25c_data <-
                          position = position_dodge(0.05)) +
         
         # Set colors
-        scale_color_manual(values = c("#9e1523","#293352")) 
-```
+        scale_color_manual(values = c("#9e1523","#293352")) +
+        ylab('Residual conductance (mols*m-2*s-1)')+
+        xlab("Temperature")
 
 # 5. Export data
 
