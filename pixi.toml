@@ -1,0 +1,15 @@
+[workspace]
+authors = ["ecamo19 <erickcamo19@gmail.com>"]
+channels = ["conda-forge"]
+name = "HIEdroughtbox_pixi"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[target.linux.tasks]
+rstudio = "rstudio"
+
+[dependencies]
+r = "==4.3"
+r-devtools = ">=2.4.5,<3"
+r-dplyr = ">=1.1.4,<2"
+
