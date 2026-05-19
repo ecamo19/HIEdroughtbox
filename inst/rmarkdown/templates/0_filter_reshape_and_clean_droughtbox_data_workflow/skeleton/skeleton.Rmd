@@ -1925,7 +1925,7 @@ glimpse([sp_name]_main_spread_sheet)
             scale_color_manual(values = string_colors) +
         
             # Show dry-weights
-            geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+            geom_hline(aes(yintercept = sample_dry_weight_g)) +
         
             # Rotate labels by 90 degrees
             theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
@@ -1962,7 +1962,7 @@ glimpse([sp_name]_main_spread_sheet)
             scale_color_manual(values = string_colors) +
         
             # Show dry-weights
-            geom_hline(aes(yintercept = sample_dry_weight_grams)) +
+            geom_hline(aes(yintercept = sample_dry_weight_g)) +
         
             # Rotate labels by 90 degrees
             theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
