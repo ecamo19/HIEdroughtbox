@@ -306,12 +306,6 @@ calculate_residual_conductance <- function(droughtbox_data,
                       vpd_avg_kpa_avg,
                       tc_avg_deg_c_avg) %>%
 
-        # Rename variables
-        #dplyr::mutate(
-                      # Transform time to seconds
-        #              time_seconds = (time - dplyr::first(time)),
-        #              .keep = "unused") %>%
-
         # Group by temperature
         dplyr::group_by(set_temperature) %>%
 
