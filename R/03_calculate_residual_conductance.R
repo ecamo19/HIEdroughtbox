@@ -261,9 +261,6 @@ calculate_residual_conductance <- function(droughtbox_data,
                                            leaf_and_branch_area_data
                                  ){
 
-    # Atmospheric pressure in the droughtbox constant
-    atmospheric_pressure_constant = 101.6
-
     # Validate input parameters ------------------------------------------------
 
     # Stop if droughtbox_data is not a data frame
@@ -299,26 +296,30 @@ calculate_residual_conductance <- function(droughtbox_data,
 
     # Get VPD parameter --------------------------------------------------------
     # This parameter will be later used in the estimation of gres.
-    vpd_parameter <-
+    # vpd_parameter <-
+    #
+    #     droughtbox_data %>%
+    #
+    #     # Select only the necessary variables
+    #     dplyr::select(string_number,
+    #                   set_temperature,
+    #                   vpd_control,
+    #                   date_time,
+    #                   vpd_avg_kpa_avg,
+    #                   tc_avg_deg_c_avg) %>%
+    #
+    #     # Group by temperature
+    #     dplyr::group_by(set_temperature, vpd_control) %>%
+    #
+    #     # Print message
+    #     {print("Make sure VPD conditions were constant"); .} %>%
+    #
+    #     # Get the median
+    #     dplyr::summarise(median_vpd = stats::median(vpd_avg_kpa_avg))
 
-        droughtbox_data %>%
+    # Atmospheric pressure in the droughtbox constant ---------------------------
+    atmospheric_pressure_constant = 101.6
 
-        # Select only the necessary variables
-        dplyr::select(string_number,
-                      set_temperature,
-                      vpd_control,
-                      date_time,
-                      vpd_avg_kpa_avg,
-                      tc_avg_deg_c_avg) %>%
-
-        # Group by temperature
-        dplyr::group_by(set_temperature, vpd_control) %>%
-
-        # Print message
-        {print("Make sure VPD conditions were constant"); .} %>%
-
-        # Get the median
-        dplyr::summarise(median_vpd = stats::median(vpd_avg_kpa_avg))
 
     # Calculate transpiration rates --------------------------------------------
     transpiration <- calculate_transpiration_rates(droughtbox_data = droughtbox_data,
@@ -329,10 +330,10 @@ calculate_residual_conductance <- function(droughtbox_data,
 
         transpiration %>%
 
-            # Add VPD parameter into the dataset
-            dplyr::full_join(., vpd_parameter,
-                             by = dplyr::join_by(set_temperature == set_temperature,
-                                                 vpd_control == vpd_control)) %>%
+            # # Add VPD parameter into the dataset
+            # dplyr::full_join(., vpd_parameter,
+            #                  by = dplyr::join_by(set_temperature == set_temperature,
+            #                                      vpd_control == vpd_control)) %>%
 
             group_by(tree_id, vpd_control, set_temperature) %>%
 
