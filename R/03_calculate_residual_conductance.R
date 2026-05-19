@@ -59,7 +59,7 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
 
             # Create a nested dataframes excluding set_temperature,
             # strain_number.
-            tidyr::nest(data = -c(median_vdp, median_rh, median_temp,
+            tidyr::nest(data = -c(median_vpd, median_rh, median_temp,
                                   string_number, set_temperature, vpd_control)) %>%
 
             # Create column with the slopes by strain_number, set_temperature
