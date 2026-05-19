@@ -44,10 +44,12 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             {print("Rate of change units: grams * s-1"); .} %>%
 
             # Get median climatic conditions ------------------------------------
-            # Done at each temperature step
-            dplyr::group_by(set_temperature) %>%
+            # Done at each temperature step for each of the vpd treatments.
+            # Remember 6 or 8 individuls at measured at each temperature step at
+            # 2 vpd treatments
+            dplyr::group_by(set_temperature, vpd_control) %>%
 
-            dplyr::mutate(median_vdp  = stats::median(vpd_avg_kpa_avg),
+            dplyr::mutate(median_vpd  = stats::median(vpd_avg_kpa_avg),
                           median_rh   = stats::median(rh_avg_percent_avg),
                           median_temp = stats::median(tc_avg_deg_c_avg)) %>%
 
