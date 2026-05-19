@@ -1846,10 +1846,10 @@ rm(list = setdiff(ls(), c("[sp_name]_droughtbox_data_cleaned",
 ## Load dry weights data  
 
 ```{r, eval = FALSE, load_dry_weights}
-[sp_name]_main_spread_sheet <- 
+#[sp_name]_main_spread_sheet <- 
     
     # Read file
-    readxl::read_xlsx("./[sp_name]_droughtbox_main_spreadsheet.xlsx") %>%
+    readxl::read_xlsx("./[sp_name]_droughtbox_main_spreadsheet.xlsx", na = "NA") %>%
     
     # Remove columns
     select(!c(notes, number_of_parafilm_pieces, date, started_at))
