@@ -331,6 +331,32 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
                                    leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
+### Plot VPD median values
+
+```{r}
+ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperature),
+                                                       y = median_vpd)) +
+    geom_boxplot() +
+    theme_bw(base_size = 14) +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
+```
+
+
+### Plot RH median values
+
+```{r}
+ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperature),
+                                                       y = median_rh)) +
+    geom_boxplot() +
+    theme_bw(base_size = 14) +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
+```
+
+
 ```{r, eval = FALSE}
 glimpse([sp_name]_residual_conductance_data)
 ```
