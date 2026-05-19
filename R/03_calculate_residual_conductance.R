@@ -302,12 +302,15 @@ calculate_residual_conductance <- function(droughtbox_data,
         droughtbox_data %>%
 
         # Select only the necessary variables
-        dplyr::select(date_time,
+        dplyr::select(string_number,
+                      set_temperature,
+                      vpd_control,
+                      date_time,
                       vpd_avg_kpa_avg,
                       tc_avg_deg_c_avg) %>%
 
         # Group by temperature
-        dplyr::group_by(set_temperature) %>%
+        dplyr::group_by(set_temperature, vpd_control) %>%
 
         # Print message
         {print("Make sure VPD conditions were constant"); .} %>%
@@ -326,7 +329,10 @@ calculate_residual_conductance <- function(droughtbox_data,
 
             # Add VPD parameter into the dataset
             dplyr::full_join(., vpd_parameter,
-                             by = dplyr::join_by(set_temperature == set_temperature)) %>%
+                             by = dplyr::join_by(set_temperature == set_temperature,
+                                                 vpd_control == vpd_control)) %>%
+
+            group_by(tree_id, vpd_control, set_temperature) %>%
 
             # Print message residual conductance units
             {print("Residual conductance units: grams * s-1 * m-2 and mols * s-1 * m-2"); .} %>%
