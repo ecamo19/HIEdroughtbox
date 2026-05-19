@@ -410,7 +410,7 @@ duplicated_25c_data <-
         scale_color_manual(values = c("#9e1523","#293352")) +
         ylab('Residual conductance (mols*m-2*s-1)')+
         xlab("Temperature")
-
+```
 # 5. Export data
 
 ```{r, export_data, eval = FALSE}
