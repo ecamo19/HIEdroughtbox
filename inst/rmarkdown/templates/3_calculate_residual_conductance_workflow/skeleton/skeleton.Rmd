@@ -13,8 +13,8 @@ output:
 
 ```{r, setup_wd, include=FALSE}
 # Set knit directory
-setwd(here::here())
-knitr::opts_knit$set(root.dir = setwd(here::here()))
+setwd(here::here(EDITME))
+knitr::opts_knit$set(root.dir = setwd(here::here(EDITME)))
 getwd()
 ```
 
@@ -38,8 +38,8 @@ knitr::opts_chunk$set(autodep        = TRUE,
                       # figures
                       Edit path in line 44 and comment out this line   
                       fig.path       = paste0("./figures_[sp_name]", "/"),
-                      fig.width      = 11,
-                      fig.height     = 7,
+                      fig.width      = 15,
+                      fig.height     = 13,
                       message        = FALSE,
                       warning        = FALSE)
 ```
@@ -148,9 +148,10 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
                                       y = vpd_avg_kpa_avg,
                                       colour = vpd_control)) +
         geom_boxplot() +
-        theme_bw() +
+        theme_bw(base_size = 14) +
+  
         scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
-        theme_bw() +
+  
         ggtitle("VPD conditions inside the Droughtbox") +
         
         # Set colors
@@ -164,7 +165,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
                                       y = tc_avg_deg_c_avg,
                                       colour = vpd_control)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
     ggtitle("Temperature conditions inside the Droughtbox") +
     
@@ -179,12 +180,12 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 ```{r, filter_data_based_on_rwc, eval = FALSE}
 #[sp_name]_rwc_data_filtered_data <-
     [sp_name]_rwc_data %>%
-        filter(relative_water_content_perc <= 0.90 && relative_water_content_perc >= 0.50) 
+        filter(relative_water_content_perc <= 0.90 & relative_water_content_perc >= 0.50) 
 ```
 
 ### Plot filtered data
 
-```{r, plot_filtered_data_below_90_no_vpd_control, eval = FALSE, echo = FALSE}
+```{r, plot_filtered_data_within_range_no_vpd_control, eval = FALSE, echo = FALSE}
 
 [sp_name]_rwc_data_filtered_data %>%
   
@@ -197,7 +198,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       # Increase the number of y-axis tick marks
       scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
   
-      theme_bw() +
+      theme_bw(base_size = 14) +
   
       ggtitle("Data with no VPD control") +
   
@@ -217,7 +218,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
-```{r, plot_filtered_data_below_85_vpd_controlled, eval = FALSE, echo = FALSE}
+```{r, plot_filtered_data_within_range_vpd_controlled, eval = FALSE, echo = FALSE}
 
 [sp_name]_rwc_data_filtered_data %>% 
   
@@ -231,7 +232,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       # Increase the number of y-axis tick marks
       scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
   
-      theme_bw() +
+      theme_bw(base_size = 14) +
   
       ggtitle("Data with VPD below 2kPa") +
   
@@ -251,15 +252,18 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
       scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
 ```
 
-### Filter data based on previuos plots 
+### Filter data with R2 lower than 0.80
 
 ```{r, data_for_gres, eval = FALSE}
-[sp_name]_db_data_for_gres <- 
+#[sp_name]_data_for_gres <- 
 
     [sp_name]_rwc_data_filtered_data  
 
     # Remove data with poor R2
-    #filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
+    # filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
+    
+    # filter(!(vpd_control == "no" & string_number == "string_8" & set_temperature == 55)) 
+  
 ```
 
 ## Calculate the water loss rate of change   
@@ -271,7 +275,7 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
 
 ```{r, eval = FALSE}
 # Make sure the maximum row length of the data frame slopes is:
-# 8 (individuals)  * 6 (temperatures) + 8 (individuals)  * 7 (temperatures) = 48 + 56
+# 8 (individuals)  * 6 (temperatures) + 8 (individuals)  * 7 (temperatures) = 48 + 56 = 104
 nrow([sp_name]_slopes)
 ```
 
@@ -288,7 +292,7 @@ nrow([sp_name]_slopes)
 ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
                                     y = slope_grams_per_second)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     facet_wrap(~vpd_control) +
     stat_summary(fun.data = give_n, geom = "text", fun.y = median,
                  position = position_dodge(width = 0.75))
@@ -298,7 +302,7 @@ ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
 
 ```{r, eval = FALSE}
 #[sp_name]_transpiration_rates <- 
-  calculate_transpiration_rates(droughtbox_data = [sp_name]_db_data_for_gres,
+  calculate_transpiration_rates(droughtbox_data = [sp_name]_data_for_gres,
                                 leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
@@ -306,7 +310,7 @@ ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
 ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
                                                  y = transpiration_single_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     facet_wrap(~vpd_control) +
     stat_summary(fun.data = give_n, geom = "text", fun.y = median,
                  position = position_dodge(width = 0.75))
@@ -316,7 +320,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
                                                  y = transpiration_double_grams_per_sec_m2)) +
     geom_boxplot() +
-    theme_bw() +
+    theme_bw(base_size = 14) +
     facet_wrap(~vpd_control) +
     stat_summary(fun.data = give_n, geom = "text", fun.y = median,
                   position = position_dodge(width = 0.75))
@@ -326,7 +330,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 
 ```{r, eval = FALSE}
 #[sp_name]_residual_conductance <- 
-    calculate_residual_conductance(droughtbox_data = [sp_name]_db_data_for_gres,
+    calculate_residual_conductance(droughtbox_data = [sp_name]_data_for_gres,
                                    leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
@@ -335,6 +339,8 @@ glimpse([sp_name]_residual_conductance)
 ```
 
 ### Duplicate 25c data for rTCP modeling
+
+rTCP need a minimum of 7 points to run
 
 ```{r, eval = FALSE}
 duplicated_25c_data <- 
@@ -375,8 +381,8 @@ duplicated_25c_data <-
     
     # Summarize data
     summarise(
-        median_residual_conductance = median(double_sided_residual_conductance_mmol_s_m2),
-        sd_residual_conductance = sd(double_sided_residual_conductance_mmol_s_m2),
+        median_residual_conductance = median(double_sided_residual_conductance_mol_s_m2),
+        sd_residual_conductance = sd(double_sided_residual_conductance_mol_s_m2),
         median_vpd = median(median_vpd),
         n_residual_conductance = n(),
         se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
@@ -386,7 +392,7 @@ duplicated_25c_data <-
                              y = median_residual_conductance,
                              colour = vpd_control)) +
         
-        theme_bw() +
+        theme_bw(base_size = 14) +
   
         geom_point(size = 3.5) +
   
@@ -404,8 +410,9 @@ duplicated_25c_data <-
                          position = position_dodge(0.05)) +
         
         # Set colors
-        scale_color_manual(values = c("#9e1523","#293352")) 
-```
+        scale_color_manual(values = c("#9e1523","#293352")) +
+        ylab('Residual conductance (mols*m-2*s-1)')+
+        xlab("Temperature")
 
 # 5. Export data
 
