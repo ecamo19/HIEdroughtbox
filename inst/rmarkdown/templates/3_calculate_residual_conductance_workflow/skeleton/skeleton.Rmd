@@ -69,9 +69,6 @@ library(here)
 
 # For adding regression line to ggplot
 library(ggpubr)
-
-# For facets_2
-library(ggh4x)
 ```
 
 ```{r echo=FALSE}
@@ -329,43 +326,44 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 ## Calculate Residual conductance
 
 ```{r, eval = FALSE}
-#[sp_name]_residual_conductance <- 
+#[sp_name]_residual_conductance_data <- 
     calculate_residual_conductance(droughtbox_data = [sp_name]_data_for_gres,
                                    leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
-```{r, eval = FALSE}
-glimpse([sp_name]_residual_conductance)
+### Plot VPD median values
+
+```{r}
+ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperature),
+                                                       y = median_vpd)) +
+    geom_boxplot() +
+    theme_bw(base_size = 14) +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
 ```
 
-### Duplicate 25c data for rTCP modeling
 
-rTCP need a minimum of 7 points to run
+### Plot RH median values
 
-```{r, eval = FALSE}
-duplicated_25c_data <- 
-    
-    [sp_name]_residual_conductance %>% 
-
-    # Get 25 degrees data from vpd_control = "yes"
-    filter(set_temperature == 25 & vpd_control == "yes") %>% 
-    
-    # Override vpd_control from "yes" to "no" 
-    mutate(vpd_control = "no")
+```{r}
+ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperature),
+                                                       y = median_rh)) +
+    geom_boxplot() +
+    theme_bw(base_size = 14) +
+    facet_wrap(~vpd_control) +
+    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
+                 position = position_dodge(width = 0.75))
 ```
 
+
 ```{r, eval = FALSE}
-# Join data sets
-#[sp_name]_residual_conductance_data_for_rtpc <-
-        list(
-            [sp_name]_residual_conductance,
-            duplicated_25c_data
-            ) %>%
-    reduce(rbind) 
+glimpse([sp_name]_residual_conductance_data)
 ```
+
 
 ```{r echo = FALSE, eval = FALSE}
-[sp_name]_residual_conductance_data_for_rtpc %>%
+[sp_name]_residual_conductance_data %>%
     mutate(across(where(is.numeric), round, 3)) %>%
     reactable::reactable(.)
 ```
@@ -373,7 +371,7 @@ duplicated_25c_data <-
 ### Plot Residual conductance data
 
 ```{r plot_residual_conductance, eval = FALSE, echo = FALSE}
-[sp_name]_residual_conductance_data_for_rtpc %>%
+[sp_name]_residual_conductance_data %>%
     
     group_by(set_temperature, vpd_control) %>%
     
@@ -413,10 +411,10 @@ duplicated_25c_data <-
         scale_color_manual(values = c("#9e1523","#293352")) +
         ylab('Residual conductance (mols*m-2*s-1)')+
         xlab("Temperature")
-
+```
 # 5. Export data
 
 ```{r, export_data, eval = FALSE}
-save([sp_name]_residual_conductance_data_for_rtpc, 
-     file = "./[sp_name]_processed_data/[sp_name]_residual_conductance_data_for_rtpc.RData")
+save([sp_name]_residual_conductance_data, 
+     file = "./[sp_name]_processed_data/[sp_name]_residual_conductance_data.RData")
 ```

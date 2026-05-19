@@ -44,10 +44,12 @@ calculate_rate_of_change <- function(droughtbox_data_reshaped){
             {print("Rate of change units: grams * s-1"); .} %>%
 
             # Get median climatic conditions ------------------------------------
-            # Done at each temperature step
-            dplyr::group_by(set_temperature) %>%
+            # Done at each temperature step for each of the vpd treatments.
+            # Remember 6 or 8 individuls at measured at each temperature step at
+            # 2 vpd treatments
+            dplyr::group_by(set_temperature, vpd_control) %>%
 
-            dplyr::mutate(median_vdp  = stats::median(vpd_avg_kpa_avg),
+            dplyr::mutate(median_vpd  = stats::median(vpd_avg_kpa_avg),
                           median_rh   = stats::median(rh_avg_percent_avg),
                           median_temp = stats::median(tc_avg_deg_c_avg)) %>%
 
@@ -302,30 +304,15 @@ calculate_residual_conductance <- function(droughtbox_data,
         droughtbox_data %>%
 
         # Select only the necessary variables
-        dplyr::select(date_time,
+        dplyr::select(string_number,
+                      set_temperature,
+                      vpd_control,
+                      date_time,
                       vpd_avg_kpa_avg,
                       tc_avg_deg_c_avg) %>%
 
-        # Change temperatures measured into discrete groups i.e if
-        # tc_avg_deg_c_avg is between 53 and 56 code it as 55
-        #dplyr::mutate(set_temperature = dplyr::case_when(
-            #dplyr::between(tc_avg_deg_c_avg, 20, 26.5) ~ 25,
-            #dplyr::between(tc_avg_deg_c_avg, 26.50001, 31.5) ~ 30,
-            #dplyr::between(tc_avg_deg_c_avg, 31.50001, 36.5) ~ 35,
-            #dplyr::between(tc_avg_deg_c_avg, 36.50001, 41.5) ~ 40,
-            #dplyr::between(tc_avg_deg_c_avg, 41.50001, 46.5) ~ 45,
-            #dplyr::between(tc_avg_deg_c_avg, 46.50001, 51.5) ~ 50,
-            #dplyr::between(tc_avg_deg_c_avg, 51.50001, 60) ~ 55,
-            #TRUE ~ tc_avg_deg_c_avg)) %>%
-
-        # Rename variables
-        #dplyr::mutate(
-                      # Transform time to seconds
-        #              time_seconds = (time - dplyr::first(time)),
-        #              .keep = "unused") %>%
-
         # Group by temperature
-        dplyr::group_by(set_temperature) %>%
+        dplyr::group_by(set_temperature, vpd_control) %>%
 
         # Print message
         {print("Make sure VPD conditions were constant"); .} %>%
@@ -344,7 +331,10 @@ calculate_residual_conductance <- function(droughtbox_data,
 
             # Add VPD parameter into the dataset
             dplyr::full_join(., vpd_parameter,
-                             by = dplyr::join_by(set_temperature == set_temperature)) %>%
+                             by = dplyr::join_by(set_temperature == set_temperature,
+                                                 vpd_control == vpd_control)) %>%
+
+            group_by(tree_id, vpd_control, set_temperature) %>%
 
             # Print message residual conductance units
             {print("Residual conductance units: grams * s-1 * m-2 and mols * s-1 * m-2"); .} %>%
