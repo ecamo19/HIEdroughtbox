@@ -72,15 +72,16 @@ library(ggpubr)
 ```
 
 ```{r echo=FALSE}
-tree_id_colors <- c("171" = "#eec000",
-                   "172" = "#cf544c",
-                   "173" = "#0175c3",
-                   "174" = "#878687",
+EDITME
+tree_id_colors <- c("1#1" = "#eec000",
+                   "1#2" = "#cf544c",
+                   "1#3" = "#0175c3",
+                   "1#4" = "#878687",
                    
-                   "175" =  "#000000",
-                   "176" =  "#008b28",
-                   "177" =  "#8600b6",
-                   "178" =  "#00a0ab")
+                   "1#5" =  "#000000",
+                   "1#6" =  "#008b28",
+                   "1#7" =  "#8600b6",
+                   "1#8" =  "#00a0ab")
 
 string_colors <- c(string_1 = "#eec000",
                    string_2 = "#cf544c",
@@ -339,7 +340,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 ```{r, eval = FALSE}
 #[sp_name]_residual_conductance_data <- 
     calculate_residual_conductance(droughtbox_data = [sp_name]_data_for_gres,
-                                   leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
+                                   transpiration_rates_data = [sp_name]_transpiration_rates)
 ```
 
 ```{r echo = FALSE, eval = FALSE}
@@ -350,8 +351,8 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 
 ### Plot Residual conductance data
 
-```{r, plot_residual_conductance,fig.width=16, fig.height=8 eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_residual_conductance, aes(x = set_temperature,
+```{r, plot_residual_conductance,fig.width=16, fig.height=8, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_residual_conductance_data, aes(x = set_temperature,
                                                   y = gres_mols_m2_s,
                                                   
                              colour = factor(tree_id))) +
@@ -378,8 +379,8 @@ ggplot(data = [sp_name]_residual_conductance, aes(x = set_temperature,
 
 ### Plot transpiration data
 
-```{r, plot_transpiration,fig.width=16, fig.height=8 eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_residual_conductance, aes(x = set_temperature,
+```{r, plot_transpiration,fig.width=16, fig.height=8, eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_residual_conductance_data, aes(x = set_temperature,
                                                   y = transpiration_H2Ommol_per_sec_m2,
                              colour = factor(tree_id))) +
         
@@ -403,14 +404,15 @@ ggplot(data = [sp_name]_residual_conductance, aes(x = set_temperature,
         scale_color_manual(values = tree_id_colors) 
 ```
 
-
-```{r}
+```{r, eval=FALSE}
 # Add spcode to data before saving 
-[sp_name]_residual_conductance_data <- 
+
+#[sp_name]_residual_conductance_data <- 
   
   [sp_name]_residual_conductance_data %>% 
     
-  mutate(spcode = "[sp_name]")
+  mutate(spcode = "[sp_name]") %>% 
+  select(spcode, everything())
 ```
 
 # 5. Export data
