@@ -72,6 +72,16 @@ library(ggpubr)
 ```
 
 ```{r echo=FALSE}
+tree_id_colors <- c("171" = "#eec000",
+                   "172" = "#cf544c",
+                   "173" = "#0175c3",
+                   "174" = "#878687",
+                   
+                   "175" =  "#000000",
+                   "176" =  "#008b28",
+                   "177" =  "#8600b6",
+                   "178" =  "#00a0ab")
+
 string_colors <- c(string_1 = "#eec000",
                    string_2 = "#cf544c",
                    string_3 = "#0175c3",
@@ -81,6 +91,7 @@ string_colors <- c(string_1 = "#eec000",
                    string_6 =  "#008b28",
                    string_7 =  "#8600b6",
                    string_8 =  "#00a0ab")
+
 
 # Function for adding the number of observations on top of a boxplot
 give_n <- function(x){
@@ -331,36 +342,6 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
                                    leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
 ```
 
-### Plot VPD median values
-
-```{r}
-ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperature),
-                                                       y = median_vpd)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    facet_wrap(~vpd_control) +
-    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
-                 position = position_dodge(width = 0.75))
-```
-
-
-### Plot RH median values
-
-```{r}
-ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperature),
-                                                       y = median_rh)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    facet_wrap(~vpd_control) +
-    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
-                 position = position_dodge(width = 0.75))
-```
-
-
-```{r, eval = FALSE}
-glimpse([sp_name]_residual_conductance_data)
-```
-
 ```{r echo = FALSE, eval = FALSE}
 [sp_name]_residual_conductance_data %>%
     mutate(across(where(is.numeric), round, 3)) %>%
@@ -369,25 +350,11 @@ glimpse([sp_name]_residual_conductance_data)
 
 ### Plot Residual conductance data
 
-```{r plot_residual_conductance, eval = FALSE, echo = FALSE}
-[sp_name]_residual_conductance_data %>%
-    
-    group_by(set_temperature, vpd_control) %>%
-    
-    na.omit() %>% 
-    
-    # Summarize data
-    summarise(
-        median_residual_conductance = median(double_sided_residual_conductance_mol_s_m2),
-        sd_residual_conductance = sd(double_sided_residual_conductance_mol_s_m2),
-        median_vpd = median(median_vpd),
-        n_residual_conductance = n(),
-        se_residual_conductance = sd_residual_conductance / sqrt(n_residual_conductance)) %>%   
-    
-        # Plot
-        ggplot(data = ., aes(x = set_temperature, 
-                             y = median_residual_conductance,
-                             colour = vpd_control)) +
+```{r, plot_residual_conductance,fig.width=16, fig.height=8 eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_residual_conductance, aes(x = set_temperature,
+                                                  y = gres_mols_m2_s,
+                                                  
+                             colour = factor(tree_id))) +
         
         theme_bw(base_size = 14) +
   
@@ -400,23 +367,50 @@ glimpse([sp_name]_residual_conductance_data)
         # Position label at the bottom
         theme(legend.position = "bottom") +
     
-        # Error bars 1 S.E
-        geom_errorbar(aes(ymin =  median_residual_conductance - se_residual_conductance,
-                         ymax  =  median_residual_conductance + se_residual_conductance),
-                         width = 1.5,
-                         position = position_dodge(0.05)) +
+        facet_wrap(~vpd_control) +
         
         # Set colors
-        scale_color_manual(values = c("#9e1523","#293352")) +
+        #scale_color_manual(values = c("#9e1523","#293352")) +
         ylab('Residual conductance (mols*m-2*s-1)')+
-        xlab("Temperature")
+        xlab("Temperature") +
+        scale_color_manual(values = tree_id_colors) 
 ```
 
+### Plot transpiration data
+
+```{r, plot_transpiration,fig.width=16, fig.height=8 eval = FALSE, echo = FALSE}
+ggplot(data = [sp_name]_residual_conductance, aes(x = set_temperature,
+                                                  y = transpiration_H2Ommol_per_sec_m2,
+                             colour = factor(tree_id))) +
+        
+        theme_bw(base_size = 14) +
+  
+        geom_point(size = 3.5) +
+  
+        # Increase the tickmarks of the axes
+        scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + 
+        scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
+  
+        # Position label at the bottom
+        theme(legend.position = "bottom") +
+    
+        facet_wrap(~vpd_control) +
+        
+        # Set colors
+        #scale_color_manual(values = c("#9e1523","#293352")) +
+        ylab('Transpiration (mmols*m-2*s-1)')+
+        xlab("Temperature") +
+        scale_color_manual(values = tree_id_colors) 
+```
+
+
 ```{r}
-# Add spcode to gres data
+# Add spcode to data before saving 
 [sp_name]_residual_conductance_data <- 
+  
   [sp_name]_residual_conductance_data %>% 
-    mutate(spcode = "[sp_name]")
+    
+  mutate(spcode = "[sp_name]")
 ```
 
 # 5. Export data
