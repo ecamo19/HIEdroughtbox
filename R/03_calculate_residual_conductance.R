@@ -258,8 +258,7 @@ calculate_transpiration_rates <- function(droughtbox_data,
 #'
 #' @export
 calculate_residual_conductance <- function(droughtbox_data,
-                                           leaf_and_branch_area_data
-                                 ){
+                                           transpiration_rates_data){
 
     # Validate input parameters ------------------------------------------------
 
@@ -267,7 +266,7 @@ calculate_residual_conductance <- function(droughtbox_data,
     base::stopifnot("droughtbox_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(droughtbox_data))
 
     # Stop if droughtbox_data is not a data frame
-    base::stopifnot("leaf_and_branch_area_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(leaf_and_branch_area_data))
+    base::stopifnot("leaf_and_branch_area_data should be a dataframe of type data.frame" = "data.frame" %in% base::class(transpiration_rates_data))
 
     # Assert date column in droughtbox_data
     #checkmate::assert_date(droughtbox_data$date)
@@ -276,80 +275,77 @@ calculate_residual_conductance <- function(droughtbox_data,
     #base::stopifnot("Time column should be of type hms/difftime" = "hms" %in% base::class(droughtbox_data$time))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in droughtbox_data" =  c(#"strain_avg_1_microstrain_avg",
-                                                              #"strain_avg_2_microstrain_avg",
-                                                              #"strain_avg_3_microstrain_avg",
-                                                              #"strain_avg_4_microstrain_avg",
-
-                                                              #"set_point_t_avg_avg",
-                                                              "vpd_avg_kpa_avg",
-                                                              "date_time"
-                                                              ) %in% base::colnames(droughtbox_data))
+    base::stopifnot("Missing columns in droughtbox_data" =  c(
+        "set_temperature",
+        "string_number",
+        "vpd_control",
+        "time_seconds",
+        "vpd_avg_kpa_avg"
+    ) %in% base::colnames(droughtbox_data))
 
     # Make sure the necessary data is in the dataframe
-    base::stopifnot("Missing columns in the leaf_and_branch_area_data" =  c("areas_m2",
-                                                                            "string_number",
-                                                                            "tree_id"
-                                                                            #"surface_branch_area_m2",
-                                                                            #"set_temperature",
-                                                                            ) %in% base::colnames(leaf_and_branch_area_data))
-
-    # Get VPD parameter --------------------------------------------------------
-    # This parameter will be later used in the estimation of gres.
-    # vpd_parameter <-
-    #
-    #     droughtbox_data %>%
-    #
-    #     # Select only the necessary variables
-    #     dplyr::select(string_number,
-    #                   set_temperature,
-    #                   vpd_control,
-    #                   date_time,
-    #                   vpd_avg_kpa_avg,
-    #                   tc_avg_deg_c_avg) %>%
-    #
-    #     # Group by temperature
-    #     dplyr::group_by(set_temperature, vpd_control) %>%
-    #
-    #     # Print message
-    #     {print("Make sure VPD conditions were constant"); .} %>%
-    #
-    #     # Get the median
-    #     dplyr::summarise(median_vpd = stats::median(vpd_avg_kpa_avg))
+    base::stopifnot("Missing columns in the transpiration_rates_data" =  c("set_temperature",
+                                                                           "string_number",
+                                                                           "tree_id",
+                                                                           "vpd_control",
+                                                                           "transpiration_double_grams_per_sec_m2"
+    ) %in% base::colnames(transpiration_rates_data))
 
     # Atmospheric pressure in the droughtbox constant ---------------------------
     atmospheric_pressure_constant = 101.6
 
+    # Get VPD data --------------------------------------------------------------
+    vpd_data <-
+        droughtbox_data %>%
+        dplyr::select(time_seconds,
+                      string_number,
+                      set_temperature,
+                      vpd_control,
+                      vpd_avg_kpa_avg)
 
-    # Calculate transpiration rates --------------------------------------------
-    transpiration <- calculate_transpiration_rates(droughtbox_data = droughtbox_data,
-                                                  leaf_and_branch_area_data = leaf_and_branch_area_data)
+    # Filter transpiration rates ------------------------------------------------
+    transpiration_rates_data <-
+        transpiration_rates_data %>%
+        dplyr::select(spcode,
+                      tree_id,
+                      string_number,
+                      set_temperature,
+                      vpd_control,
+                      transpiration_double_grams_per_sec_m2)
+
+
 
     # Estimate residual conductance --------------------------------------------
     residual_conductance_df <-
 
-        transpiration %>%
+        # Join data
+        dplyr::full_join(transpiration_rates, vpd_data,
+                         by = join_by(string_number, set_temperature, vpd_control)) %>%
 
-            # # Add VPD parameter into the dataset
-            # dplyr::full_join(., vpd_parameter,
-            #                  by = dplyr::join_by(set_temperature == set_temperature,
-            #                                      vpd_control == vpd_control)) %>%
+        # Sort columns
+        dplyr::select(spcode, time_seconds, everything()) %>%
 
-            group_by(tree_id, vpd_control, set_temperature) %>%
+        # Calculate variables
+        dplyr::mutate(
 
-            # Print message residual conductance units
-            {print("Residual conductance units: grams * s-1 * m-2 and mols * s-1 * m-2"); .} %>%
+            # Transform grams of water to mols of water
+            transpiration_mol_per_sec_m2 = transpiration_double_grams_per_sec_m2/18.015,
 
-            # Residual conductance in grams * s-1 * m-2 and
-            dplyr::mutate(single_sided_residual_conductance_grams_s_m2 = (transpiration_single_grams_per_sec_m2 / median_vpd)*atmospheric_pressure_constant,
-                          single_sided_residual_conductance_mol_s_m2 = (single_sided_residual_conductance_grams_s_m2 / 18.02)
-                          ) %>%
 
-            dplyr::mutate(double_sided_residual_conductance_grams_s_m2 = (transpiration_double_grams_per_sec_m2 / median_vpd)*atmospheric_pressure_constant,
-                          double_sided_residual_conductance_mol_s_m2 = (double_sided_residual_conductance_grams_s_m2 / 18.02)
-                      ) %>%
+            # Calculate gres as (E/VPD)*101.6
+            gres = (transpiration_mol_per_sec_m2/vpd_avg_kpa_avg)*101.6,
+
+            # Transform traspiration to Milimols of water
+            transpiration_mmol_per_sec_m2 = (transpiration_double_grams_per_sec_m2/18.015)*1000) %>%
+
+        dplyr::group_by(tree_id, vpd_control, set_temperature) %>%
+
+        # Get the median values
+        dplyr::summarise(gres_mols_m2_s = median(gres),
+                         transpiration_H2Ommol_per_sec_m2 = median(transpiration_mol_per_sec_m2))
 
 
     return(base::data.frame(residual_conductance_df))
 
 }
+
