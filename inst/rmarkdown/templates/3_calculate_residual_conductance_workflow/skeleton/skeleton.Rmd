@@ -361,7 +361,6 @@ ggplot(data = [sp_name]_residual_conductance_data, aes(x = factor(set_temperatur
 glimpse([sp_name]_residual_conductance_data)
 ```
 
-
 ```{r echo = FALSE, eval = FALSE}
 [sp_name]_residual_conductance_data %>%
     mutate(across(where(is.numeric), round, 3)) %>%
@@ -412,6 +411,14 @@ glimpse([sp_name]_residual_conductance_data)
         ylab('Residual conductance (mols*m-2*s-1)')+
         xlab("Temperature")
 ```
+
+```{r}
+# Add spcode to gres data
+[sp_name]_residual_conductance_data <- 
+  [sp_name]_residual_conductance_data %>% 
+    mutate(spcode = "[sp_name]")
+```
+
 # 5. Export data
 
 ```{r, export_data, eval = FALSE}
