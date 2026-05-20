@@ -319,7 +319,7 @@ calculate_residual_conductance <- function(droughtbox_data,
     residual_conductance_df <-
 
         # Join data
-        dplyr::full_join(transpiration_rates, vpd_data,
+        dplyr::full_join(transpiration_rates_data, vpd_data,
                          by = join_by(string_number, set_temperature, vpd_control)) %>%
 
         # Sort columns
@@ -343,7 +343,6 @@ calculate_residual_conductance <- function(droughtbox_data,
         # Get the median values
         dplyr::summarise(gres_mols_m2_s = median(gres),
                          transpiration_H2Ommol_per_sec_m2 = median(transpiration_mol_per_sec_m2))
-
 
     return(base::data.frame(residual_conductance_df))
 
