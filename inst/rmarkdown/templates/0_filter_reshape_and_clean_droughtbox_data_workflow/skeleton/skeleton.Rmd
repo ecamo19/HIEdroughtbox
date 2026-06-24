@@ -1864,13 +1864,16 @@ glimpse([sp_name]_main_spread_sheet)
   
     [sp_name]_main_spread_sheet %>% 
         
-       mutate(sample_dry_weight_g =  ((leaf_dry_weight_mg/1000) +
+       mutate(
+         leaf_dry_weight_g    = leaf_dry_weight_mg/1000, 
+         sample_dry_weight_g =  ((leaf_dry_weight_mg/1000) +
                                          (stem_dry_weight_mg/1000) + 
                                          hook_weight_g + 
                                          prensa_weight_g), 
               # Add word to number 
               string_number = stringr::str_c("string_", string_number),
               .keep = "unused") %>%  
+  
         select(-c(paper_bag_weight_g, weight_paper_bag_plus_sample_scale_mg)) %>%
     
     na.omit()
@@ -1887,7 +1890,7 @@ glimpse([sp_name]_main_spread_sheet)
         # Remove the word string inside the column string_number 
         mutate(set_temperature = temperature_measured, .keep = "unused") %>% 
             
-        inner_join(., [sp_name]_dry_weights, , 
+        inner_join(., [sp_name]_dry_weights, 
                 by = join_by(string_number, set_temperature, vpd_control)) %>% 
         
         select(-c(spcode, tree_id))
