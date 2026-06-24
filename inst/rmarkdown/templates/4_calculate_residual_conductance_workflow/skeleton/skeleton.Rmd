@@ -105,9 +105,18 @@ give_n <- function(x){
 
 ## Load water loss data
 
-```{r, load_droughtbox_data_with_rwc, eval = FALSE}
+```{r, load_water_loss_data, eval = FALSE}
 load("./[sp_name]_processed_data/[sp_name]_water_loss_data.RData")
 ```
+
+## Load cleaned droughtbox data
+
+```{r, load_droughtbox_data_with_rwc, eval = FALSE}
+load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
+
+[sp_name]_data_for_gres <- [sp_name]_rwc_data
+```
+
 
 ```{r, eval = FALSE}
 # Show the names of each element in the list
