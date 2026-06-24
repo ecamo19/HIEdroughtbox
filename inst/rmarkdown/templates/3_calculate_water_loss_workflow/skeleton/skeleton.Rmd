@@ -343,8 +343,8 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
 ### Plot transpiration data
 
 ```{r, plot_transpiration,fig.width=16, fig.height=8, eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_water_loss_data, aes(x = set_temperature,
-                                                  y = transpiration_H2Ommol_per_sec_m2,
+ggplot(data = [sp_name]_transpiration_rates, aes(x = set_temperature,
+                                                  y = transpiration_double_grams_per_sec_m2,
                              colour = factor(tree_id))) +
         
         theme_bw(base_size = 14) +
