@@ -106,7 +106,7 @@ give_n <- function(x){
 ## Load water loss data
 
 ```{r, load_water_loss_data, eval = FALSE}
-load("./[sp_name]_processed_data/[sp_name]_water_loss_data.RData")
+load("./[sp_name]_processed_data/[sp_name]_water_loss_rates.RData")
 ```
 
 ```{r, eval = FALSE}
