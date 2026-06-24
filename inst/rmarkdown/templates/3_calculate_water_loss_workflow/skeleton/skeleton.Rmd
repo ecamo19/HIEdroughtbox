@@ -280,6 +280,11 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
   
 ```
 
+```{r, export_data_rwc_filtered_data}
+save([sp_name]_data_for_water_loss, 
+     file = "./[sp_name]_processed_data/[sp_name]_rwc_filtered_data.RData")
+```
+
 ## Calculate the water loss rate of change   
 
 ```{r, eval = FALSE}
@@ -362,7 +367,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = set_temperature,
         
         # Set colors
         #scale_color_manual(values = c("#9e1523","#293352")) +
-        ylab('Transpiration (mmols*m-2*s-1)')+
+        ylab('Transpiration (grams*m-2*s-1)')+
         xlab("Temperature") +
         scale_color_manual(values = tree_id_colors) 
 ```

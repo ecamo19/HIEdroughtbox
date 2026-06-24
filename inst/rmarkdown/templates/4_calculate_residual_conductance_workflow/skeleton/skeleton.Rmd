@@ -106,7 +106,7 @@ give_n <- function(x){
 ## Load water loss data
 
 ```{r, load_water_loss_data, eval = FALSE}
-load("./[sp_name]_processed_data/[sp_name]_water_loss_data.RData")
+load("./[sp_name]_processed_data/[sp_name]_water_loss_rates.RData")
 ```
 
 ```{r, eval = FALSE}
@@ -117,9 +117,9 @@ glimpse([sp_name]_water_loss_data)
 ## Load cleaned droughtbox data
 
 ```{r, load_droughtbox_data_with_rwc, eval = FALSE}
-load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
+load("./[sp_name]_processed_data/[sp_name]_rwc_filtered_data.RData")
 
-[sp_name]_data_for_gres <- [sp_name]_rwc_data
+[sp_name]_data_for_gres <- [sp_name]_data_for_water_loss
 ```
 
 ```{r, eval = FALSE}
@@ -127,7 +127,7 @@ load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
 glimpse([sp_name]_data_for_gres)
 ```
 
-# 3. Calculate species residual conductance 
+# 2. Calculate species residual conductance 
 
 ## Calculate Residual conductance
 
@@ -183,21 +183,21 @@ atmospheric_pressure_constant = 101.6
         dplyr::mutate(
 
             # Transform grams of water to mols of water
-            transpiration_mol_per_sec_m2 = transpiration_double_grams_per_sec_m2/18.015,
+            transpiration_double_mol_per_sec_m2 = transpiration_double_grams_per_sec_m2/18.015,
 
+            # Transform transpiration to Milimols of water
+            transpiration_double_mmol_per_sec_m2 = (transpiration_double_grams_per_sec_m2/18.015)*1000) %>%
 
             # Calculate gres as (E/VPD)*101.6
-            gres = (transpiration_mol_per_sec_m2/vpd_avg_kpa_avg)*101.6,
+            gres = (transpiration_double_mol_per_sec_m2/vpd_avg_kpa_avg)*101.6,
 
-            # Transform traspiration to Milimols of water
-            transpiration_mmol_per_sec_m2 = (transpiration_double_grams_per_sec_m2/18.015)*1000) %>%
 
         dplyr::group_by(tree_id, vpd_control, set_temperature, 
                         leaf_areas_m2, leaf_dry_weight_g) 
 
         # Get the median values
         dplyr::summarise(gres_mols_m2_s = median(gres),
-                         transpiration_H2Ommol_per_sec_m2 = median(transpiration_mol_per_sec_m2))
+                         transpiration_double_H2Ommol_per_sec_m2 = median(transpiration_double_mmol_per_sec_m2))
 
 ```
 
@@ -242,7 +242,7 @@ ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
 ```{r, plot_transpiration,fig.width = 16, fig.height = 8, eval = FALSE, echo = FALSE}
 
 ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
-                                                     y = transpiration_H2Ommol_per_sec_m2,
+                                                     y = transpiration_double_H2Ommol_per_sec_m,
                                                      colour = factor(tree_id))) +
         
         theme_bw(base_size = 14) +
@@ -265,6 +265,35 @@ ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
         scale_color_manual(values = tree_id_colors) 
 ```
 
+
+```{r, calculate_sla_lma, eval = FALSE}
+[sp_name]_residual_conductance_df <- 
+  
+    [sp_name]_residual_conductance_df %>% 
+        mutate(sla = leaf_areas_m2/leaf_dry_weight_g,
+               lma = 1/sla)
+```
+
+
+```{r, plot_lma_gres fig.width=20, fig.height = 5, eval=FALSE}
+[sp_name]_residual_conductance_df %>% 
+    
+    ggplot(data = ., aes(x = lma, y= gres_mols_m2_s))+
+    geom_point() +
+    geom_smooth(method = "lm", se = TRUE) +
+    facet_grid(~vpd_control)
+```
+
+```{r, plot_lma_water_loss, fig.width=20, fig.height = 5,  eval=FALSE}
+
+[sp_name]_residual_conductance_df %>% 
+    
+    ggplot(data = ., aes(x = lma, y = transpiration_double_H2Ommol_per_sec_m2)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = TRUE) +
+    facet_grid(~vpd_control)
+```
+
 ```{r, eval = FALSE}
 # Add spcode to data before saving 
 
@@ -276,7 +305,7 @@ ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
   select(spcode, everything())
 ```
 
-# 5. Export data
+# 3. Export data
 
 ```{r, export_data, eval = FALSE}
 save([sp_name]_residual_conductance_data, 
