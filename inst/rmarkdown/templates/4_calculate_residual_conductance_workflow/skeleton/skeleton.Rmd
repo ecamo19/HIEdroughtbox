@@ -141,6 +141,7 @@ atmospheric_pressure_constant = 101.6
         [sp_name]_data_for_gres %>%
         dplyr::select(time_seconds,
                       string_number,
+                      leaf_dry_weight_g,
                       set_temperature,
                       vpd_control,
                       vpd_avg_kpa_avg)
@@ -191,7 +192,8 @@ atmospheric_pressure_constant = 101.6
             # Transform traspiration to Milimols of water
             transpiration_mmol_per_sec_m2 = (transpiration_double_grams_per_sec_m2/18.015)*1000) %>%
 
-        dplyr::group_by(tree_id, vpd_control, set_temperature) 
+        dplyr::group_by(tree_id, vpd_control, set_temperature, 
+                        leaf_areas_m2, leaf_dry_weight_g) 
 
         # Get the median values
         dplyr::summarise(gres_mols_m2_s = median(gres),
