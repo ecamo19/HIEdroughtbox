@@ -117,7 +117,7 @@ glimpse([sp_name]_water_loss_data)
 ## Load cleaned droughtbox data
 
 ```{r, load_droughtbox_data_with_rwc, eval = FALSE}
-load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
+load("./[sp_name]_processed_data/[sp_name]_rwc_filtered_data.RData")
 
 [sp_name]_data_for_gres <- [sp_name]_rwc_data
 ```

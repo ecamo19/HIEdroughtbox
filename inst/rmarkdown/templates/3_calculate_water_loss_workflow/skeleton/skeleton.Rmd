@@ -280,6 +280,11 @@ ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
   
 ```
 
+```{r, export_data_rwc_filtered_data}
+save([sp_name]_data_for_water_loss, 
+     file = "./[sp_name]_processed_data/[sp_name]_rwc_filtered_data.RData")
+```
+
 ## Calculate the water loss rate of change   
 
 ```{r, eval = FALSE}
