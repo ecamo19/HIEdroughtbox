@@ -372,7 +372,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = set_temperature,
 
 #[sp_name]_water_loss_data <- 
   
-  [sp_name]_water_loss_data %>% 
+  [sp_name]_transpiration_rates %>% 
     
   mutate(spcode = "[sp_name]") %>% 
   select(spcode, everything())
