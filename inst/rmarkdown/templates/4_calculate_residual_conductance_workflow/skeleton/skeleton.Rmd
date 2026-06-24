@@ -183,21 +183,21 @@ atmospheric_pressure_constant = 101.6
         dplyr::mutate(
 
             # Transform grams of water to mols of water
-            transpiration_mol_per_sec_m2 = transpiration_double_grams_per_sec_m2/18.015,
+            transpiration_double_mol_per_sec_m2 = transpiration_double_grams_per_sec_m2/18.015,
 
+            # Transform transpiration to Milimols of water
+            transpiration_double_mmol_per_sec_m2 = (transpiration_double_grams_per_sec_m2/18.015)*1000) %>%
 
             # Calculate gres as (E/VPD)*101.6
-            gres = (transpiration_mol_per_sec_m2/vpd_avg_kpa_avg)*101.6,
+            gres = (transpiration_double_mol_per_sec_m2/vpd_avg_kpa_avg)*101.6,
 
-            # Transform traspiration to Milimols of water
-            transpiration_mmol_per_sec_m2 = (transpiration_double_grams_per_sec_m2/18.015)*1000) %>%
 
         dplyr::group_by(tree_id, vpd_control, set_temperature, 
                         leaf_areas_m2, leaf_dry_weight_g) 
 
         # Get the median values
         dplyr::summarise(gres_mols_m2_s = median(gres),
-                         transpiration_H2Ommol_per_sec_m2 = median(transpiration_mol_per_sec_m2))
+                         transpiration_double_H2Ommol_per_sec_m2 = median(transpiration_double_mmol_per_sec_m2))
 
 ```
 
@@ -242,7 +242,7 @@ ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
 ```{r, plot_transpiration,fig.width = 16, fig.height = 8, eval = FALSE, echo = FALSE}
 
 ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
-                                                     y = transpiration_H2Ommol_per_sec_m2,
+                                                     y = transpiration_double_H2Ommol_per_sec_m,
                                                      colour = factor(tree_id))) +
         
         theme_bw(base_size = 14) +
