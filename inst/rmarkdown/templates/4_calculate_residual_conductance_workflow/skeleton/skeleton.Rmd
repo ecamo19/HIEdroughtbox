@@ -103,244 +103,34 @@ give_n <- function(x){
 
 # 1. Load data
 
-## Load RWC data
+## Load water loss data
+
+```{r, load_water_loss_data, eval = FALSE}
+load("./[sp_name]_processed_data/[sp_name]_water_loss_data.RData")
+```
+
+## Load cleaned droughtbox data
 
 ```{r, load_droughtbox_data_with_rwc, eval = FALSE}
 load("./[sp_name]_processed_data/[sp_name]_rwc_data.RData")
+
+[sp_name]_data_for_gres <- [sp_name]_rwc_data
 ```
+
 
 ```{r, eval = FALSE}
 # Show the names of each element in the list
-glimpse([sp_name]_rwc_data)
-```
-
-## Load Areas data file
-
-```{r, load_areas_data, eval = FALSE}
-load("./[sp_name]_processed_data/[sp_name]_areas_data_cleaned.RData")
-```
-
-```{r, prepare_areas_data, eval = FALSE}
-#[sp_name]_areas_data_for_gres <-
-  
-    [sp_name]_areas_data_cleaned %>%
-  
-        group_by(spcode, tree_id, set_temperature, string_number, vpd_control) %>% 
-        
-         # Convert cm2 to m2
-        mutate(areas_m2 = areas_cm2/10000,
-               double_sided_areas_m2 = double_sided_areas_cm2/10000,
-               .keep = "unused") %>% 
-
-        summarise(areas_m2 = sum(areas_m2),
-                  double_sided_areas_m2 = sum(double_sided_areas_m2)) %>% 
-        
-        mutate(set_temperature = as.integer(set_temperature), 
-               .keep =  "unused") %>% 
-        
-        # Reorganize columns
-        select(spcode, string_number, tree_id, set_temperature, everything()) %>% 
-        arrange(vpd_control)
-```
-
-```{r, eval = FALSE}
-glimpse([sp_name]_areas_data_for_gres)
-```
-
-# 2. Plot climatic conditions inside the droughtbox
-
-## VPD
-
-```{r, plot_vpd_conditions, eval = FALSE, echo = FALSE}
-
-ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
-                                      y = vpd_avg_kpa_avg,
-                                      colour = vpd_control)) +
-        geom_boxplot() +
-        theme_bw(base_size = 14) +
-  
-        scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
-  
-        ggtitle("VPD conditions inside the Droughtbox") +
-        
-        # Set colors
-        scale_color_manual(values = c("#9e1523","#293352")) 
-```
-
-## Temperature
-
-```{r, plot_temperature_conditions, eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_rwc_data, aes(x = factor(set_temperature),
-                                      y = tc_avg_deg_c_avg,
-                                      colour = vpd_control)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) +
-    ggtitle("Temperature conditions inside the Droughtbox") +
-    
-    # Set colors
-    scale_color_manual(values = c("#9e1523","#293352")) 
+glimpse([sp_name]_water_loss_data)
 ```
 
 # 3. Calculate species residual conductance 
-
-## Filter data in the 50% to 90% range RWC
-
-```{r, filter_data_based_on_rwc, eval = FALSE}
-#[sp_name]_rwc_data_filtered_data <-
-    [sp_name]_rwc_data %>%
-        filter(relative_water_content_perc <= 0.90 & relative_water_content_perc >= 0.50) 
-```
-
-### Plot filtered data
-
-```{r, plot_filtered_data_within_range_no_vpd_control, eval = FALSE, echo = FALSE}
-
-[sp_name]_rwc_data_filtered_data %>%
-  
-  filter(vpd_control == "no") %>% 
-
-  ggplot(data = ., aes(x = time_seconds, y = string_weight_grams,
-                       colour = string_number)) +
-      geom_point() + 
-  
-      # Increase the number of y-axis tick marks
-      scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
-  
-      theme_bw(base_size = 14) +
-  
-      ggtitle("Data with no VPD control") +
-  
-      # Put legend at the bottom
-      theme(legend.position = "none") +
-  
-      # Break plot into panels
-      facet_grid(vars(set_temperature), vars(string_number)) +
-  
-      # Set colors  
-      scale_color_manual(values = string_colors) +
-      
-      # Show slope and R2
-      stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
-      stat_regline_equation(label.y = 40,  size = 3)+
-      scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
-      scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
-```
-
-```{r, plot_filtered_data_within_range_vpd_controlled, eval = FALSE, echo = FALSE}
-
-[sp_name]_rwc_data_filtered_data %>% 
-  
-  filter(vpd_control == "yes") %>% 
-
-  ggplot(data = ., aes(x = time_seconds,
-                       y = string_weight_grams,
-                       colour = string_number)) +
-      geom_point() + 
-  
-      # Increase the number of y-axis tick marks
-      scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
-  
-      theme_bw(base_size = 14) +
-  
-      ggtitle("Data with VPD below 2kPa") +
-  
-      # Put legend at the bottom
-      theme(legend.position = "none") +
-  
-      # Break plot into panels
-      facet_grid(vars(set_temperature), vars(string_number)) +
-  
-      # Set colors  
-      scale_color_manual(values = string_colors) +
-      
-      # Show slope and R2
-      stat_cor(aes(label = ..rr.label..), size = 3, label.y = 38) +
-      stat_regline_equation(label.y = 40,  size = 3)+
-      scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
-      scale_x_continuous(breaks = scales::pretty_breaks(n = 7))
-```
-
-### Filter data with R2 lower than 0.80
-
-```{r, data_for_gres, eval = FALSE}
-#[sp_name]_data_for_gres <- 
-
-    [sp_name]_rwc_data_filtered_data  
-
-    # Remove data with poor R2
-    # filter(!(vpd_control == "yes" & string_number == "string_8" & set_temperature == 55))
-    
-    # filter(!(vpd_control == "no" & string_number == "string_8" & set_temperature == 55)) 
-  
-```
-
-## Calculate the water loss rate of change   
-
-```{r, eval = FALSE}
-#[sp_name]_slopes <-
-    calculate_rate_of_change([sp_name]_data_for_gres)
-```
-
-```{r, eval = FALSE}
-# Make sure the maximum row length of the data frame slopes is:
-# 8 (individuals)  * 6 (temperatures) + 8 (individuals)  * 7 (temperatures) = 48 + 56 = 104
-nrow([sp_name]_slopes)
-```
-
-```{r, eval = FALSE, echo = FALSE}
-# Compare the slopes with those calculated in the ggplot
-[sp_name]_slopes %>% 
-    select(string_number, set_temperature, vpd_control, 
-           slope_grams_per_second) %>% 
-    
-    reactable::reactable(.)
-```
-
-```{r, plot_slopes, eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_slopes, aes(x = factor(set_temperature),
-                                    y = slope_grams_per_second)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    facet_wrap(~vpd_control) +
-    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
-                 position = position_dodge(width = 0.75))
-```
-
-## Calculate transpiration rates
-
-```{r, eval = FALSE}
-#[sp_name]_transpiration_rates <- 
-  calculate_transpiration_rates(droughtbox_data = [sp_name]_data_for_gres,
-                                leaf_and_branch_area_data = [sp_name]_areas_data_for_gres)
-```
-
-```{r, plot_transpiration_rates_single, eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
-                                                 y = transpiration_single_grams_per_sec_m2)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    facet_wrap(~vpd_control) +
-    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
-                 position = position_dodge(width = 0.75))
-```
-
-```{r, plot_transpiration_rates_double, eval = FALSE, echo = FALSE}
-ggplot(data = [sp_name]_transpiration_rates, aes(x = factor(set_temperature),
-                                                 y = transpiration_double_grams_per_sec_m2)) +
-    geom_boxplot() +
-    theme_bw(base_size = 14) +
-    facet_wrap(~vpd_control) +
-    stat_summary(fun.data = give_n, geom = "text", fun.y = median,
-                  position = position_dodge(width = 0.75))
-```
 
 ## Calculate Residual conductance
 
 ```{r, eval = FALSE}
 #[sp_name]_residual_conductance_data <- 
     calculate_residual_conductance(droughtbox_data = [sp_name]_data_for_gres,
-                                   transpiration_rates_data = [sp_name]_transpiration_rates)
+                                   transpiration_rates_data = [sp_name]_water_loss)
 ```
 
 ```{r echo = FALSE, eval = FALSE}
