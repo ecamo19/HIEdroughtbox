@@ -322,6 +322,8 @@ ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
   [sp_name]_residual_conductance_df %>% 
     
   mutate(spcode = "[sp_name]") %>% 
+  ungroup() %>% 
+  select(-c(sample_dry_weight_g, areas_m2, leaf_areas_m2, leaf_dry_weight_g)) %>% 
   select(spcode, everything())
 ```
 
