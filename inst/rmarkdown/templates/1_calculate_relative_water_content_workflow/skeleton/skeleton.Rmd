@@ -103,8 +103,8 @@ load(file = "./[sp_name]_processed_data/[sp_name]_droughtbox_data_for_rwc.RData"
                
                # Hook weight, prensa weight have been already added when
                # creating sample_dry_weight_g
-               branch_dry_matter_content =
-                 sample_dry_weight_g/(fist(string_weight_grams))
+               branch_dry_matter_content_g_g =
+                    sample_dry_weight_g/(fist(string_weight_grams))
                
                )      
 ```
