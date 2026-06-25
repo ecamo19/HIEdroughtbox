@@ -380,6 +380,7 @@ ggplot(data = [sp_name]_transpiration_rates, aes(x = set_temperature,
   [sp_name]_transpiration_rates %>% 
     
   mutate(spcode = "[sp_name]") %>% 
+  select(-c(median_vpd, median_vpd, median_rh, median_temp)) %>% 
   select(spcode, everything())
 ```
 
