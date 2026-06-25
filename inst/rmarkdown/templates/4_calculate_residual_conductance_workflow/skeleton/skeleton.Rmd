@@ -139,12 +139,15 @@ atmospheric_pressure_constant = 101.6
 
 # [sp_name]_vpd_data <-
         [sp_name]_data_for_gres %>%
-        dplyr::select(time_seconds,
+        dplyr::select(vpd_control,
+                      time_seconds,
                       string_number,
-                      leaf_dry_weight_g,
                       set_temperature,
-                      vpd_control,
-                      vpd_avg_kpa_avg)
+                      vpd_avg_kpa_avg,
+                      leaf_dry_weight_g,
+                      sample_dry_weight_g,
+                      branch_dry_matter_content_g_g 
+                      )
 ```
 
 
@@ -156,11 +159,13 @@ atmospheric_pressure_constant = 101.6
         [sp_name]_water_loss_data %>% 
         dplyr::select(spcode,
                       tree_id,
-                      string_number,
-                      set_temperature,
+                      areas_m2,
                       vpd_control,
                       leaf_areas_m2, 
-                      transpiration_double_grams_per_sec_m2)
+                      string_number,
+                      set_temperature,
+                      transpiration_double_grams_per_sec_m2) %>% 
+        select(spcode, tree_id, string_number,set_temperature, vpd_control, everything())
 
 ```
 
@@ -170,7 +175,7 @@ atmospheric_pressure_constant = 101.6
 # [sp_name]_residual_conductance_df <-
 
         # Join data
-        dplyr::full_join([sp_name]_water_loss_data, 
+        dplyr::inner_join([sp_name]_water_loss_data, 
                          [sp_name]_vpd_data,
                          by = join_by(string_number, 
                                       set_temperature, 
@@ -192,12 +197,25 @@ atmospheric_pressure_constant = 101.6
             gres = (transpiration_double_mol_per_sec_m2/vpd_avg_kpa_avg)*101.6,
 
 
-        dplyr::group_by(tree_id, vpd_control, set_temperature, 
-                        leaf_areas_m2, leaf_dry_weight_g) 
+        dplyr::group_by(tree_id,
+                        areas_m2,
+                        vpd_control, 
+                        leaf_areas_m2, 
+                        set_temperature, 
+                        leaf_dry_weight_g,
+                        sample_dry_weight_g,
+                        branch_dry_matter_content_g_g
+                        ) 
 
         # Get the median values
         dplyr::summarise(gres_mols_m2_s = median(gres),
-                         transpiration_double_H2Ommol_per_sec_m2 = median(transpiration_double_mmol_per_sec_m2))
+                         transpiration_double_H2Ommol_per_sec_m2 = median(transpiration_double_mmol_per_sec_m2)) %>% 
+        
+        select(tree_id, 
+               vpd_control, 
+               set_temperature, 
+               sample_dry_weight_g, 
+               everything())
 
 ```
 
@@ -266,12 +284,14 @@ ggplot(data = [sp_name]_residual_conductance_df, aes(x = set_temperature,
 ```
 
 
-```{r, calculate_sla_lma, eval = FALSE}
+```{r, calculate_soft_traits, eval = FALSE}
 [sp_name]_residual_conductance_df <- 
   
     [sp_name]_residual_conductance_df %>% 
-        mutate(sla = leaf_areas_m2/leaf_dry_weight_g,
-               lma = 1/sla)
+        dplyr::mutate(sla = leaf_areas_m2/leaf_dry_weight_g,
+                      branch_sla =  areas_m2/sample_dry_weight_g,
+                      lma = 1/sla,
+                      branch_lma = 1/branch_sla, .keep = "unused")
 ```
 
 
