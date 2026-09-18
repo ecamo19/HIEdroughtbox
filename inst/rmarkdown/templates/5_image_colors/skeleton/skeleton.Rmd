@@ -1,0 +1,324 @@
+---
+title: '[spcode] colors'
+author: 'ecamo19'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r, setup_wd, include=FALSE}
+# Set knit directory
+setwd(here::here('./#_[spcode]/[spcode]_images'))
+knitr::opts_knit$set(root.dir = setwd(here::here('./#_[spcode]/[spcode]_images')))
+getwd()
+```
+
+```{r setup, include = FALSE}
+options(scipen = 999)
+
+# Save figures in specific place
+knitr::opts_chunk$set(autodep        = TRUE,
+                      #cache.comments = TRUE,
+                      comment = "",
+                      # Save figures as pdf ?
+                      #dev = c( "png", "pdf"),
+                  
+                      # Include code?
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path where figures are going to be store pdf single 
+                      # figures
+                      #Edit path in line 40 and comment out this line   
+                      fig.path       = paste0("./figures_[spcode]", "/"),
+                      fig.width      = 16,
+                      fig.height     = 10,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r, libaries, message = FALSE, warning = FALSE, cache = FALSE}
+
+# For data manipulation
+library(here)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(tidyr)
+library(tibble)
+library(stringr)
+library(lubridate)
+
+# For colors
+library(imager)
+library(charisma)
+library(munsellinterpol)
+```
+
+# Functions
+
+```{r, echo=FALSE}
+read_rgb <- function(path) {
+    img <- if (grepl("\\.png$", path, ignore.case = TRUE))
+                png::readPNG(path)
+           else 
+               jpeg::readJPEG(path)
+  img[, , 1:3]
+}
+```
+
+```{r, echo=FALSE}
+shrink_image_res <- function(path, 
+                             max_px = 600, 
+                             dir = file.path(tempdir(), "shrunk")) {
+    
+    # Create tmp directory
+    dir.create(dir, showWarnings = FALSE)
+    
+    # Read image
+    img <- imager::load.image(path)
+    
+    # f is the resize factor to transform a 2480 × 3508 scan to 424 × 600
+    f <- min(1, max_px / max(dim(img)[1:2]))
+    
+    # Image path
+    out <- file.path(dir, sub("\\.[^.]+$", ".png", basename(path)))
+    
+    # Resize the image
+    imager::save.image(imager::imresize(img, 
+                                        scale = f, 
+                                        
+                                        # nearest neighbour
+                                        interpolation = 1), out)
+    
+    return(out)
+}
+```
+
+```{r, echo=FALSE}
+iscc_family <- c(
+                # Classified as healthy
+                green = "green",
+                 
+                # Classified as transitional
+                yellow = "yellow", olive = "yellow", "yellow green" = "yellow", 
+                 
+                # Classified as senescence
+                brown = "brown", orange = "brown", red = "brown", pink = "brown",  
+                 
+                # Classified as background
+                gray = "grey", white = "white", black = "black",     
+                 
+                # reported, not expected
+                blue = "other", purple = "other", violet = "other")           
+```
+
+```{r, echo=FALSE}
+
+iscc_label <- function(matrix_of_colours) {
+    
+    iscc_color_name <- ColorBlockFromMunsell(RGBtoMunsell(matrix_of_colours, 
+                                             space = "sRGB", 
+                                             maxSignal = 255))$Name
+    # Extracts the hue family
+    fam  <- ifelse(grepl("yellow green$", iscc_color_name), 
+                 "yellow green", sub(".* ", "", iscc_color_name))
+  
+    # Looks each family up in your table
+    cls  <- unname(iscc_family[fam])
+  
+    # Stop if color is not found 
+    if (any(is.na(cls))) stop("unmapped ISCC-NBS name: ",
+                              iscc_color_name[is.na(cls)][1])
+  
+    # Return data
+    data.frame(iscc = iscc_color_name, class = cls)
+}
+```
+
+```{r echo=FALSE}
+classify_scan <- function(path, max_px = 600) {
+    
+    # Shrink_image_res?
+    src <- if (is.null(max_px)) path else shrink_image_res(path, max_px)
+    
+    # Run Charisma
+    res <- charisma(src, threshold = 0, interactive = FALSE, pavo = FALSE)
+    
+    # Per-cluster table
+    # Remove the first row which corresponds to the transparent background
+    lut <- res$color_mask_LUT[-1, ]
+    
+    # Picks the RGB values from  the lut table and assign ISCC-NBS name and 
+    # the study class defined in the iscc_family() and append them to lut as 
+    # the iscc and class columns
+    res$iscc_lut <- cbind(lut, iscc_label(as.matrix(lut[, c("r", "g", "b")])))
+    
+    # Add image name
+    res$source   <- path
+    
+    return(res)
+}
+```
+
+```{r, echo=FALSE}
+leaf_summary <- function(x, max_px = 600, background = c("white", "grey", "black")) {
+  
+    # Is the object an image or a charisma object
+    res  <- if (inherits(x, "charisma")) x
+            else classify_scan(x, max_px)
+    
+    # Get look-up table (lut) 
+    # Table you consult to translate one thing into another, rather than 
+    # compute it each time. charisma uses the abbreviation in color_mask_LUT 
+    # because that table is how it translates a cluster index into a colour 
+    # and a label: pixel says "cluster 7", the table says what cluster 7 is.
+    lut  <- res$iscc_lut
+    
+    # Calculate quantities 
+    prop <- tapply(lut$prop, lut$class, sum)
+    leaf <- prop[!names(prop) %in% background]
+    frac <- leaf / sum(leaf)
+    get  <- function(k) sum(frac[names(frac) %in% k])
+    
+    # Create data frame
+    data.frame(file = basename(res$source),
+               leaf_cover   = sum(leaf),
+               green_frac   = get("green"), 
+               yellow_frac  = get("yellow"),
+               brown_frac   = get("brown"), 
+               other_frac   = get("other"),
+               shadow_cover = sum(prop[names(prop) == "black"]))
+}
+```
+
+```{r}
+plot_check <- function(res, alpha = 0.55,
+                       cols = c(green = "#2ca02c", 
+                                yellow = "#ffdd00", 
+                                brown = "#8b4513",
+                                other = "#0000ff", 
+                                black = "#ff00ff")) {
+  img <- read_rgb(res$path)
+  stopifnot(all(dim(img)[1:2] == dim(res$pixel_assignments)))
+  lut <- res$iscc_lut
+  cls <- lut$class[match(res$pixel_assignments, lut$assignment_class)]
+  ov  <- img
+  hit <- cls %in% names(cols)
+  rgb <- t(col2rgb(cols[cls[hit]])) / 255
+  for (k in 1:3) {
+    ch <- ov[, , k]
+    ch[hit] <- (1 - alpha) * ch[hit] + alpha * rgb[, k]
+    ov[, , k] <- ch
+  }
+  op <- par(mfrow = c(1, 2), mar = c(0, 0, 1, 0)); on.exit(par(op))
+  plot(as.raster(img)); title("original")
+  plot(as.raster(ov));  title("classified")
+}
+```
+
+# Analysis
+
+## Single image analysis 
+
+```{r, eval = FALSE}
+single_image <- classify_scan("./original_images/.jpg")
+```
+
+```{r}
+plot_check(single_image)
+```
+
+```{r, eval = FALSE}
+# Fast version
+leaf_summary("./original_images/.jpg")
+```
+
+```{r, eval = FALSE}
+# Full resolution image analysis  
+leaf_summary("./original_images/.jpg", 
+             max_px = NULL)
+
+```
+
+## Batch processing
+
+```{r, get_file_names, evaL = FALSE}
+files <- list.files("./original_images/", 
+                    
+                    # Get only images containing leaves
+                    pattern = "leaves.*\\.(jpe?g|png)$",
+                    full.names = TRUE, ignore.case = TRUE)
+
+```
+
+```{r, batch_processing, evaL = FALSE}
+raw_[spcode]_colors <- do.call(rbind,
+                               parallel::mclapply(files, leaf_summary,
+                                                  mc.cores = parallel::detectCores() - 1))
+```
+
+# Data cleaning
+
+```{r,data_cleaning,  evaL = FALSE}
+#[spcode]_colors %>% 
+
+    raw_[spcode]_colors %>% 
+    
+    # Separate file name from file extension
+    separate_wider_delim(file, delim = ".", names = c("file_name", 
+                                                      "file_extension")) %>%  
+
+    # Create the vpd_control column based on whether "no-vpd-control" is present
+    mutate(vpd_control = ifelse(grepl("no-vpd-control", file_name),
+                                "no-vpd-control", 
+                                "vpd_controlled")) %>% 
+
+    # Remove "no-vpd-control_" from file_name to standardize the format
+    mutate(file_name_clean = gsub("no-vpd-control_", "", file_name)) %>% 
+    
+    # Remove the .jpg extension
+    mutate(file_name_clean = gsub("\\.jpg$", "", file_name_clean)) %>% 
+    
+    # Separate the cleaned filename into components
+    separate(file_name_clean, into = c( "genera", "specie", "month", 
+                                       "tree_id", "set_temperature", "organ",
+                                       
+                                       "image_number"), sep = "_") %>% 
+
+    # Select and reorder columns as desired
+    select(file_name, genera, specie, 
+           month, tree_id, vpd_control, set_temperature, 
+           organ, image_number, everything()
+           ) %>% 
+
+   # Unite Genera and specie columns
+    unite("spcode", genera:month, sep = "_", remove = TRUE) %>% 
+
+    # Remove leading zeros inside column
+    mutate(tree_id = as.numeric(str_remove(tree_id, "^0+")),
+
+           # Remove the last character in set_temperature column
+           set_temperature = as.numeric(str_sub(set_temperature, end = -2))) %>%
+
+    # Remove unused columns
+    select(-c(file_extension)) %>% 
+
+    group_by(spcode, tree_id, set_temperature, organ, vpd_control) %>% View()
+
+```
+
+# Export data
+
+```{r, export_data, eval = FALSE}
+save([spcode]_colors, 
+     file = "./[spcode]_processed_data/[spcode]_colors_data.RData")
+```
+
+
