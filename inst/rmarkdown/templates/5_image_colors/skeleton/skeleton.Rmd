@@ -315,4 +315,107 @@ save([spcode]_colors,
      file = "./[spcode]_processed_data/[spcode]_colors_data.RData")
 ```
 
+# Figures
+
+```{r, eval = FALSE }
+load("./[spcode]_processed_data/[spcode]_colors_data.RData")
+```
+
+```{r, summarise_data, echo = FALSE, eval = FALSE}
+summary_[spcode]_colors <- 
+    [spcode]_colors %>% 
+        ungroup() %>% 
+        group_by(spcode, tree_id, vpd_control, set_temperature) %>% 
+        dplyr::summarise(
+            n_scans     = n(),
+            total_leaf_cover  = round(sum(leaf_cover), 3),
+            green        = round(sum(leaf_cover * green_frac), 3),    
+            yellow       = round(sum(leaf_cover * yellow_frac), 3),
+            brown        = round(sum(leaf_cover * brown_frac), 3),
+            other_colors = round(sum(leaf_cover * other_frac), 3),
+            .groups     = "drop" ) %>%
+        
+         # Percentage
+        mutate(
+            green_frac  = round((green  / total_leaf_cover), 3),            
+            yellow_frac = round((yellow / total_leaf_cover), 3),
+            brown_frac  = round((brown  / total_leaf_cover), 3),
+            other_colors_frac = round((other_colors  / total_leaf_cover), 3)) 
+
+```
+
+```{r, eval = FALSE, echo=FALSE}
+summary_[spcode]_colors %>% 
+    select(spcode, tree_id, vpd_control,set_temperature, n_scans,
+           green_frac,yellow_frac, brown_frac, other_colors_frac ) %>% 
+    mutate(fraction_sum = (green_frac + yellow_frac + brown_frac + 
+                               other_colors_frac))
+```
+
+```{r, fig_colors, fig.width = 25, fig.height = 15, echo = FALSE, eval = FALSE}
+summary_[spcode]_colors %>% 
+    
+    select(spcode, tree_id, vpd_control, set_temperature, 
+           green_frac, yellow_frac, brown_frac) %>%
+
+    pivot_longer(
+        cols = c(green_frac, yellow_frac, brown_frac), 
+        names_to = "proportion",
+        values_to = "values") %>% 
+    
+    group_by(spcode, vpd_control, set_temperature, proportion)  %>% 
+    
+    dplyr::summarise(median_proportion = mean(values))  %>% 
+    
+    mutate(
+        
+        median_proportion = round(median_proportion, 2),
+        
+        # Rename levels in treatment
+        treatment = factor(if_else(vpd_control == "no_vpd_control",
+                                   "Dry heat", "Humid heat"))
+        ) %>% 
+           
+    
+    ggplot2::ggplot(data = ., aes(x = set_temperature, y = median_proportion,
+                                  fill = proportion, 
+                                  color = proportion)) +
+    
+    geom_hline(yintercept = 0.99, linetype = "dashed", color = "grey") +
+    
+    geom_col()+
+    facet_wrap(~treatment) +
+    # Set colors
+    scale_fill_manual(values = c("#72563f","#4a5c3d", "#a49056")) +
+    
+    scale_color_manual(values = c("#72563f","#4a5c3d", "#a49056")) + 
+    
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
+    
+    # Position label at the bottom
+    theme_bw(base_size = 40) +
+    theme(legend.position = "bottom",
+              legend.title = element_blank(),
+              legend.justification = c(0.005, 0.99),
+              legend.position.inside = c(0.005, 0.99),
+              legend.text = element_text(size = 30),
+              legend.background = element_blank(),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              strip.background = element_rect(fill = "white",colour = NA),
+              strip.text = element_text(colour = "black",face = "bold"),
+              panel.border = element_rect(colour = "black",fill = NA,
+                                          linewidth = 4),
+              axis.text    = element_text(colour = "black"),
+              axis.ticks   = element_line(colour = "black")) +
+    
+    labs(x = "Temperature (°C)", y = "Color proportion (%)") +
+    
+    # Increase the tickmarks of the axes
+    scale_y_continuous(breaks = seq(0, 1, 0.05), 
+                       sec.axis = dup_axis(name = NULL, labels = waiver()))
+```
+
+
+
 
