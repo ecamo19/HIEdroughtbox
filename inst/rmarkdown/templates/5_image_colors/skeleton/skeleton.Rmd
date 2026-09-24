@@ -13,8 +13,8 @@ output:
 
 ```{r, setup_wd, include=FALSE}
 # Set knit directory
-setwd(here::here('./#_[spcode]/[spcode]_images'))
-knitr::opts_knit$set(root.dir = setwd(here::here('./#_[spcode]/[spcode]_images')))
+setwd(here::here('./#_[spcode]/'))
+knitr::opts_knit$set(root.dir = setwd(here::here('./#_[spcode]/')))
 getwd()
 ```
 
@@ -190,15 +190,15 @@ leaf_summary <- function(x, max_px = 600, background = c("white", "grey", "black
     # Create data frame
     data.frame(file = basename(res$source),
                leaf_cover   = sum(leaf),
-               green_frac   = get("green"), 
-               yellow_frac  = get("yellow"),
-               brown_frac   = get("brown"), 
-               other_frac   = get("other"),
+               green_percentage   = get("green"), 
+               yellow_percentage  = get("yellow"),
+               brown_percentage   = get("brown"), 
+               other_percentage   = get("other"),
                shadow_cover = sum(prop[names(prop) == "black"]))
 }
 ```
 
-```{r}
+```{r, echo=FALSE}
 plot_check <- function(res, alpha = 0.55,
                        cols = c(green = "#2ca02c", 
                                 yellow = "#ffdd00", 
@@ -231,7 +231,7 @@ plot_check <- function(res, alpha = 0.55,
 single_image <- classify_scan("./original_images/.jpg")
 ```
 
-```{r}
+```{r, eval = FALSE}
 plot_check(single_image)
 ```
 
@@ -249,7 +249,7 @@ leaf_summary("./original_images/.jpg",
 
 ## Batch processing
 
-```{r, get_file_names, evaL = FALSE}
+```{r, get_file_names, eval = FALSE}
 files <- list.files("./original_images/", 
                     
                     # Get only images containing leaves
@@ -258,7 +258,7 @@ files <- list.files("./original_images/",
 
 ```
 
-```{r, batch_processing, evaL = FALSE}
+```{r, batch_processing, eval = FALSE}
 raw_[spcode]_colors <- do.call(rbind,
                                parallel::mclapply(files, leaf_summary,
                                                   mc.cores = parallel::detectCores() - 1))
@@ -266,7 +266,7 @@ raw_[spcode]_colors <- do.call(rbind,
 
 # Data cleaning
 
-```{r,data_cleaning,  evaL = FALSE}
+```{r,data_cleaning,  eval = FALSE}
 #[spcode]_colors %>% 
 
     raw_[spcode]_colors %>% 
@@ -277,15 +277,9 @@ raw_[spcode]_colors <- do.call(rbind,
 
     # Create the vpd_control column based on whether "no-vpd-control" is present
     mutate(vpd_control = ifelse(grepl("no-vpd-control", file_name),
-                                "no-vpd-control", 
-                                "vpd_controlled")) %>% 
+                                "no", 
+                                "yes")) %>% 
 
-    # Remove "no-vpd-control_" from file_name to standardize the format
-    mutate(file_name_clean = gsub("no-vpd-control_", "", file_name)) %>% 
-    
-    # Remove the .jpg extension
-    mutate(file_name_clean = gsub("\\.jpg$", "", file_name_clean)) %>% 
-    
     # Separate the cleaned filename into components
     separate(file_name_clean, into = c( "genera", "specie", "month", 
                                        "tree_id", "set_temperature", "organ",
